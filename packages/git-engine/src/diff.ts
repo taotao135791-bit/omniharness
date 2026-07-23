@@ -35,7 +35,7 @@ export interface DiffOptions {
 
 /** Runs `git diff` and parses the unified output into structured files. */
 export async function diff(path: string, opts?: DiffOptions): Promise<DiffFile[]> {
-  const args = ["diff", "--no-color", "--no-ext-diff", "--no-renames-off"];
+  const args = ["diff", "--no-color", "--no-ext-diff"];
   if (opts?.staged) args.push("--cached");
   if (opts?.base) args.push(opts.base);
   args.push("--");
@@ -52,6 +52,11 @@ export function parseUnifiedDiff(text: string): DiffFile[] {
   let pendingRenameFrom: string | undefined;
 
   const flush = (): void => {
+    if (currentHunk) {
+      while (currentHunk.lines.length > 0 && currentHunk.lines[currentHunk.lines.length - 1] === "") {
+        currentHunk.lines.pop();
+      }
+    }
     if (current) files.push(current);
     current = null;
     currentHunk = null;

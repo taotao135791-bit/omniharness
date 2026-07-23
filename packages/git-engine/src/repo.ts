@@ -60,7 +60,9 @@ export async function createBranch(
  * The -z format keeps filenames with spaces or special characters unambiguous.
  */
 export async function status(path: string): Promise<GitStatus> {
-  const out = await git(["status", "--porcelain=v1", "-z", "--branch"], { cwd: path });
+  const out = await git(["status", "--porcelain=v1", "-z", "--branch", "--untracked-files=all"], {
+    cwd: path,
+  });
   const entries = out.split("\0");
 
   let branch: string | null = null;

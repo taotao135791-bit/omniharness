@@ -1,0 +1,18 @@
+{
+  "id": "example.hello-tool",
+  "name": "Hello Tool",
+  "version": "1.0.0",
+  "description": "Minimal example plugin: registers one read-only tool.",
+  "author": "OmniHarness Contributors",
+  "license": "Apache-2.0",
+  "entry": "index.js",
+  "platforms": ["macos", "windows", "linux"],
+  "permissions": {
+    "capabilities": [],
+    "tools": ["example.hello"],
+    "uiExtensions": [],
+    "registersProviders": false,
+    "secrets": [],
+    "networkDomains": []
+  }
+}

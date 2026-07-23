@@ -1,4 +1,5 @@
 import type { ModelStreamChunk, ProviderKind, ToolCallRequest } from "@omniharness/shared-types";
+import { ProviderHttpError } from "./errors.js";
 import { postSse, type FetchLike } from "./http.js";
 import { OpenAiSseMapper } from "./sse.js";
 import type {
@@ -110,7 +111,6 @@ export class OpenAICompatibleProvider implements ModelProvider {
     const res = await this.fetchImpl(this.url("/models"), { headers: this.authHeaders() });
     if (!res.ok) {
       const text = await res.text().catch(() => "");
-      const { ProviderHttpError } = await import("./errors.js");
       throw new ProviderHttpError(res.status, `listModels failed with HTTP ${res.status}: ${text.slice(0, 300)}`);
     }
     const json = (await res.json()) as { data?: Array<{ id?: string }> };
