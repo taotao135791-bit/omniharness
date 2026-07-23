@@ -1,5 +1,4 @@
 {
-  "$schema": "./packages/config-schema/schemas/brand.schema.json",
   "product": {
     "codeName": "OmniHarness",
     "displayName": "OmniHarness",
