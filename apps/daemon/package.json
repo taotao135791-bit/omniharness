@@ -1,0 +1,44 @@
+{
+  "name": "@omniharness/daemon",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "bin": { "omniharnessd": "./dist/main.js" },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx src/main.ts",
+    "start": "node dist/main.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@omniharness/agent-orchestrator": "workspace:*",
+    "@omniharness/agent-protocol": "workspace:*",
+    "@omniharness/approval-engine": "workspace:*",
+    "@omniharness/artifact-store": "workspace:*",
+    "@omniharness/automation-engine": "workspace:*",
+    "@omniharness/config-schema": "workspace:*",
+    "@omniharness/memory-engine": "workspace:*",
+    "@omniharness/model-gateway": "workspace:*",
+    "@omniharness/policy-engine": "workspace:*",
+    "@omniharness/runtime-pi": "workspace:*",
+    "@omniharness/sandbox-engine": "workspace:*",
+    "@omniharness/secret-store": "workspace:*",
+    "@omniharness/session-store": "workspace:*",
+    "@omniharness/shared-types": "workspace:*",
+    "@omniharness/skill-engine": "workspace:*",
+    "@omniharness/tool-runtime": "workspace:*",
+    "@omniharness/workspace-manager": "workspace:*",
+    "@omniharness/git-engine": "workspace:*",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/ws": "^8.5.10",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.0"
+  }
+}
