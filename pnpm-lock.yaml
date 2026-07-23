@@ -33,6 +33,129 @@ importers:
         specifier: ^3.1.0
         version: 3.2.7(@types/node@24.13.3)(tsx@4.23.1)
 
+  apps/cli:
+    dependencies:
+      '@omniharness/agent-protocol':
+        specifier: workspace:*
+        version: link:../../packages/agent-protocol
+      '@omniharness/client-sdk':
+        specifier: workspace:*
+        version: link:../../packages/client-sdk
+      '@omniharness/config-schema':
+        specifier: workspace:*
+        version: link:../../packages/config-schema
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      tsx:
+        specifier: ^4.19.0
+        version: 4.23.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/node@24.13.3)(tsx@4.23.1)
+
+  apps/daemon:
+    dependencies:
+      '@omniharness/agent-orchestrator':
+        specifier: workspace:*
+        version: link:../../packages/agent-orchestrator
+      '@omniharness/agent-protocol':
+        specifier: workspace:*
+        version: link:../../packages/agent-protocol
+      '@omniharness/approval-engine':
+        specifier: workspace:*
+        version: link:../../packages/approval-engine
+      '@omniharness/artifact-store':
+        specifier: workspace:*
+        version: link:../../packages/artifact-store
+      '@omniharness/automation-engine':
+        specifier: workspace:*
+        version: link:../../packages/automation-engine
+      '@omniharness/config-schema':
+        specifier: workspace:*
+        version: link:../../packages/config-schema
+      '@omniharness/git-engine':
+        specifier: workspace:*
+        version: link:../../packages/git-engine
+      '@omniharness/memory-engine':
+        specifier: workspace:*
+        version: link:../../packages/memory-engine
+      '@omniharness/model-gateway':
+        specifier: workspace:*
+        version: link:../../packages/model-gateway
+      '@omniharness/policy-engine':
+        specifier: workspace:*
+        version: link:../../packages/policy-engine
+      '@omniharness/runtime-pi':
+        specifier: workspace:*
+        version: link:../../packages/runtime-pi
+      '@omniharness/sandbox-engine':
+        specifier: workspace:*
+        version: link:../../packages/sandbox-engine
+      '@omniharness/secret-store':
+        specifier: workspace:*
+        version: link:../../packages/secret-store
+      '@omniharness/session-store':
+        specifier: workspace:*
+        version: link:../../packages/session-store
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
+      '@omniharness/skill-engine':
+        specifier: workspace:*
+        version: link:../../packages/skill-engine
+      '@omniharness/tool-runtime':
+        specifier: workspace:*
+        version: link:../../packages/tool-runtime
+      '@omniharness/workspace-manager':
+        specifier: workspace:*
+        version: link:../../packages/workspace-manager
+      ws:
+        specifier: ^8.18.0
+        version: 8.21.1
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      '@types/ws':
+        specifier: ^8.5.10
+        version: 8.18.1
+      tsx:
+        specifier: ^4.19.0
+        version: 4.23.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/node@24.13.3)(tsx@4.23.1)
+
+  packages/agent-orchestrator:
+    dependencies:
+      '@omniharness/session-store':
+        specifier: workspace:*
+        version: link:../session-store
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/node@24.13.3)(tsx@4.23.1)
+
   packages/agent-protocol:
     dependencies:
       '@omniharness/shared-types':
@@ -51,6 +174,44 @@ importers:
 
   packages/approval-engine:
     dependencies:
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/node@24.13.3)(tsx@4.23.1)
+
+  packages/artifact-store:
+    dependencies:
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/node@24.13.3)(tsx@4.23.1)
+
+  packages/automation-engine:
+    dependencies:
+      '@omniharness/config-schema':
+        specifier: workspace:*
+        version: link:../config-schema
+      '@omniharness/session-store':
+        specifier: workspace:*
+        version: link:../session-store
       '@omniharness/shared-types':
         specifier: workspace:*
         version: link:../shared-types
@@ -122,11 +283,33 @@ importers:
         specifier: ^3.1.0
         version: 3.2.7(@types/node@24.13.3)(tsx@4.23.1)
 
+  packages/memory-engine:
+    dependencies:
+      '@omniharness/session-store':
+        specifier: workspace:*
+        version: link:../session-store
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/node@24.13.3)(tsx@4.23.1)
+
   packages/model-gateway:
     dependencies:
       '@omniharness/config-schema':
         specifier: workspace:*
         version: link:../config-schema
+      '@omniharness/secret-store':
+        specifier: workspace:*
+        version: link:../secret-store
       '@omniharness/shared-types':
         specifier: workspace:*
         version: link:../shared-types
@@ -146,6 +329,34 @@ importers:
       '@omniharness/shared-types':
         specifier: workspace:*
         version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/node@24.13.3)(tsx@4.23.1)
+
+  packages/runtime-pi:
+    dependencies:
+      '@omniharness/model-gateway':
+        specifier: workspace:*
+        version: link:../model-gateway
+      '@omniharness/policy-engine':
+        specifier: workspace:*
+        version: link:../policy-engine
+      '@omniharness/session-store':
+        specifier: workspace:*
+        version: link:../session-store
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      '@omniharness/tool-runtime':
+        specifier: workspace:*
+        version: link:../tool-runtime
     devDependencies:
       '@types/node':
         specifier: ^24.0.0
@@ -202,6 +413,25 @@ importers:
         version: 3.2.7(@types/node@24.13.3)(tsx@4.23.1)
 
   packages/shared-types:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/node@24.13.3)(tsx@4.23.1)
+
+  packages/skill-engine:
+    dependencies:
+      '@omniharness/config-schema':
+        specifier: workspace:*
+        version: link:../config-schema
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
     devDependencies:
       '@types/node':
         specifier: ^24.0.0

@@ -5,8 +5,15 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -14,11 +21,12 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@omniharness/shared-types": "workspace:*"
-    "@omniharness/model-gateway": "workspace:*"
-    "@omniharness/tool-runtime": "workspace:*"
-    "@omniharness/policy-engine": "workspace:*"
-    "@omniharness/session-store": "workspace:*"  },
+    "@omniharness/shared-types": "workspace:*",
+    "@omniharness/model-gateway": "workspace:*",
+    "@omniharness/tool-runtime": "workspace:*",
+    "@omniharness/policy-engine": "workspace:*",
+    "@omniharness/session-store": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "typescript": "^5.8.3",
