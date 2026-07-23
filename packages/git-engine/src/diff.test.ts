@@ -133,7 +133,8 @@ describe("applyHunks", () => {
     const f = files[0]!;
     expect(f.hunks.length).toBe(2);
 
-    // Accept only the first hunk; the working tree keeps the second change.
+    // Reset the file to the committed state, then re-apply only hunk 0.
+    await git(["checkout", "--", "big.txt"], { cwd: dir });
     await applyHunks(dir, f, [0]);
     const content = await readFile(join(dir, "big.txt"), "utf8");
     expect(content).toContain("CHANGED-2");

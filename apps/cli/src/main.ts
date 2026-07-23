@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { loadBrand } from "@omniharness/config-schema";
+import type { SessionId } from "@omniharness/shared-types";
 import { parseArgs, optBool, optString } from "./args.js";
 import { connectToDaemon } from "./connect.js";
 import { printJson, printTable } from "./output.js";
@@ -93,14 +94,14 @@ async function main(): Promise<number> {
         if (action === "archive") {
           const id = optString(options, "session") ?? rest[0];
           if (!id) throw new Error("session id required");
-          await client.call("session.archive", { sessionId: id });
+          await client.call("session.archive", { sessionId: id as SessionId });
           return 0;
         }
         if (action === "rename") {
           const id = optString(options, "session") ?? rest[0];
           const title = optString(options, "title") ?? rest[1];
           if (!id || !title) throw new Error("usage: omni session rename <id> <title>");
-          await client.call("session.rename", { sessionId: id, title });
+          await client.call("session.rename", { sessionId: id as SessionId, title });
           return 0;
         }
         throw new Error(`unknown session action: ${action ?? "(none)"}`);
@@ -119,7 +120,7 @@ async function main(): Promise<number> {
             }
             if (e.type === "run.failed") console.error(`\n[failed: ${e.error}]`);
           });
-          await client.call("run.start", { sessionId, input });
+          await client.call("run.start", { sessionId: sessionId as SessionId, input });
           // Wait until the run finishes.
           await new Promise<void>((resolve) => {
             const off = client.onEvent((e) => {
@@ -248,7 +249,7 @@ async function main(): Promise<number> {
         throw new Error(`unknown automation action: ${action ?? "(none)"}`);
       }
       case "diff": {
-        const r = await client.call("diff.get", optString(options, "session") ? { sessionId: optString(options, "session")! } : {});
+        const r = await client.call("diff.get", optString(options, "session") ? { sessionId: optString(options, "session")! as SessionId } : {});
         if (json) printJson(r);
         else printTable(r.files.map((f) => ({ path: f.path, status: f.status, "+": f.additions, "-": f.deletions, hunks: f.hunks.length })));
         return 0;

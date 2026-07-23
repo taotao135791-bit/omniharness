@@ -7,6 +7,22 @@ function escapePath(path: string): string {
 }
 
 /**
+ * System paths that must stay readable for any process to start at all
+ * (dyld shared cache, system libraries, shell binaries, resolver config).
+ * Always included when reads are scoped via readOnlyPaths.
+ */
+const SYSTEM_READ_PATHS = [
+  "/System",
+  "/usr",
+  "/bin",
+  "/sbin",
+  "/Library",
+  "/private",
+  "/dev",
+  "/Applications",
+];
+
+/**
  * Pure generator for a macOS seatbelt (.sb) profile:
  * deny-by-default, process exec/fork allowed, reads unrestricted (or scoped to
  * readOnlyPaths + cwd when provided), writes scoped to writablePaths, and
