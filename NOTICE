@@ -1,0 +1,16 @@
+# OmniHarness third-party notices
+
+OmniHarness is Apache-2.0 licensed. It builds on and interoperates with the
+following upstream projects:
+
+- **Pi** (`earendil-works/pi`, MIT) — agent loop, LLM API layer, TUI toolkit.
+  Consumed as npm dependencies (`@earendil-works/pi-*`). See `docs/research/PI_AUDIT.md`.
+- **OpenClaw** — gateway/channel/node integration reference. Integrated via our own
+  adapter (`packages/openclaw-adapter`); no OpenClaw code is vendored.
+  See `docs/research/OPENCLAW_AUDIT.md`.
+- **Hermes Agent** (`NousResearch/hermes-agent`, MIT) — memory and skill-learning
+  design reference and import source. No Hermes code is vendored; data importers
+  re-encode into OmniHarness schemas. See `docs/research/HERMES_AUDIT.md`.
+
+Runtime npm dependencies and their licenses are audited in CI (`scripts/release/license-audit.mjs`)
+and shipped in each installer's `THIRD_PARTY_NOTICES.txt`.
