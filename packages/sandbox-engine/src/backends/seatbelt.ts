@@ -1,3 +1,4 @@
+import { realpathSync } from "node:fs";
 import { commandOnPath } from "../availability.js";
 import type { SandboxBackend, SandboxRequest, WrappedCommand } from "../types.js";
 
@@ -47,7 +48,11 @@ export function generateSeatbeltProfile(req: SandboxRequest): string {
     lines.push("(allow file-read*)");
   } else {
     const scopedReads = [...new Set([...SYSTEM_READ_PATHS, ...readOnlyPaths, req.cwd])];
-    lines.push("; system baseline plus readOnlyPaths + cwd");
+    lines.push(
+      "; system baseline plus readOnlyPaths + cwd",
+      // dyld reads the root directory at startup; without this the process aborts.
+      '(allow file-read* (literal "/"))',
+    );
     for (const path of scopedReads) {
       lines.push(`(allow file-read* (subpath "${escapePath(path)}"))`);
     }
@@ -78,6 +83,25 @@ export function generateSeatbeltProfile(req: SandboxRequest): string {
   return lines.join("\n") + "\n";
 }
 
+/**
+ * Seatbelt matches against canonicalized paths, so symlinks like /tmp
+ * (→ /private/tmp) must be resolved or the rule silently fails to apply.
+ * Returns the original plus the resolved path (deduped); unresolvable
+ * paths are kept as-is.
+ */
+function canonicalize(paths: readonly string[]): string[] {
+  const out = new Set<string>();
+  for (const path of paths) {
+    out.add(path);
+    try {
+      out.add(realpathSync.native(path));
+    } catch {
+      // path may not exist yet; keep the literal form
+    }
+  }
+  return [...out];
+}
+
 /** macOS sandbox-exec backend. */
 export class SeatbeltBackend implements SandboxBackend {
   readonly name = "seatbelt";
@@ -91,7 +115,17 @@ export class SeatbeltBackend implements SandboxBackend {
   }
 
   wrap(req: SandboxRequest): WrappedCommand {
-    const profile = generateSeatbeltProfile(req);
+    const readScoped = req.readOnlyPaths !== undefined && req.readOnlyPaths.length > 0;
+    const resolved: SandboxRequest = {
+      ...req,
+      writablePaths: canonicalize(req.writablePaths),
+      // Canonical cwd is folded into the read scope; req.cwd itself is left
+      // untouched for spawn and is added to the read scope by the generator.
+      ...(readScoped
+        ? { readOnlyPaths: canonicalize([...(req.readOnlyPaths ?? []), req.cwd]) }
+        : {}),
+    };
+    const profile = generateSeatbeltProfile(resolved);
     const warnings: string[] = [];
     if (req.network === "allowlist") {
       warnings.push(

@@ -129,11 +129,14 @@ export function parseUnifiedDiff(text: string): DiffFile[] {
 /** Strips the `a/` or `b/` prefix; returns null for `/dev/null`. Unquotes C-style paths. */
 function stripDiffPrefix(raw: string): string | null {
   if (raw === "/dev/null") return null;
-  const unquoted = raw.startsWith('"') ? unquoteCStyle(raw) : raw;
-  if (unquoted.startsWith("a/") || unquoted.startsWith("b/")) {
-    return unquoted.slice(2);
+  // Git pads unquoted paths containing spaces with a trailing tab; a raw tab
+  // can never be part of the path itself (it would be C-quoted as \t).
+  const noTab = raw.split("\t")[0] ?? raw;
+  const cleaned = noTab.startsWith('"') ? unquoteCStyle(noTab) : noTab;
+  if (cleaned.startsWith("a/") || cleaned.startsWith("b/")) {
+    return cleaned.slice(2);
   }
-  return unquoted;
+  return cleaned;
 }
 
 /**

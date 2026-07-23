@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -52,10 +52,12 @@ describe("worktrees", () => {
     const wtPath = join(dir, "..", `${dir.split("/").pop()}-wt`);
     const info = await worktreeAdd(dir, wtPath, "feature-x");
     expect(info.branch).toBe("feature-x");
+    // git reports realpaths; macOS tmp dirs live under /private.
+    const wtReal = await realpath(wtPath);
 
     const list = await worktreeList(dir);
-    expect(list.map((w) => w.path)).toContain(wtPath);
-    expect(list[0]!.path).toBe(dir);
+    expect(list.map((w) => w.path)).toContain(wtReal);
+    expect(list[0]!.path).toBe(await realpath(dir));
 
     await writeFile(join(wtPath, "wt.txt"), "in worktree\n");
     await commitAll(wtPath, "wt commit");
@@ -65,7 +67,7 @@ describe("worktrees", () => {
 
     await worktreeRemove(dir, wtPath);
     const after = await worktreeList(dir);
-    expect(after.map((w) => w.path)).not.toContain(wtPath);
+    expect(after.map((w) => w.path)).not.toContain(wtReal);
   });
 
   it("checks out an existing branch in a worktree and force-removes dirty trees", async () => {
@@ -103,21 +105,27 @@ describe("checkpoints", () => {
 
   it("restores a checkpoint after stashing current changes", async () => {
     await writeFile(join(dir, "v1.txt"), "v1\n");
-    const cp = await checkpointCommit(dir, "has v1");
+    await commitAll(dir, "add v1");
 
+    await writeFile(join(dir, "v1.txt"), "v1 changed\n");
     await writeFile(join(dir, "v2.txt"), "v2\n");
+    const cp = await checkpointCommit(dir, "wip state");
+
+    // Agent wrecks the tree afterwards.
+    await writeFile(join(dir, "v1.txt"), "wrecked\n");
+    await rm(join(dir, "v2.txt"));
+
     const result = await restoreCheckpoint(dir, cp.ref);
     expect(result.stashed).toBe(true);
 
-    // v1 restored and committed, v2 stashed away.
-    expect(await readFile(join(dir, "v1.txt"), "utf8")).toBe("v1\n");
-    const s = await status(dir);
-    expect(s.dirty).toBe(false);
-    await expect(readFile(join(dir, "v2.txt"), "utf8")).rejects.toThrow();
-
-    // Safety stash is recoverable.
-    await stashPop(dir);
+    // Checkpoint state restored exactly.
+    expect(await readFile(join(dir, "v1.txt"), "utf8")).toBe("v1 changed\n");
     expect(await readFile(join(dir, "v2.txt"), "utf8")).toBe("v2\n");
+    expect((await status(dir)).dirty).toBe(false);
+
+    // The wrecked state survives on the stash as a safety net.
+    const stashList = await git(["stash", "list"], { cwd: dir });
+    expect(stashList).toContain("safety stash");
   });
 
   it("stash returns false when the tree is clean", async () => {

@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "noEmit": false, "outDir": "dist-electron", "rootDir": "src", "jsx": "react-jsx", "lib": ["ES2023", "DOM", "DOM.Iterable"] },
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/renderer"]
+}

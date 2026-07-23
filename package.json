@@ -2,7 +2,7 @@
   "name": "omniharness",
   "version": "0.1.0",
   "private": true,
-  "description": "OmniHarness — local-first, model-agnostic desktop agent harness",
+  "description": "OmniHarness \u2014 local-first, model-agnostic desktop agent harness",
   "type": "module",
   "packageManager": "pnpm@10.30.3",
   "engines": {
@@ -38,6 +38,9 @@
     "vitest": "^3.1.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": []
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild"
+    ]
   }
 }

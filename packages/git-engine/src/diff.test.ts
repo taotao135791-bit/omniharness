@@ -47,9 +47,11 @@ describe("diff parsing", () => {
     await commitAll(dir, "base");
     await git(["mv", "old.txt", "new.txt"], { cwd: dir });
     await rm(join(dir, "gone.txt"));
+    // Untracked files never show up in `git diff`; stage to make them visible.
     await writeFile(join(dir, "added.txt"), "new\n");
+    await git(["add", "-A"], { cwd: dir });
 
-    const files = await diff(dir);
+    const files = await diff(dir, { staged: true });
     const byPath = new Map(files.map((f) => [f.path, f]));
     expect(byPath.get("added.txt")?.status).toBe("added");
     expect(byPath.get("gone.txt")?.status).toBe("deleted");

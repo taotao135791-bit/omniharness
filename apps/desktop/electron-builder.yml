@@ -1,0 +1,25 @@
+appId: dev.omniharness.desktop
+productName: OmniHarness
+copyright: Copyright © 2026 OmniHarness Contributors
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist-electron/**
+  - renderer/**
+  - package.json
+mac:
+  category: public.app-category.developer-tools
+  target: [dmg, zip]
+  hardenedRuntime: true
+  gatekeeperAssess: false
+win:
+  target: [nsis, zip]
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+linux:
+  target: [AppImage, deb]
+  category: Development
+electronDownload:
+  cache: ~/.cache/electron
