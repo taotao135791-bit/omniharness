@@ -1,0 +1,36 @@
+{
+  "$schema": "./packages/config-schema/schemas/brand.schema.json",
+  "product": {
+    "codeName": "OmniHarness",
+    "displayName": "OmniHarness",
+    "tagline": "Local-first, model-agnostic desktop agent harness",
+    "vendor": "OmniHarness Contributors",
+    "website": "https://github.com/taotao135791-bit/omniharness",
+    "supportUrl": "https://github.com/taotao135791-bit/omniharness/issues",
+    "license": "Apache-2.0"
+  },
+  "identifiers": {
+    "bundleId": "dev.omniharness.desktop",
+    "appId": "dev.omniharness.desktop",
+    "cliBin": "omni",
+    "daemonServiceName": "dev.omniharness.daemon",
+    "dataDirName": "omniharness",
+    "configFileName": "config.json",
+    "registryNamespace": "@omniharness"
+  },
+  "paths": {
+    "iconSvg": "brand/assets/icon.svg",
+    "iconPng": "brand/assets/icon.png",
+    "iconIco": "brand/assets/icon.ico",
+    "iconIcns": "brand/assets/icon.icns"
+  },
+  "channels": {
+    "stable": { "name": "stable", "autoUpdate": true },
+    "beta": { "name": "beta", "autoUpdate": true }
+  },
+  "copy": {
+    "welcome": "Welcome to OmniHarness",
+    "onboardingTitle": "Set up your agent harness",
+    "shortDescription": "One runtime for coding, knowledge work, browser and desktop agents — with any model."
+  }
+}

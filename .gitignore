@@ -1,0 +1,17 @@
+node_modules/
+dist/
+out/
+build/
+coverage/
+*.log
+.DS_Store
+.turbo/
+.cache/
+release/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+apps/desktop/dist-electron/
+apps/desktop/release/
+tmp/

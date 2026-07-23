@@ -1,0 +1,43 @@
+{
+  "name": "omniharness",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OmniHarness — local-first, model-agnostic desktop agent harness",
+  "type": "module",
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "setup": "pnpm install && pnpm -r build",
+    "build": "pnpm -r --topological build",
+    "dev:daemon": "pnpm --filter @omniharness/daemon dev",
+    "dev:tui": "pnpm --filter @omniharness/tui dev",
+    "dev:cli": "pnpm --filter @omniharness/cli dev",
+    "dev:desktop": "pnpm --filter @omniharness/desktop dev",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter @omniharness/test-harness run test:e2e",
+    "test:security": "pnpm --filter @omniharness/test-harness run test:security",
+    "test:providers": "pnpm --filter @omniharness/model-gateway run test:providers",
+    "test:installers": "node scripts/verify/installer-smoke.mjs",
+    "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm -r --topological typecheck",
+    "verify": "node scripts/verify/verify.mjs",
+    "release:local": "node scripts/release/release-local.mjs",
+    "upstream:sync": "node scripts/upstream/sync.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.30.0",
+    "@typescript-eslint/parser": "^8.30.0",
+    "eslint": "^9.25.0",
+    "prettier": "^3.5.3",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": []
+  }
+}
