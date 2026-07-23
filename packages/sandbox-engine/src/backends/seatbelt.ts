@@ -46,7 +46,9 @@ export function generateSeatbeltProfile(req: SandboxRequest): string {
   if (readOnlyPaths.length === 0) {
     lines.push("(allow file-read*)");
   } else {
-    for (const path of [...readOnlyPaths, req.cwd]) {
+    const scopedReads = [...new Set([...SYSTEM_READ_PATHS, ...readOnlyPaths, req.cwd])];
+    lines.push("; system baseline plus readOnlyPaths + cwd");
+    for (const path of scopedReads) {
       lines.push(`(allow file-read* (subpath "${escapePath(path)}"))`);
     }
   }
