@@ -1,6 +1,8 @@
 import { openDatabase, type OmniDatabase } from "@omniharness/session-store";
 import { createSecretStore, type SecretStore } from "@omniharness/secret-store";
 import { MemoryEngine } from "@omniharness/memory-engine";
+import { SkillEngine } from "@omniharness/skill-engine";
+import { AutomationEngine, Scheduler } from "@omniharness/automation-engine";
 import { PolicyEngine } from "@omniharness/policy-engine";
 import { ApprovalEngine, InMemoryApprovalStore } from "@omniharness/approval-engine";
 import { ArtifactStore } from "@omniharness/artifact-store";
@@ -21,6 +23,12 @@ export interface DaemonContext {
   policy: PolicyEngine;
   approvals: ApprovalEngine;
   memory: MemoryEngine;
+  skills: SkillEngine;
+  automations: {
+    engine: AutomationEngine;
+    scheduler: Scheduler | null;
+    setScheduler: (s: Scheduler) => void;
+  };
   artifacts: ArtifactStore;
   version: string;
   startedAt: number;
@@ -46,6 +54,10 @@ export async function createDaemonContext(opts: {
   const approvals = new ApprovalEngine({ store: new InMemoryApprovalStore() });
   const memory = new MemoryEngine(db);
   const artifacts = new ArtifactStore(opts.paths.artifactsDir);
+  const { SqliteSkillStore } = await import("./services/skill-store-adapter.js");
+  const skills = new SkillEngine(new SqliteSkillStore(db));
+  const automationEngine = new AutomationEngine({ repo: db.automations });
+  const automationsHolder: { scheduler: Scheduler | null } = { scheduler: null };
 
   const rpc = new RpcServer({
     host: opts.host,
@@ -67,6 +79,16 @@ export async function createDaemonContext(opts: {
     policy,
     approvals,
     memory,
+    skills,
+    automations: {
+      engine: automationEngine,
+      get scheduler() {
+        return automationsHolder.scheduler;
+      },
+      setScheduler: (s: Scheduler) => {
+        automationsHolder.scheduler = s;
+      },
+    },
     artifacts,
     version: opts.version,
     startedAt: Date.now(),

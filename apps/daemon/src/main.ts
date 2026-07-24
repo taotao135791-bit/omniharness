@@ -5,6 +5,8 @@ import { loadOrCreateAuthToken, removeRuntimeInfo, resolvePaths, writeRuntimeInf
 import { registerSessionHandlers } from "./services/session-handlers.js";
 import { registerSystemHandlers } from "./services/system-handlers.js";
 import { registerMemoryHandlers } from "./services/memory-handlers.js";
+import { registerSkillHandlers } from "./services/skill-handlers.js";
+import { registerAutomationHandlers } from "./services/automation-handlers.js";
 
 export async function startDaemon(opts?: {
   dataDir?: string;
@@ -36,6 +38,8 @@ export async function startDaemon(opts?: {
   });
   registerSessionHandlers(register, ctx.db, ctx.bus);
   registerMemoryHandlers(register, ctx);
+  registerSkillHandlers(register, ctx);
+  registerAutomationHandlers(register, ctx);
 
   // system.shutdown is registered here because it needs the stop hook.
   register("system.shutdown", () => {

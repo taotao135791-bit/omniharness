@@ -46,8 +46,8 @@ describe("Scheduler", () => {
 
     vi.setSystemTime(new Date("2024-03-01T10:00:01.000Z"));
     scheduler.tick();
-    await vi.waitFor(() => expect(calls).toHaveLength(1));
-
+    await vi.waitFor(() => expect(engine.listRuns(a.id, "completed")).toHaveLength(1));
+    expect(calls).toHaveLength(1);
     const runs = engine.listRuns(a.id);
     expect(runs).toHaveLength(1);
     expect(runs[0]?.status).toBe("completed");
@@ -100,16 +100,20 @@ describe("Scheduler", () => {
 
     vi.setSystemTime(new Date("2024-03-01T10:00:01.000Z"));
     scheduler.tick();
-    await vi.waitFor(() => expect(attempt).toBe(1));
-    expect(engine.listRuns(a.id, "failed")).toHaveLength(1);
+    await vi.waitFor(() => expect(engine.listRuns(a.id, "failed")).toHaveLength(1));
+    expect(attempt).toBe(1);
 
     await vi.advanceTimersByTimeAsync(1000); // backoff fires retry
-    await vi.waitFor(() => expect(attempt).toBe(2));
+    await vi.waitFor(() =>
+      expect(engine.listRuns(a.id).some((r) => r.attempt === 2 && r.status === "completed")).toBe(
+        true,
+      ),
+    );
+    expect(attempt).toBe(2);
 
     const runs = engine.listRuns(a.id);
     expect(runs).toHaveLength(2);
     const second = runs.find((r) => r.attempt === 2);
-    expect(second?.status).toBe("completed");
     expect(second?.resultSummary).toBe("recovered");
     scheduler.stop();
   });

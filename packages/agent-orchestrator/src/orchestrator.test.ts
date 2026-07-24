@@ -2,10 +2,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type {
   AgentId,
   AgentTask,
+  ProjectId,
   TaskId,
   WorkspaceId,
   WorktreeId,
 } from "@omniharness/shared-types";
+import { nowIso } from "@omniharness/shared-types";
 import { openDatabase, type OmniDatabase } from "@omniharness/session-store";
 import {
   BudgetExceededError,
@@ -67,6 +69,17 @@ const nextId = (): TaskId => `task_${idCounter + 1}` as TaskId;
 
 beforeEach(() => {
   db = openDatabase(":memory:");
+  db.projects.put({ id: "proj_test" as ProjectId, name: "test", createdAt: nowIso() });
+  db.workspaces.put({
+    id: WS,
+    projectId: "proj_test" as ProjectId,
+    name: "test-ws",
+    kind: "folder",
+    roots: [],
+    protectedPaths: [],
+    readOnlyPaths: [],
+    createdAt: nowIso(),
+  });
   runner = new ScriptedRunner();
   idCounter = 0;
   orch = new TaskOrchestrator({
