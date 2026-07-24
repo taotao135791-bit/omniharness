@@ -9,7 +9,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "setup": "pnpm install && pnpm -r build",
+    "setup": "node scripts/setup/check-env.mjs && pnpm install && pnpm build",
     "build": "pnpm -r --topological build",
     "dev:daemon": "pnpm --filter @omniharness/daemon dev",
     "dev:tui": "pnpm --filter @omniharness/tui dev",
