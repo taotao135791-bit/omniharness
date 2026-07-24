@@ -226,7 +226,7 @@ export class ToolRuntime {
               decision: evaluation.decision,
               ok: false,
               durationMs: Date.now() - started,
-              error: approved.reason,
+              error: approved.reason ?? "denied by user",
             });
             return result;
           }
