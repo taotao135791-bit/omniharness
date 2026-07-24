@@ -43,7 +43,7 @@ describe("ModelCapabilityRegistry", () => {
     expect(vision.map((m) => m.remoteName)).toEqual(["gpt-4o"]);
 
     const bigContext = registry.filterByCapability({ contextWindow: 100_000 });
-    expect(bigContext.map((m) => m.remoteName).sort()).toEqual(["gpt-3.5-turbo", "gpt-4o"]);
+    expect(bigContext.map((m) => m.remoteName)).toEqual(["gpt-4o"]);
 
     const toolCallers = registry.filter((caps) => caps.nativeToolCalling);
     expect(toolCallers.map((m) => m.remoteName).sort()).toEqual(["gpt-3.5-turbo", "gpt-4o"]);

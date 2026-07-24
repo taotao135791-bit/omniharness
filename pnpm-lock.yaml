@@ -306,6 +306,25 @@ importers:
         specifier: ^3.1.0
         version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
 
+  packages/browser-runtime:
+    dependencies:
+      '@omniharness/policy-engine':
+        specifier: workspace:*
+        version: link:../policy-engine
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
+
   packages/client-sdk:
     dependencies:
       '@omniharness/agent-protocol':
@@ -331,6 +350,25 @@ importers:
         specifier: ^3.1.0
         version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
 
+  packages/computer-use:
+    dependencies:
+      '@omniharness/policy-engine':
+        specifier: workspace:*
+        version: link:../policy-engine
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
+
   packages/config-schema:
     dependencies:
       '@omniharness/shared-types':
@@ -347,8 +385,49 @@ importers:
         specifier: ^3.1.0
         version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
 
+  packages/extension-host:
+    dependencies:
+      '@omniharness/plugin-sdk':
+        specifier: workspace:*
+        version: link:../plugin-sdk
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      '@omniharness/tool-runtime':
+        specifier: workspace:*
+        version: link:../tool-runtime
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
+
   packages/git-engine:
     dependencies:
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/hermes-importer:
+    dependencies:
+      '@omniharness/session-store':
+        specifier: workspace:*
+        version: link:../session-store
       '@omniharness/shared-types':
         specifier: workspace:*
         version: link:../shared-types
@@ -390,6 +469,63 @@ importers:
       '@omniharness/secret-store':
         specifier: workspace:*
         version: link:../secret-store
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/observability:
+    dependencies:
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/openclaw-adapter:
+    dependencies:
+      '@omniharness/agent-protocol':
+        specifier: workspace:*
+        version: link:../agent-protocol
+      '@omniharness/client-sdk':
+        specifier: workspace:*
+        version: link:../client-sdk
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/plugin-sdk:
+    dependencies:
+      '@omniharness/config-schema':
+        specifier: workspace:*
+        version: link:../config-schema
       '@omniharness/shared-types':
         specifier: workspace:*
         version: link:../shared-types
@@ -529,11 +665,55 @@ importers:
         specifier: ^3.1.0
         version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
 
+  packages/test-harness:
+    dependencies:
+      '@omniharness/agent-protocol':
+        specifier: workspace:*
+        version: link:../agent-protocol
+      '@omniharness/client-sdk':
+        specifier: workspace:*
+        version: link:../client-sdk
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
+
   packages/tool-runtime:
     dependencies:
       '@omniharness/policy-engine':
         specifier: workspace:*
         version: link:../policy-engine
+      '@omniharness/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      '@omniharness/workspace-manager':
+        specifier: workspace:*
+        version: link:../workspace-manager
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/ui-command-registry:
+    dependencies:
+      '@omniharness/agent-protocol':
+        specifier: workspace:*
+        version: link:../agent-protocol
       '@omniharness/shared-types':
         specifier: workspace:*
         version: link:../shared-types

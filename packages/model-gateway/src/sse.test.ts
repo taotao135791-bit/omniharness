@@ -42,7 +42,7 @@ const OPENAI_SSE = [
   'data: {"id":"chatcmpl-1","choices":[],"usage":{"prompt_tokens":12,"completion_tokens":7,"prompt_tokens_details":{"cached_tokens":4}}}',
   "data: [DONE]",
   "",
-].join("\n");
+].join("\n\n");
 
 describe("OpenAiSseMapper", () => {
   it("maps canned OpenAI SSE (text + tool call + usage) to chunks", () => {
