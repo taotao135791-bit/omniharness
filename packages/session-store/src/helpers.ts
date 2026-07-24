@@ -3,9 +3,9 @@ import type { SQLInputValue, SQLOutputValue, StatementSync } from "node:sqlite";
 /** A raw SQLite row as returned by node:sqlite. */
 export type Row = Record<string, SQLOutputValue>;
 
-/** JSON-encode a value for a TEXT column. */
+/** JSON-encode a value for a TEXT column. `undefined` encodes as "null" (never a bind error). */
 export function jstr(value: unknown): string {
-  return JSON.stringify(value);
+  return JSON.stringify(value ?? null);
 }
 
 /** Decode a JSON TEXT column. Returns fallback when the column is NULL. */

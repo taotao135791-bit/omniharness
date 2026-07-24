@@ -203,15 +203,14 @@ export interface AnthropicEventPayload {
   type?: string;
   index?: number;
   message?: { usage?: AnthropicUsage };
-  content_block?:
-    | { type: "text"; text?: string }
-    | { type: "tool_use"; id?: string; name?: string }
-    | { type: string };
-  delta?:
-    | { type: "text_delta"; text?: string }
-    | { type: "thinking_delta"; thinking?: string }
-    | { type: "input_json_delta"; partial_json?: string }
-    | { type: string; stop_reason?: string };
+  content_block?: { type?: string; text?: string; id?: string; name?: string };
+  delta?: {
+    type?: string;
+    text?: string;
+    thinking?: string;
+    partial_json?: string;
+    stop_reason?: string;
+  };
   usage?: AnthropicUsage;
   error?: { message?: string; type?: string };
 }

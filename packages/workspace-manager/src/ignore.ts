@@ -71,12 +71,12 @@ export function parseGitignore(content: string): IgnoreRule[] {
       dirOnly = true;
       line = line.slice(0, -1);
     }
+    const anchored = line.startsWith("/") || line.includes("/");
     if (line.startsWith("/")) {
       line = line.slice(1);
     }
     if (line === "") continue;
 
-    const anchored = line.includes("/");
     rules.push({ pattern: line, negated, dirOnly, regex: patternToRegex(line, anchored) });
   }
   return rules;

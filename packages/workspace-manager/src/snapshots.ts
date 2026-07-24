@@ -2,11 +2,11 @@ import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import {
   copyFile,
-  link,
   mkdir,
   readdir,
   readFile,
   rm,
+  rmdir,
   stat,
   writeFile,
 } from "node:fs/promises";
@@ -125,10 +125,10 @@ function snapshotDir(dataDir: string, id: string): string {
 }
 
 /**
- * Captures the workspace's current file set. File content is stored
- * content-addressed under `<dataDir>/snapshots/<id>/blobs/<sha256>` —
- * hardlinked when the filesystem allows it, copied otherwise — plus a
- * manifest describing the exact file set.
+ * Captures the workspace's current file set. File content is copied
+ * content-addressed under `<dataDir>/snapshots/<id>/blobs/<sha256>` (a copy,
+ * never a hardlink, so in-place writers cannot corrupt the blob store),
+ * plus a manifest describing the exact file set.
  */
 export async function createSnapshot(
   workspace: Workspace,
@@ -158,11 +158,9 @@ export async function createSnapshot(
     try {
       await stat(blob);
     } catch {
-      try {
-        await link(file.abs, blob);
-      } catch {
-        await copyFile(file.abs, blob);
-      }
+      // Copy (not hardlink): writers that truncate in place would otherwise
+      // corrupt the blob through the shared inode.
+      await copyFile(file.abs, blob);
     }
     entries.push({ root: file.root, path: file.rel, size: file.size, mode: file.mode, sha256 });
   }
@@ -276,7 +274,8 @@ export async function restoreSnapshot(
     await collectDirs(root);
   }
   for (const d of dirs) {
-    await rm(d, { recursive: false }).catch(() => undefined);
+    // rmdir fails on non-empty directories, which is exactly what we want.
+    await rmdir(d).catch(() => undefined);
   }
 
   return { restored, deleted, skipped };

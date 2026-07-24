@@ -19,7 +19,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@omniharness/shared-types": "workspace:*","@omniharness/policy-engine": "workspace:*"
+    "@omniharness/shared-types": "workspace:*",
+    "@omniharness/policy-engine": "workspace:*",
+    "@omniharness/workspace-manager": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
