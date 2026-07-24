@@ -166,7 +166,6 @@ export class SkillEngine {
     };
     this.assertValid(skill);
     await this.store.save(skill);
-    await this.store.saveVersion(skill);
     return skill;
   }
 
@@ -323,7 +322,6 @@ export class SkillEngine {
     if (existing === null) {
       installed = { ...proposal.skill, enabled: false };
       await this.store.save(installed);
-      await this.store.saveVersion(installed);
     } else {
       await this.store.saveVersion(existing);
       installed = {

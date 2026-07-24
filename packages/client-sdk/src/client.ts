@@ -138,6 +138,9 @@ export class OmniClient {
       };
       const onClose = (): void => {
         this.ws = null;
+        if (this.welcome === null) {
+          reject(new OmniClientError(ErrorCodes.UNAUTHORIZED, "connection closed before welcome"));
+        }
         this.emitConnection("disconnected");
         this.failAllPending(new OmniClientError(ErrorCodes.INTERNAL, "connection closed", true));
         if (!this.closed && (this.options.autoReconnect ?? true)) {

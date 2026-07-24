@@ -4,8 +4,15 @@
   "private": true,
   "type": "module",
   "main": "./dist/index.js",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "bin": { "omniharnessd": "./dist/main.js" },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "omniharnessd": "./dist/main.js"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -32,7 +39,9 @@
     "@omniharness/tool-runtime": "workspace:*",
     "@omniharness/workspace-manager": "workspace:*",
     "@omniharness/git-engine": "workspace:*",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "@omniharness/observability": "workspace:*",
+    "@omniharness/client-sdk": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -78,6 +78,9 @@ importers:
       '@omniharness/automation-engine':
         specifier: workspace:*
         version: link:../../packages/automation-engine
+      '@omniharness/client-sdk':
+        specifier: workspace:*
+        version: link:../../packages/client-sdk
       '@omniharness/config-schema':
         specifier: workspace:*
         version: link:../../packages/config-schema
@@ -90,6 +93,9 @@ importers:
       '@omniharness/model-gateway':
         specifier: workspace:*
         version: link:../../packages/model-gateway
+      '@omniharness/observability':
+        specifier: workspace:*
+        version: link:../../packages/observability
       '@omniharness/policy-engine':
         specifier: workspace:*
         version: link:../../packages/policy-engine

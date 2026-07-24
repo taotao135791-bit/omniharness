@@ -60,7 +60,7 @@ export class RpcServer {
   ) {}
 
   register<N extends CommandName>(name: N, handler: CommandHandler<N>): void {
-    this.handlers.set(name, handler as CommandHandler);
+    this.handlers.set(name, handler as unknown as CommandHandler);
   }
 
   /** Actual bound port (differs from opts.port when 0). */

@@ -1,4 +1,11 @@
 import type { DomainEvent } from "@omniharness/agent-protocol";
+
+/** Distributive Omit over the DomainEvent union (plain Omit collapses unions). */
+export type EventInput = DomainEvent extends infer E
+  ? E extends DomainEvent
+    ? Omit<E, "seq" | "at">
+    : never
+  : never;
 import type { OmniDatabase } from "@omniharness/session-store";
 
 /**
@@ -12,12 +19,12 @@ export class EventBus {
   constructor(private readonly db: OmniDatabase) {}
 
   /** Persist + broadcast. Returns the assigned seq. */
-  emit(event: Omit<DomainEvent, "seq" | "at">): number {
+  emit(event: EventInput): number {
     const seq = this.db.events.append(event.type, {
       ...event,
       at: new Date().toISOString(),
     });
-    const full = { ...event, seq, at: new Date().toISOString() } as DomainEvent;
+    const full = { ...event, seq, at: new Date().toISOString() } as unknown as DomainEvent;
     for (const listener of this.listeners) {
       try {
         listener(full);
@@ -37,7 +44,7 @@ export class EventBus {
   since(seq: number, limit = 1000): { events: DomainEvent[]; latestSeq: number } {
     const rows = this.db.events.since(seq, limit);
     return {
-      events: rows.map((r) => ({ ...(r.payload as object), seq: r.seq, at: r.at }) as DomainEvent),
+      events: rows.map((r) => ({ ...(r.payload as object), seq: r.seq, at: r.at }) as unknown as DomainEvent),
       latestSeq: this.db.events.latestSeq(),
     };
   }
