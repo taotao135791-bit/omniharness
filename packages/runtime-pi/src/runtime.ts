@@ -83,7 +83,7 @@ interface RunState {
   outputTokens: number;
   costUsd: number;
   sawCost: boolean;
-  currentAssistantMessageId?: string;
+  currentAssistantMessageId: string | undefined;
   messageCounter: number;
 }
 
@@ -202,6 +202,7 @@ export class PiAgentRuntime {
       outputTokens: 0,
       costUsd: 0,
       sawCost: false,
+      currentAssistantMessageId: undefined,
       messageCounter: 0,
     };
     this.runs.set(runId, run);

@@ -4,10 +4,9 @@ import {
   estimateTokens,
   serializeConversation,
   shouldCompact,
-  SUMMARIZATION_SYSTEM_PROMPT,
 } from "@earendil-works/pi-agent-core";
 import type { CompactionSettings } from "@earendil-works/pi-agent-core";
-import type { UserMessage } from "@earendil-works/pi-ai";
+import type { Message, UserMessage } from "@earendil-works/pi-ai";
 import type { ModelRouter } from "@omniharness/model-gateway";
 import { textMessage } from "@omniharness/model-gateway";
 
@@ -28,6 +27,13 @@ export interface CompactionTransform {
 }
 
 const SUMMARY_PREFIX = "[Summary of earlier conversation]";
+
+/** Mirrors pi-agent-core's summarization system prompt (not re-exported at the package root). */
+const SUMMARIZATION_SYSTEM_PROMPT =
+  "You are a context summarization assistant. Your task is to read a conversation between a user " +
+  "and an AI assistant, then produce a structured summary following the exact format specified.\n\n" +
+  "Do NOT continue the conversation. Do NOT respond to any questions in the conversation. ONLY " +
+  "output the structured summary.";
 
 /**
  * Threshold compaction built from pi-agent-core's estimation/serialization
@@ -54,7 +60,7 @@ export function createCompactionTransform(options: {
   }
 
   async function summarize(messages: AgentMessage[], signal?: AbortSignal): Promise<string> {
-    const conversation = serializeConversation(messages);
+    const conversation = serializeConversation(messages as Message[]);
     const prompt =
       "Summarize the following conversation between a user and an AI assistant. " +
       "Preserve: the user's goals, decisions made, file paths touched, tool outcomes, " +

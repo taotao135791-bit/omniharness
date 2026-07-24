@@ -2,6 +2,7 @@ import type { StreamFn } from "@earendil-works/pi-agent-core";
 import type {
   Api,
   AssistantMessage,
+  AssistantMessageEventStream,
   Context,
   ImageContent,
   Message,
@@ -11,7 +12,7 @@ import type {
   ToolCall,
   Usage,
 } from "@earendil-works/pi-ai";
-import { AssistantMessageEventStream } from "@earendil-works/pi-ai";
+import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import type { ChatMessage, MessagePart, ModelRouter } from "@omniharness/model-gateway";
 import { textMessage } from "@omniharness/model-gateway";
 import type { ModelDefinition, ModelRole, ModelStreamChunk, TokenUsage } from "@omniharness/shared-types";
@@ -134,7 +135,7 @@ interface PendingToolCall {
  */
 export function createRouterStreamFn(router: ModelRouter, role: ModelRole): StreamFn {
   return (model, context, options) => {
-    const stream = new AssistantMessageEventStream();
+    const stream: AssistantMessageEventStream = createAssistantMessageEventStream();
     const signal = options?.signal;
 
     const partial = (): AssistantMessage => ({
