@@ -1,6 +1,13 @@
 import { logicalToOsPoints, logicalToPhysical } from "../coordinates.js";
-import type { InputDriver } from "../driver.js";
-import type { DisplayInfo, LogicalPoint, PhysicalPoint } from "../types.js";
+import type { DriverAvailability, InputDriver } from "../driver.js";
+import type {
+  DisplayInfo,
+  LogicalPoint,
+  MouseButton,
+  PhysicalPoint,
+  ScreenFrame,
+  WindowInfo,
+} from "../types.js";
 
 /**
  * Shared geometry plumbing for concrete drivers: caches the primary display
@@ -11,26 +18,19 @@ export abstract class BaseInputDriver implements InputDriver {
   abstract readonly platform: string;
   private cachedPrimary: DisplayInfo | null = null;
 
-  abstract checkAvailability(): ReturnType<InputDriver["checkAvailability"]>;
+  abstract checkAvailability(): Promise<DriverAvailability>;
   abstract listDisplays(): Promise<DisplayInfo[]>;
   abstract moveTo(point: LogicalPoint): Promise<void>;
-  abstract click(point: LogicalPoint, button?: import("../types.js").MouseButton): Promise<void>;
-  abstract doubleClick(
-    point: LogicalPoint,
-    button?: import("../types.js").MouseButton,
-  ): Promise<void>;
-  abstract drag(
-    from: LogicalPoint,
-    to: LogicalPoint,
-    button?: import("../types.js").MouseButton,
-  ): Promise<void>;
+  abstract click(point: LogicalPoint, button?: MouseButton): Promise<void>;
+  abstract doubleClick(point: LogicalPoint, button?: MouseButton): Promise<void>;
+  abstract drag(from: LogicalPoint, to: LogicalPoint, button?: MouseButton): Promise<void>;
   abstract scroll(point: LogicalPoint, deltaX: number, deltaY: number): Promise<void>;
   abstract typeText(text: string): Promise<void>;
   abstract keyPress(key: string, modifiers?: string[]): Promise<void>;
   abstract shortcut(keys: string[]): Promise<void>;
   abstract launchApp(app: string, args?: string[]): Promise<void>;
-  abstract activeWindow(): Promise<import("../types.js").WindowInfo | null>;
-  abstract screenshot(): Promise<import("../types.js").ScreenFrame>;
+  abstract activeWindow(): Promise<WindowInfo | null>;
+  abstract screenshot(): Promise<ScreenFrame>;
 
   /** Primary display, resolved lazily and cached. */
   async primaryDisplay(): Promise<DisplayInfo> {
