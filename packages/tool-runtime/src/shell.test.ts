@@ -7,7 +7,14 @@ import {
   createShellExecTool,
   LocalShellExecutor,
 } from "./index.js";
-import type { SandboxExecutor, ToolContext, ToolOutputChunk } from "./index.js";
+import type { SandboxExecutor, ToolContext, ToolOutputChunk, ToolResult } from "./index.js";
+
+/** tool.execute may also return a stream; shell.exec always resolves to a ToolResult. */
+async function asResult(value: unknown): Promise<ToolResult> {
+  const v = await value;
+  if (typeof v === "object" && v !== null && "ok" in v) return v as ToolResult;
+  throw new Error("expected ToolResult, got stream");
+}
 
 let dir: string;
 let ctx: ToolContext;
@@ -75,10 +82,10 @@ describe("shell.exec tool", () => {
     const tool = createShellExecTool();
     const chunks: ToolOutputChunk[] = [];
     const streamingCtx: ToolContext = { ...ctx, emit: (c) => chunks.push(c) };
-    const res = await tool.execute(
+    const res = await asResult(tool.execute(
       { command: "node", args: ["-e", "process.stdout.write('hello-stream')"] },
       streamingCtx,
-    );
+    ));
     expect(res.ok).toBe(true);
     expect(res.output).toContain("hello-stream");
     expect(chunks.map((c) => c.text).join("")).toContain("hello-stream");
@@ -86,7 +93,7 @@ describe("shell.exec tool", () => {
 
   it("marks non-zero exits as errors", async () => {
     const tool = createShellExecTool();
-    const res = await tool.execute({ command: "node", args: ["-e", "process.exit(2)"] }, ctx);
+    const res = await asResult(tool.execute({ command: "node", args: ["-e", "process.exit(2)"] }, ctx));
     expect(res.ok).toBe(false);
     expect(res.isError).toBe(true);
     expect(res.output).toContain("exit code 2");
@@ -94,16 +101,16 @@ describe("shell.exec tool", () => {
 
   it("enforces timeout_ms", async () => {
     const tool = createShellExecTool();
-    const res = await tool.execute(
+    const res = await asResult(tool.execute(
       { command: "node", args: ["-e", "setTimeout(() => {}, 60_000)"], timeout_ms: 150 },
       ctx,
-    );
+    ));
     expect(res.ok).toBe(false);
     expect(res.output).toContain("timed out");
   });
 
   it("uses the injected SandboxExecutor instead of spawning", async () => {
-    const exec = vi.fn(async () => ({
+    const exec = vi.fn(async (_req: { command: string; args?: string[] }) => ({
       exitCode: 0,
       stdout: "from sandbox",
       stderr: "",
@@ -112,7 +119,7 @@ describe("shell.exec tool", () => {
     }));
     const sandbox: SandboxExecutor = { exec };
     const tool = createShellExecTool(sandbox);
-    const res = await tool.execute({ command: "anything", args: ["--x"] }, ctx);
+    const res = await asResult(tool.execute({ command: "anything", args: ["--x"] }, ctx));
     expect(res.ok).toBe(true);
     expect(res.output).toBe("from sandbox");
     expect(exec).toHaveBeenCalledTimes(1);

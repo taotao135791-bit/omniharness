@@ -30,7 +30,8 @@ export interface SanitizeResult {
 
 const ZERO_WIDTH_AND_BIDI = /[\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g;
 const HTML_COMMENT = /<!--[\s\S]*?-->/g;
-const ANSI_ESCAPE = /\x1B\[[0-9;?]*[ -\/]*[@-~]/g;
+// eslint-disable-next-line no-control-regex -- intentionally matching ANSI escapes to strip them
+const ANSI_ESCAPE = /\x1B\[[0-9;?]*[ -/]*[@-~]/g;
 const ROLE_MARKER_LINE = /^\s*(system|assistant|user|developer)\s*[:：]/i;
 
 const INJECTION_PHRASES: readonly RegExp[] = [

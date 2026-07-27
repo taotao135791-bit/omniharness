@@ -2,7 +2,7 @@ import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { MemoryId, SessionId, SkillDefinition } from "@omniharness/shared-types";
+import type { SessionId, SkillDefinition } from "@omniharness/shared-types";
 import type { OmniDatabase } from "@omniharness/session-store";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { HermesImporter } from "./hermes.js";

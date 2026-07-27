@@ -15,7 +15,7 @@ import type {
 import { nowIso } from "@omniharness/shared-types";
 import type { OmniDatabase } from "@omniharness/session-store";
 import { ImportStateTracker } from "./import-state.js";
-import { asArray, asNumber, asRecord, asString, errMessage } from "./json-utils.js";
+import { asArray, asRecord, asString, errMessage } from "./json-utils.js";
 import { type ImportOptions, type ImportReport, ImportReportBuilder } from "./report.js";
 
 /**
