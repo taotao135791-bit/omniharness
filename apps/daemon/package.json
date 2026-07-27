@@ -41,7 +41,9 @@
     "@omniharness/git-engine": "workspace:*",
     "ws": "^8.18.0",
     "@omniharness/observability": "workspace:*",
-    "@omniharness/client-sdk": "workspace:*"
+    "@omniharness/client-sdk": "workspace:*",
+    "@omniharness/extension-host": "workspace:*",
+    "@omniharness/plugin-sdk": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

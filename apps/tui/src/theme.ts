@@ -10,7 +10,8 @@ import type {
  * stylers, so the whole theme is raw escape codes — no chalk dependency.
  */
 
-const wrap = (open: string) => (s: string) => `[${open}m${s}[0m`;
+const ESC = "\u001b";
+const wrap = (open: string) => (s: string) => `${ESC}[${open}m${s}${ESC}[0m`;
 
 export const fg = {
   black: wrap("30"),
@@ -37,7 +38,7 @@ export const underline = wrap("4");
 export const inverse = wrap("7");
 
 export function bgBlue(s: string): string {
-  return `[44m[37m${s}[0m`;
+  return `${ESC}[44m${ESC}[37m${s}${ESC}[0m`;
 }
 
 export const mdTheme: MarkdownTheme = {

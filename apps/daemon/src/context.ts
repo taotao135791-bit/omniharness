@@ -3,6 +3,8 @@ import { createSecretStore, type SecretStore } from "@omniharness/secret-store";
 import { MemoryEngine } from "@omniharness/memory-engine";
 import { SkillEngine } from "@omniharness/skill-engine";
 import { AutomationEngine, Scheduler } from "@omniharness/automation-engine";
+import { ExtensionHost, PluginRegistry, type PluginPersistence } from "@omniharness/extension-host";
+import type { InstalledPlugin, PluginId } from "@omniharness/shared-types";
 import { PolicyEngine } from "@omniharness/policy-engine";
 import { ApprovalEngine, InMemoryApprovalStore } from "@omniharness/approval-engine";
 import { ArtifactStore } from "@omniharness/artifact-store";
@@ -28,6 +30,10 @@ export interface DaemonContext {
     engine: AutomationEngine;
     scheduler: Scheduler | null;
     setScheduler: (s: Scheduler) => void;
+  };
+  plugins: {
+    host: ExtensionHost;
+    registry: PluginRegistry;
   };
   artifacts: ArtifactStore;
   version: string;
@@ -57,6 +63,14 @@ export async function createDaemonContext(opts: {
   const { SqliteSkillStore } = await import("./services/skill-store-adapter.js");
   const skills = new SkillEngine(new SqliteSkillStore(db));
   const automationEngine = new AutomationEngine({ repo: db.automations });
+  const pluginHost = new ExtensionHost();
+  const pluginPersistence: PluginPersistence = {
+    list: () => db.plugins.list(),
+    get: (id: PluginId) => db.plugins.get(id),
+    put: (record: InstalledPlugin) => db.plugins.put(record),
+    remove: (id: PluginId) => db.plugins.delete(id),
+  };
+  const pluginRegistry = new PluginRegistry(pluginHost, pluginPersistence);
   const automationsHolder: { scheduler: Scheduler | null } = { scheduler: null };
 
   const rpc = new RpcServer({
@@ -80,6 +94,7 @@ export async function createDaemonContext(opts: {
     approvals,
     memory,
     skills,
+    plugins: { host: pluginHost, registry: pluginRegistry },
     automations: {
       engine: automationEngine,
       get scheduler() {

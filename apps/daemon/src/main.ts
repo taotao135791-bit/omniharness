@@ -8,6 +8,7 @@ import { registerMemoryHandlers } from "./services/memory-handlers.js";
 import { registerSkillHandlers } from "./services/skill-handlers.js";
 import { registerAutomationHandlers } from "./services/automation-handlers.js";
 import { registerWorkspaceHandlers } from "./services/workspace-handlers.js";
+import { registerPluginHandlers } from "./services/plugin-handlers.js";
 
 export async function startDaemon(opts?: {
   dataDir?: string;
@@ -42,6 +43,7 @@ export async function startDaemon(opts?: {
   registerSkillHandlers(register, ctx);
   registerAutomationHandlers(register, ctx);
   registerWorkspaceHandlers(register, ctx);
+  registerPluginHandlers(register, ctx);
 
   // system.shutdown is registered here because it needs the stop hook.
   register("system.shutdown", () => {

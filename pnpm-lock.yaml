@@ -84,6 +84,9 @@ importers:
       '@omniharness/config-schema':
         specifier: workspace:*
         version: link:../../packages/config-schema
+      '@omniharness/extension-host':
+        specifier: workspace:*
+        version: link:../../packages/extension-host
       '@omniharness/git-engine':
         specifier: workspace:*
         version: link:../../packages/git-engine
@@ -96,6 +99,9 @@ importers:
       '@omniharness/observability':
         specifier: workspace:*
         version: link:../../packages/observability
+      '@omniharness/plugin-sdk':
+        specifier: workspace:*
+        version: link:../../packages/plugin-sdk
       '@omniharness/policy-engine':
         specifier: workspace:*
         version: link:../../packages/policy-engine

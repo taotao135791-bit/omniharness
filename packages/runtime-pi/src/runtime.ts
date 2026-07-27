@@ -275,14 +275,14 @@ export class PiAgentRuntime {
   }
 
   private failEarly(run: RunState, error: unknown): void {
-    run.ended = true;
     this.runs.delete(run.runId);
-    this.push(run, {
+    run.queue.push({
       type: "run.failed",
       sessionId: run.sessionId,
       runId: run.runId,
       error: error instanceof Error ? error.message : String(error),
     });
+    run.ended = true;
     run.queue.close();
   }
 
@@ -591,13 +591,14 @@ export class PiAgentRuntime {
 
   private finishRun(session: SessionState, run: RunState): void {
     if (run.ended) return;
-    run.ended = true;
     if (session.activeRunId === run.runId) session.activeRunId = null;
     this.runs.delete(run.runId);
+    // Push the terminal event BEFORE marking the run ended; push() drops
+    // events for ended runs.
     if (run.failure !== undefined) {
-      this.push(run, { type: "run.failed", sessionId: run.sessionId, runId: run.runId, error: run.failure });
+      run.queue.push({ type: "run.failed", sessionId: run.sessionId, runId: run.runId, error: run.failure });
     } else {
-      this.push(run, {
+      run.queue.push({
         type: "run.completed",
         sessionId: run.sessionId,
         runId: run.runId,
@@ -608,6 +609,7 @@ export class PiAgentRuntime {
         },
       });
     }
+    run.ended = true;
     run.queue.close();
   }
 
