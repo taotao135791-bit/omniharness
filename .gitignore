@@ -7,11 +7,12 @@ coverage/
 .DS_Store
 .turbo/
 .cache/
-release/
+/release/
 *.tsbuildinfo
 .env
 .env.*
 !.env.example
 apps/desktop/dist-electron/
+apps/desktop/renderer/
 apps/desktop/release/
 tmp/
