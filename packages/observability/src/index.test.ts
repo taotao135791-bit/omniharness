@@ -30,7 +30,16 @@ describe("Tracer", () => {
       await new Promise((r) => setTimeout(r, 5));
     });
     const id = t.startSpan("tool_call", "fs.read");
-    t.endSpan(id, { ok: false, usage: { inputTokens: 10, outputTokens: 5, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0.001 } });
+    t.endSpan(id, {
+      ok: false,
+      usage: {
+        inputTokens: 10,
+        outputTokens: 5,
+        cacheReadTokens: 0,
+        cacheWriteTokens: 0,
+        costUsd: 0.001,
+      },
+    });
     const summary = t.summarize();
     const model = summary.find((s) => s.kind === "model_request");
     const tool = summary.find((s) => s.kind === "tool_call");

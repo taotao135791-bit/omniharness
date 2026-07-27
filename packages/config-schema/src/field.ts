@@ -134,9 +134,17 @@ export function merge(base: SettingsObject, override: SettingsObject): SettingsO
 
 /** Render the schema as Markdown documentation. */
 export function toMarkdownDocs(schema: readonly FieldDef[], title: string): string {
-  const lines = [`# ${title}`, "", "| Key | Type | Default | Scope | Description |", "| --- | --- | --- | --- | --- |"];
+  const lines = [
+    `# ${title}`,
+    "",
+    "| Key | Type | Default | Scope | Description |",
+    "| --- | --- | --- | --- | --- |",
+  ];
   for (const f of schema) {
-    const def = f.type === "string" || f.type === "enum" ? `\`"${String(f.default)}"\`` : `\`${JSON.stringify(f.default)}\``;
+    const def =
+      f.type === "string" || f.type === "enum"
+        ? `\`"${String(f.default)}"\``
+        : `\`${JSON.stringify(f.default)}\``;
     const type = f.type === "enum" ? `enum(${(f.enumValues ?? []).join("\\|")})` : f.type;
     lines.push(`| \`${f.key}\` | ${type} | ${def} | ${f.scope} | ${f.description} |`);
   }

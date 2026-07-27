@@ -84,9 +84,7 @@ describe("lifecycle", () => {
   });
 
   it("throws on unknown id and on already-resolved requests", async () => {
-    await expect(engine.resolve("appr_nope" as ApprovalId, "approve")).rejects.toThrow(
-      /not found/,
-    );
+    await expect(engine.resolve("appr_nope" as ApprovalId, "approve")).rejects.toThrow(/not found/);
     const req = await engine.create(makeInput());
     await engine.resolve(req.id, "deny");
     await expect(engine.resolve(req.id, "approve")).rejects.toThrow(/already resolved/);
@@ -142,9 +140,7 @@ describe("expiry", () => {
 
   it("sweepExpired expires only overdue pending requests and returns the count", async () => {
     await engine.create(makeInput({ timeoutMs: 60_000 }));
-    await engine.create(
-      makeInput({ detail: { target: "/workspace/b.txt" }, timeoutMs: 600_000 }),
-    );
+    await engine.create(makeInput({ detail: { target: "/workspace/b.txt" }, timeoutMs: 600_000 }));
     const resolved = await engine.create(
       makeInput({ detail: { target: "/workspace/c.txt" }, timeoutMs: 60_000 }),
     );

@@ -33,15 +33,33 @@ export class MemoryViewModel {
     const approved = this.memories.filter((m) => m.approvedByUser);
     const rows: ListRow[] = [];
     if (pending.length > 0) {
-      rows.push({ id: "h:pending", label: `pending proposals (${pending.length})`, detail: "", header: true });
+      rows.push({
+        id: "h:pending",
+        label: `pending proposals (${pending.length})`,
+        detail: "",
+        header: true,
+      });
       for (const m of pending) {
-        rows.push({ id: m.id, label: `? ${m.summary}`, detail: `${m.kind} ${fmtDate(m.createdAt)}` });
+        rows.push({
+          id: m.id,
+          label: `? ${m.summary}`,
+          detail: `${m.kind} ${fmtDate(m.createdAt)}`,
+        });
       }
     }
     if (approved.length > 0) {
-      rows.push({ id: "h:approved", label: `approved (${approved.length})`, detail: "", header: true });
+      rows.push({
+        id: "h:approved",
+        label: `approved (${approved.length})`,
+        detail: "",
+        header: true,
+      });
       for (const m of approved) {
-        rows.push({ id: m.id, label: `✓ ${m.summary}`, detail: `${m.kind} ${fmtDate(m.createdAt)}` });
+        rows.push({
+          id: m.id,
+          label: `✓ ${m.summary}`,
+          detail: `${m.kind} ${fmtDate(m.createdAt)}`,
+        });
       }
     }
     return rows;
@@ -59,7 +77,9 @@ export class MemoryViewModel {
 
   renderLines(width: number, maxVisible: number): string[] {
     const lines: string[] = [];
-    lines.push(truncate(`  search: ${this.searchText || "(type to filter, enter to search)"}`, width));
+    lines.push(
+      truncate(`  search: ${this.searchText || "(type to filter, enter to search)"}`, width),
+    );
     lines.push("");
     if (this.loading) return [...lines, "  loading memories…"];
     if (this.error) return [...lines, truncate(`  error: ${this.error}`, width)];

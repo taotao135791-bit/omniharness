@@ -185,7 +185,9 @@ export function createFsEditTool(): Tool {
             "Provide more context or set replace_all to true.",
         );
       }
-      const updated = replaceAll ? text.split(oldString).join(newString) : text.replace(oldString, newString);
+      const updated = replaceAll
+        ? text.split(oldString).join(newString)
+        : text.replace(oldString, newString);
       await writeFile(resolved, updated, "utf8");
       const replaced = replaceAll ? occurrences : 1;
       return ok(`Replaced ${replaced} occurrence${replaced === 1 ? "" : "s"} in ${p}`);

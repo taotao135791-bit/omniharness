@@ -23,7 +23,11 @@ describe("chat", () => {
     daemon.on("session.get", () => ({ session }));
     daemon.on("session.messages", () => ({
       messages: [
-        makeMessage({ id: "m0", role: "user", parts: [{ type: "text", text: "earlier question" }] }),
+        makeMessage({
+          id: "m0",
+          role: "user",
+          parts: [{ type: "text", text: "earlier question" }],
+        }),
         makeMessage({
           id: "m1",
           role: "assistant",
@@ -66,13 +70,47 @@ describe("chat", () => {
 
   it("renders streamed deltas in order", async () => {
     await harness.controller.submitChat("hi");
-    daemon.emit({ type: "run.started", sessionId: sid("sess-1"), runId: "run-1", agentId: "a1", modelId: "model-1" });
-    daemon.emit({ type: "message.started", sessionId: sid("sess-1"), messageId: "m2", role: "assistant" });
-    daemon.emit({ type: "message.delta", sessionId: sid("sess-1"), messageId: "m2", delta: "Hello ", channel: "text" });
-    daemon.emit({ type: "message.delta", sessionId: sid("sess-1"), messageId: "m2", delta: "world", channel: "text" });
-    daemon.emit({ type: "message.delta", sessionId: sid("sess-1"), messageId: "m2", delta: "!", channel: "text" });
+    daemon.emit({
+      type: "run.started",
+      sessionId: sid("sess-1"),
+      runId: "run-1",
+      agentId: "a1",
+      modelId: "model-1",
+    });
+    daemon.emit({
+      type: "message.started",
+      sessionId: sid("sess-1"),
+      messageId: "m2",
+      role: "assistant",
+    });
+    daemon.emit({
+      type: "message.delta",
+      sessionId: sid("sess-1"),
+      messageId: "m2",
+      delta: "Hello ",
+      channel: "text",
+    });
+    daemon.emit({
+      type: "message.delta",
+      sessionId: sid("sess-1"),
+      messageId: "m2",
+      delta: "world",
+      channel: "text",
+    });
+    daemon.emit({
+      type: "message.delta",
+      sessionId: sid("sess-1"),
+      messageId: "m2",
+      delta: "!",
+      channel: "text",
+    });
     daemon.emit({ type: "message.completed", sessionId: sid("sess-1"), messageId: "m2" });
-    daemon.emit({ type: "run.completed", sessionId: sid("sess-1"), runId: "run-1", usage: { inputTokens: 100, outputTokens: 20, costUsd: 0.01 } });
+    daemon.emit({
+      type: "run.completed",
+      sessionId: sid("sess-1"),
+      runId: "run-1",
+      usage: { inputTokens: 100, outputTokens: 20, costUsd: 0.01 },
+    });
 
     await waitFor(() => {
       const block = harness.controller.chat.blocks.find(
@@ -92,7 +130,13 @@ describe("chat", () => {
 
   it("collapses tool blocks by default and expands on toggle", async () => {
     await harness.controller.submitChat("run something");
-    daemon.emit({ type: "run.started", sessionId: sid("sess-1"), runId: "run-1", agentId: "a1", modelId: "model-1" });
+    daemon.emit({
+      type: "run.started",
+      sessionId: sid("sess-1"),
+      runId: "run-1",
+      agentId: "a1",
+      modelId: "model-1",
+    });
     daemon.emit({
       type: "tool.call.started",
       sessionId: sid("sess-1"),
@@ -100,8 +144,20 @@ describe("chat", () => {
       toolName: "bash",
       argumentsJson: JSON.stringify({ command: "ls -la" }),
     });
-    daemon.emit({ type: "tool.call.output", sessionId: sid("sess-1"), toolCallId: tid("tc-1"), chunk: "total 5\n", stream: "stdout" });
-    daemon.emit({ type: "tool.call.completed", sessionId: sid("sess-1"), toolCallId: tid("tc-1"), resultJson: "{}", durationMs: 42 });
+    daemon.emit({
+      type: "tool.call.output",
+      sessionId: sid("sess-1"),
+      toolCallId: tid("tc-1"),
+      chunk: "total 5\n",
+      stream: "stdout",
+    });
+    daemon.emit({
+      type: "tool.call.completed",
+      sessionId: sid("sess-1"),
+      toolCallId: tid("tc-1"),
+      resultJson: "{}",
+      durationMs: 42,
+    });
 
     await waitFor(() => {
       const b = harness.controller.chat.toolBlocks()[0];
@@ -146,7 +202,13 @@ describe("chat", () => {
 
   it("enter while running steers; interrupt sends run.interrupt", async () => {
     await harness.controller.submitChat("start");
-    daemon.emit({ type: "run.started", sessionId: sid("sess-1"), runId: "run-1", agentId: "a1", modelId: "model-1" });
+    daemon.emit({
+      type: "run.started",
+      sessionId: sid("sess-1"),
+      runId: "run-1",
+      agentId: "a1",
+      modelId: "model-1",
+    });
     await waitFor(() => harness.controller.chat.activeRun?.runId === "run-1");
 
     await harness.controller.submitChat("actually, do it differently");
@@ -162,10 +224,26 @@ describe("chat", () => {
 
   it("compaction events produce an indicator block", async () => {
     await harness.controller.submitChat("start");
-    daemon.emit({ type: "run.started", sessionId: sid("sess-1"), runId: "run-1", agentId: "a1", modelId: "model-1" });
-    daemon.emit({ type: "run.compacting", sessionId: sid("sess-1"), runId: "run-1", beforeTokens: 120000 });
+    daemon.emit({
+      type: "run.started",
+      sessionId: sid("sess-1"),
+      runId: "run-1",
+      agentId: "a1",
+      modelId: "model-1",
+    });
+    daemon.emit({
+      type: "run.compacting",
+      sessionId: sid("sess-1"),
+      runId: "run-1",
+      beforeTokens: 120000,
+    });
     await waitFor(() => harness.controller.chat.blocks.some((b) => b.kind === "compaction"));
-    daemon.emit({ type: "run.compacted", sessionId: sid("sess-1"), runId: "run-1", afterTokens: 20000 });
+    daemon.emit({
+      type: "run.compacted",
+      sessionId: sid("sess-1"),
+      runId: "run-1",
+      afterTokens: 20000,
+    });
     await waitFor(() => {
       const b = harness.controller.chat.blocks.find((bb) => bb.kind === "compaction");
       return b?.kind === "compaction" && b.done;

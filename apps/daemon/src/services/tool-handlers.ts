@@ -34,25 +34,24 @@ export function registerToolHandlers(register: Register, ctx: DaemonContext): vo
     return { approvals: all.slice(0, params.limit ?? 50) };
   });
 
-  register("approval.resolve", async (params: {
-    approvalId: string;
-    decision: ApprovalDecision;
-    rememberScope?: string;
-  }) => {
-    const record = db.approvals.get(params.approvalId as never);
-    if (!record) throw new RpcError(ErrorCodes.NOT_FOUND, "approval not found");
-    const approval = await approvals.resolve(
-      params.approvalId as never,
-      params.decision,
-      params.rememberScope as never,
-    );
-    bus.emit({
-      type: "approval.resolved",
-      approvalId: params.approvalId as never,
-      status: params.decision === "approve" ? "approved" : "denied",
-    });
-    return { approval };
-  });
+  register(
+    "approval.resolve",
+    async (params: { approvalId: string; decision: ApprovalDecision; rememberScope?: string }) => {
+      const record = db.approvals.get(params.approvalId as never);
+      if (!record) throw new RpcError(ErrorCodes.NOT_FOUND, "approval not found");
+      const approval = await approvals.resolve(
+        params.approvalId as never,
+        params.decision,
+        params.rememberScope as never,
+      );
+      bus.emit({
+        type: "approval.resolved",
+        approvalId: params.approvalId as never,
+        status: params.decision === "approve" ? "approved" : "denied",
+      });
+      return { approval };
+    },
+  );
 
   register("policy.get", () => ({ rules: db.permissionRules.list() }));
 

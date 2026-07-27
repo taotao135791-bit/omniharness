@@ -3,17 +3,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { PolicyDecisionKind, Workspace } from "@omniharness/shared-types";
-import {
-  LocalArtifactStore,
-  ToolRegistry,
-  ToolRuntime,
-} from "./index.js";
-import type {
-  AuditEntry,
-  PolicyEvaluator,
-  Tool,
-  ToolRunContext,
-} from "./index.js";
+import { LocalArtifactStore, ToolRegistry, ToolRuntime } from "./index.js";
+import type { AuditEntry, PolicyEvaluator, Tool, ToolRunContext } from "./index.js";
 
 let dir: string;
 let workspace: Workspace;
@@ -40,7 +31,9 @@ function runCtx(): ToolRunContext {
   return { workspace, sessionId: "s1", agentId: "a1" };
 }
 
-function evaluator(decision: PolicyDecisionKind): PolicyEvaluator & { evaluate: ReturnType<typeof vi.fn> } {
+function evaluator(
+  decision: PolicyDecisionKind,
+): PolicyEvaluator & { evaluate: ReturnType<typeof vi.fn> } {
   return {
     evaluate: vi.fn(() => ({
       decision,
@@ -62,7 +55,10 @@ function echoTool(name = "t.echo"): Tool & { execute: ReturnType<typeof vi.fn> }
       additionalProperties: false,
     },
     requiredCapabilities: ["fs.read"],
-    execute: vi.fn(async (args: Record<string, unknown>) => ({ ok: true, output: String(args["text"]) })),
+    execute: vi.fn(async (args: Record<string, unknown>) => ({
+      ok: true,
+      output: String(args["text"]),
+    })),
   };
 }
 
@@ -89,7 +85,12 @@ describe("ToolRuntime pipeline", () => {
       policy: {
         evaluate: () => {
           order.push("policy");
-          return { decision: "ask_every_time", risk: "low", matchedScope: "product_default", reason: "r" };
+          return {
+            decision: "ask_every_time",
+            risk: "low",
+            matchedScope: "product_default",
+            reason: "r",
+          };
         },
       },
       approval: {
@@ -249,7 +250,11 @@ describe("ToolRuntime pipeline", () => {
     const runtime = new ToolRuntime(registry, { policy: evaluator("always_allow") });
 
     const chunks: string[] = [];
-    const result = await runtime.run("t.stream", {}, { ...runCtx(), emit: (c) => chunks.push(c.text) });
+    const result = await runtime.run(
+      "t.stream",
+      {},
+      { ...runCtx(), emit: (c) => chunks.push(c.text) },
+    );
     expect(result.ok).toBe(true);
     expect(result.output).toBe("one two");
     expect(chunks).toEqual(["one ", "two"]);

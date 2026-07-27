@@ -14,7 +14,8 @@ export class DiagnosticLog {
 
   push(ev: DiagnosticEvent): void {
     this.events.push(ev);
-    if (this.events.length > this.capacity) this.events.splice(0, this.events.length - this.capacity);
+    if (this.events.length > this.capacity)
+      this.events.splice(0, this.events.length - this.capacity);
   }
 
   recent(limit: number): DiagnosticEvent[] {

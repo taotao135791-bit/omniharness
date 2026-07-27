@@ -4,13 +4,7 @@ import { join } from "node:path";
 import { nowIso } from "@omniharness/shared-types";
 import { findTool, runFile } from "../exec.js";
 import type { DriverAvailability } from "../driver.js";
-import type {
-  DisplayInfo,
-  LogicalPoint,
-  MouseButton,
-  ScreenFrame,
-  WindowInfo,
-} from "../types.js";
+import type { DisplayInfo, LogicalPoint, MouseButton, ScreenFrame, WindowInfo } from "../types.js";
 import { BaseInputDriver } from "./base.js";
 
 /**
@@ -74,8 +68,7 @@ $p = Get-Process -Id $pid -ErrorAction SilentlyContinue
 `;
 
 type MouseOp =
-  | { op: "move"; x: number; y: number }
-  | { op: string; x?: number; y?: number; dy?: number };
+  { op: "move"; x: number; y: number } | { op: string; x?: number; y?: number; dy?: number };
 
 /** Escapes SendKeys metacharacters by wrapping each in braces. */
 function sendKeysEscape(text: string): string {
@@ -99,8 +92,18 @@ const SENDKEYS_KEYS: Record<string, string> = {
   end: "{END}",
   pageup: "{PGUP}",
   pagedown: "{PGDN}",
-  f1: "{F1}", f2: "{F2}", f3: "{F3}", f4: "{F4}", f5: "{F5}", f6: "{F6}",
-  f7: "{F7}", f8: "{F8}", f9: "{F9}", f10: "{F10}", f11: "{F11}", f12: "{F12}",
+  f1: "{F1}",
+  f2: "{F2}",
+  f3: "{F3}",
+  f4: "{F4}",
+  f5: "{F5}",
+  f6: "{F6}",
+  f7: "{F7}",
+  f8: "{F8}",
+  f9: "{F9}",
+  f10: "{F10}",
+  f11: "{F11}",
+  f12: "{F12}",
 };
 
 const SENDKEYS_MODIFIERS: Record<string, string> = {
@@ -162,11 +165,7 @@ export class WindowsInputDriver extends BaseInputDriver {
     const p = await this.toPhysical(point);
     const down = `${button}Down`;
     const up = `${button}Up`;
-    await this.runMouseEvents([
-      { op: "move", x: p.x, y: p.y },
-      { op: down },
-      { op: up },
-    ]);
+    await this.runMouseEvents([{ op: "move", x: p.x, y: p.y }, { op: down }, { op: up }]);
   }
 
   override async doubleClick(point: LogicalPoint, button: MouseButton = "left"): Promise<void> {
@@ -190,10 +189,7 @@ export class WindowsInputDriver extends BaseInputDriver {
     const a = await this.toPhysical(from);
     const b = await this.toPhysical(to);
     const steps = 10;
-    const events: MouseOp[] = [
-      { op: "move", x: a.x, y: a.y },
-      { op: `${button}Down` },
-    ];
+    const events: MouseOp[] = [{ op: "move", x: a.x, y: a.y }, { op: `${button}Down` }];
     for (let i = 1; i <= steps; i += 1) {
       events.push({
         op: "move",
@@ -251,7 +247,8 @@ Add-Type -AssemblyName System.Windows.Forms
       throw new Error(`unsupported key: ${key}`);
     }
     // Modifier prefixes only apply to the next group; wrap multi-key bodies.
-    const sequence = prefix.length > 0 && body.length > 1 ? `${prefix}(${body})` : `${prefix}${body}`;
+    const sequence =
+      prefix.length > 0 && body.length > 1 ? `${prefix}(${body})` : `${prefix}${body}`;
     const script = `
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.SendKeys]::SendWait($args[0])

@@ -18,8 +18,7 @@ export interface HeaderState {
  * Compact form (< 80 cols): brand · conn · model · approvals
  */
 export function renderHeader(s: HeaderState, width: number): string[] {
-  const conn =
-    s.connection === "connected" ? "●" : s.connection === "replaying" ? "◌" : "✗";
+  const conn = s.connection === "connected" ? "●" : s.connection === "replaying" ? "◌" : "✗";
   const approvals = s.pendingApprovals > 0 ? `⚠${s.pendingApprovals}` : "";
   if (width < 80) {
     const parts = [s.brand, conn];

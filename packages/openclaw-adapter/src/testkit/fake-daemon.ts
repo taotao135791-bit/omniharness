@@ -43,7 +43,9 @@ export class FakeDaemon {
         socket.destroy();
         return;
       }
-      const accept = createHash("sha1").update(key + WS_GUID).digest("base64");
+      const accept = createHash("sha1")
+        .update(key + WS_GUID)
+        .digest("base64");
       socket.write(
         "HTTP/1.1 101 Switching Protocols\r\n" +
           "Upgrade: websocket\r\n" +
@@ -166,7 +168,12 @@ export class FakeDaemon {
             headMessageId: null,
             createdAt: now,
             updatedAt: now,
-            totalUsage: { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 },
+            totalUsage: {
+              inputTokens: 0,
+              outputTokens: 0,
+              cacheReadTokens: 0,
+              cacheWriteTokens: 0,
+            },
           },
         };
       }
@@ -219,7 +226,9 @@ export class FakeDaemon {
     return Buffer.concat([header, payload]);
   }
 
-  private decodeFrame(buffer: Buffer): { opcode: number; payload: Buffer; consumed: number } | null {
+  private decodeFrame(
+    buffer: Buffer,
+  ): { opcode: number; payload: Buffer; consumed: number } | null {
     if (buffer.length < 2) return null;
     const b0 = buffer[0] ?? 0;
     const b1 = buffer[1] ?? 0;

@@ -22,7 +22,9 @@ function deepEqual(a: unknown, b: unknown): boolean {
     const kb = Object.keys(b as Record<string, unknown>);
     return (
       ka.length === kb.length &&
-      ka.every((k) => deepEqual((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k]))
+      ka.every((k) =>
+        deepEqual((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k]),
+      )
     );
   }
   return false;
@@ -44,10 +46,18 @@ function validate(schema: JsonSchema, value: unknown, path: string, errors: stri
   }
 
   if (schema.enum !== undefined && !schema.enum.some((e) => deepEqual(e, value))) {
-    errors.push(`${path}: value ${JSON.stringify(value)} is not one of ${JSON.stringify(schema.enum)}`);
+    errors.push(
+      `${path}: value ${JSON.stringify(value)} is not one of ${JSON.stringify(schema.enum)}`,
+    );
   }
 
-  if (schema.type === "object" || (schema.type === undefined && typeof value === "object" && value !== null && !Array.isArray(value))) {
+  if (
+    schema.type === "object" ||
+    (schema.type === undefined &&
+      typeof value === "object" &&
+      value !== null &&
+      !Array.isArray(value))
+  ) {
     if (typeof value !== "object" || value === null || Array.isArray(value)) return;
     const obj = value as Record<string, unknown>;
     for (const key of schema.required ?? []) {
@@ -72,7 +82,11 @@ function validate(schema: JsonSchema, value: unknown, path: string, errors: stri
     }
   }
 
-  if ((schema.type === "array" || Array.isArray(value)) && schema.items !== undefined && Array.isArray(value)) {
+  if (
+    (schema.type === "array" || Array.isArray(value)) &&
+    schema.items !== undefined &&
+    Array.isArray(value)
+  ) {
     value.forEach((item, i) => validate(schema.items!, item, `${path}[${i}]`, errors));
   }
 }

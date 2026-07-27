@@ -28,7 +28,9 @@ const DEFAULT_MAX_BUFFER = 1024 * 1024;
 
 function appendCapped(buffer: string, chunk: string, cap: number): string {
   if (buffer.length >= cap) return buffer;
-  return buffer.length + chunk.length <= cap ? buffer + chunk : buffer + chunk.slice(0, cap - buffer.length);
+  return buffer.length + chunk.length <= cap
+    ? buffer + chunk
+    : buffer + chunk.slice(0, cap - buffer.length);
 }
 
 /**

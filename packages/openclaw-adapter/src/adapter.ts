@@ -123,7 +123,10 @@ export class OpenClawAdapter {
     if (done.status === "ok" && output.length > 0) {
       await this.sendToTarget(target, output);
     } else if (done.status === "error") {
-      await this.sendToTarget(target, `Sorry, something went wrong: ${done.stopReason ?? "unknown error"}`);
+      await this.sendToTarget(
+        target,
+        `Sorry, something went wrong: ${done.stopReason ?? "unknown error"}`,
+      );
     }
   }
 }

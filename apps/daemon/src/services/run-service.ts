@@ -36,7 +36,10 @@ import path from "node:path";
 export class RunService {
   private router: ModelRouter | null = null;
   private readonly runtimes = new Map<WorkspaceId, PiAgentRuntime>();
-  private readonly activeRuns = new Map<string, { sessionId: SessionId; runtime: PiAgentRuntime }>();
+  private readonly activeRuns = new Map<
+    string,
+    { sessionId: SessionId; runtime: PiAgentRuntime }
+  >();
   private readonly approvalWaiters = new Map<string, (result: ApprovalGateResult) => void>();
   /** Per-session tool allowlists (automations run restricted). */
   private readonly toolRestrictions = new Map<string, ReadonlySet<string>>();
@@ -70,7 +73,9 @@ export class RunService {
    * (fs.write/fs.read inside the workspace auto-allow). Rules come from the
    * shared engine; per-workspace engines are built fresh (rules are few).
    */
-  private policyFor(workspaceId: string | undefined): import("@omniharness/policy-engine").PolicyEngine {
+  private policyFor(
+    workspaceId: string | undefined,
+  ): import("@omniharness/policy-engine").PolicyEngine {
     const { PolicyEngine } = policyEngineModule;
     const root = workspaceId
       ? this.ctx.db.workspaces.get(workspaceId as never)?.roots[0]
@@ -92,7 +97,8 @@ export class RunService {
       try {
         if (config.kind === "fixture") {
           const script = this.fixtureScripts?.get(config.id);
-          if (!script) throw new Error(`fixture provider ${config.id} has no script (test-only kind)`);
+          if (!script)
+            throw new Error(`fixture provider ${config.id} has no script (test-only kind)`);
           providers.set(config.id, new FixtureProvider(script));
           continue;
         }
@@ -111,7 +117,11 @@ export class RunService {
     }
     const bindings: Record<string, string> = {};
     for (const entry of db.settings.list("profile" as never, "")) {
-      if (entry.key.startsWith("models.bindings.") && typeof entry.value === "string" && entry.value) {
+      if (
+        entry.key.startsWith("models.bindings.") &&
+        typeof entry.value === "string" &&
+        entry.value
+      ) {
         bindings[entry.key.slice("models.bindings.".length)] = entry.value;
       }
     }
@@ -180,18 +190,29 @@ export class RunService {
         const sections: string[] = [];
         const session = ctx.db.sessions.get(sessionId);
         if (session) {
-          const block = ctx.memory.buildContextBlock(session.profileId, session.projectId, undefined, 8);
+          const block = ctx.memory.buildContextBlock(
+            session.profileId,
+            session.projectId,
+            undefined,
+            8,
+          );
           if (block) sections.push(block);
         }
         const skills = await ctx.skills.listEffective();
         const enabled = skills.filter((s) => s.enabled);
         if (enabled.length > 0) {
           sections.push(
-            "## Available skills\n" + enabled.map((s) => `- **${s.name}**: ${s.description}`).join("\n"),
+            "## Available skills\n" +
+              enabled.map((s) => `- **${s.name}**: ${s.description}`).join("\n"),
           );
         }
-        const agentsMd = workspace.roots.map((r) => path.join(r, "AGENTS.md")).find((p) => fs.existsSync(p));
-        if (agentsMd) sections.push(`## Project instructions (AGENTS.md)\n${fs.readFileSync(agentsMd, "utf8")}`);
+        const agentsMd = workspace.roots
+          .map((r) => path.join(r, "AGENTS.md"))
+          .find((p) => fs.existsSync(p));
+        if (agentsMd)
+          sections.push(
+            `## Project instructions (AGENTS.md)\n${fs.readFileSync(agentsMd, "utf8")}`,
+          );
         return sections;
       },
       recorder: {
@@ -296,7 +317,11 @@ export class RunService {
   }
 
   /** Start a run and pump its events into the bus + database. */
-  async startRun(params: { sessionId: SessionId; input: string; modelId?: string }): Promise<{ runId: string }> {
+  async startRun(params: {
+    sessionId: SessionId;
+    input: string;
+    modelId?: string;
+  }): Promise<{ runId: string }> {
     const { db, bus } = this.ctx;
     const session = db.sessions.get(params.sessionId);
     if (!session) throw new RpcError(ErrorCodes.NOT_FOUND, "session not found");
@@ -327,7 +352,13 @@ export class RunService {
       lastEventSeq: 0,
     };
     db.agentRuns.put(run);
-    bus.emit({ type: "run.started", sessionId: session.id, runId, agentId, modelId: params.modelId ?? "" });
+    bus.emit({
+      type: "run.started",
+      sessionId: session.id,
+      runId,
+      agentId,
+      modelId: params.modelId ?? "",
+    });
 
     void (async () => {
       try {
@@ -354,28 +385,67 @@ export class RunService {
     const { bus } = this.ctx;
     switch (event.type) {
       case "message.started":
-        bus.emit({ type: "message.started", sessionId, messageId: event.messageId, role: event.role });
+        bus.emit({
+          type: "message.started",
+          sessionId,
+          messageId: event.messageId,
+          role: event.role,
+        });
         break;
       case "message.delta":
-        bus.emit({ type: "message.delta", sessionId, messageId: event.messageId, delta: event.delta, channel: event.channel });
+        bus.emit({
+          type: "message.delta",
+          sessionId,
+          messageId: event.messageId,
+          delta: event.delta,
+          channel: event.channel,
+        });
         break;
       case "message.completed":
         bus.emit({ type: "message.completed", sessionId, messageId: event.messageId });
         break;
       case "tool.call.started":
-        bus.emit({ type: "tool.call.started", sessionId, toolCallId: event.toolCallId, toolName: event.toolName, argumentsJson: event.argumentsJson });
+        bus.emit({
+          type: "tool.call.started",
+          sessionId,
+          toolCallId: event.toolCallId,
+          toolName: event.toolName,
+          argumentsJson: event.argumentsJson,
+        });
         break;
       case "tool.call.output":
-        bus.emit({ type: "tool.call.output", sessionId, toolCallId: event.toolCallId, chunk: event.chunk, stream: event.stream });
+        bus.emit({
+          type: "tool.call.output",
+          sessionId,
+          toolCallId: event.toolCallId,
+          chunk: event.chunk,
+          stream: event.stream,
+        });
         break;
       case "tool.call.completed":
-        bus.emit({ type: "tool.call.completed", sessionId, toolCallId: event.toolCallId, resultJson: event.resultJson, durationMs: event.durationMs });
+        bus.emit({
+          type: "tool.call.completed",
+          sessionId,
+          toolCallId: event.toolCallId,
+          resultJson: event.resultJson,
+          durationMs: event.durationMs,
+        });
         break;
       case "tool.call.failed":
-        bus.emit({ type: "tool.call.failed", sessionId, toolCallId: event.toolCallId, error: event.error });
+        bus.emit({
+          type: "tool.call.failed",
+          sessionId,
+          toolCallId: event.toolCallId,
+          error: event.error,
+        });
         break;
       case "tool.call.denied":
-        bus.emit({ type: "tool.call.denied", sessionId, toolCallId: event.toolCallId, reason: event.reason });
+        bus.emit({
+          type: "tool.call.denied",
+          sessionId,
+          toolCallId: event.toolCallId,
+          reason: event.reason,
+        });
         break;
       case "run.compacting":
         bus.emit({ type: "run.compacting", sessionId, runId, beforeTokens: event.beforeTokens });

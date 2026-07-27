@@ -45,7 +45,12 @@ export const KNOWN_MODEL_OVERRIDES: readonly ModelCapabilityOverride[] = [
   },
   {
     pattern: /^gpt-4/i,
-    capabilities: { nativeToolCalling: true, parallelToolCalling: true, contextWindow: 128_000, maxOutputTokens: 8_192 },
+    capabilities: {
+      nativeToolCalling: true,
+      parallelToolCalling: true,
+      contextWindow: 128_000,
+      maxOutputTokens: 8_192,
+    },
   },
   {
     pattern: /^gpt-3\.5/i,
@@ -116,7 +121,12 @@ export const KNOWN_MODEL_OVERRIDES: readonly ModelCapabilityOverride[] = [
   },
   {
     pattern: /^glm-4/i,
-    capabilities: { nativeToolCalling: true, vision: true, contextWindow: 128_000, maxOutputTokens: 4_096 },
+    capabilities: {
+      nativeToolCalling: true,
+      vision: true,
+      contextWindow: 128_000,
+      maxOutputTokens: 4_096,
+    },
   },
   {
     pattern: /^(llama-3\.[123]|llama-4)/i,
@@ -124,11 +134,22 @@ export const KNOWN_MODEL_OVERRIDES: readonly ModelCapabilityOverride[] = [
   },
   {
     pattern: /^mistral-(large|medium)/i,
-    capabilities: { nativeToolCalling: true, parallelToolCalling: true, contextWindow: 131_072, maxOutputTokens: 8_192 },
+    capabilities: {
+      nativeToolCalling: true,
+      parallelToolCalling: true,
+      contextWindow: 131_072,
+      maxOutputTokens: 8_192,
+    },
   },
   {
     pattern: /^(grok-3|grok-4)/i,
-    capabilities: { nativeToolCalling: true, structuredOutput: true, vision: true, contextWindow: 131_072, maxOutputTokens: 8_192 },
+    capabilities: {
+      nativeToolCalling: true,
+      structuredOutput: true,
+      vision: true,
+      contextWindow: 131_072,
+      maxOutputTokens: 8_192,
+    },
   },
   {
     pattern: /^(kimi-k2|moonshot-v1-128k|kimi-latest)/i,
@@ -166,7 +187,9 @@ export class ModelCapabilityRegistry {
   }
 
   /** All models whose capabilities satisfy the predicate. */
-  filter(predicate: (capabilities: ModelCapabilities, definition: ModelDefinition) => boolean): ModelDefinition[] {
+  filter(
+    predicate: (capabilities: ModelCapabilities, definition: ModelDefinition) => boolean,
+  ): ModelDefinition[] {
     return this.list().filter((def) => predicate(def.capabilities, def));
   }
 
@@ -176,11 +199,13 @@ export class ModelCapabilityRegistry {
    */
   filterByCapability(required: Partial<ModelCapabilities>): ModelDefinition[] {
     return this.filter((caps) =>
-      (Object.entries(required) as Array<[keyof ModelCapabilities, boolean | number]>).every(([key, value]) => {
-        const actual = caps[key];
-        if (typeof value === "boolean") return value ? actual === true : true;
-        return typeof actual === "number" && actual >= value;
-      }),
+      (Object.entries(required) as Array<[keyof ModelCapabilities, boolean | number]>).every(
+        ([key, value]) => {
+          const actual = caps[key];
+          if (typeof value === "boolean") return value ? actual === true : true;
+          return typeof actual === "number" && actual >= value;
+        },
+      ),
     );
   }
 
@@ -189,7 +214,11 @@ export class ModelCapabilityRegistry {
    * capabilities from DEFAULT_CAPABILITIES + KNOWN_MODEL_OVERRIDES.
    * Model ids are `<providerId>:<remoteName>`.
    */
-  seedFromProvider(providerId: ProviderId, remoteNames: string[], options?: { enabled?: boolean }): ModelDefinition[] {
+  seedFromProvider(
+    providerId: ProviderId,
+    remoteNames: string[],
+    options?: { enabled?: boolean },
+  ): ModelDefinition[] {
     const seeded: ModelDefinition[] = [];
     for (const remoteName of remoteNames) {
       const def: ModelDefinition = {

@@ -76,35 +76,40 @@ export function registerSystemHandlers(
   // ── providers ────────────────────────────────────────────────────────────
   register("provider.list", () => ({ providers: db.providers.list() }));
 
-  register("provider.add", async (params: {
-    kind: ProviderKind;
-    displayName: string;
-    baseUrl?: string;
-    apiKey?: string;
-    options?: Record<string, string>;
-  }) => {
-    const preset = PROVIDER_PRESETS.find((p) => p.kind === params.kind);
-    const id = nanoid("prov") as ProviderConfig["id"];
-    let apiKeyRef: string | undefined;
-    if (params.apiKey) {
-      apiKeyRef = `provider:${id}:apiKey`;
-      await secrets.set(apiKeyRef, params.apiKey);
-    }
-    const provider: ProviderConfig = {
-      id,
-      kind: params.kind,
-      displayName: params.displayName,
-      enabled: true,
-      rateLimitRpm: 0,
-      timeoutMs: 120_000,
-      maxRetries: 3,
-      ...(params.baseUrl ?? preset?.baseUrl ? { baseUrl: params.baseUrl ?? preset!.baseUrl! } : {}),
-      ...(apiKeyRef ? { apiKeyRef } : {}),
-      ...(params.options ? { options: params.options } : {}),
-    };
-    db.providers.put(provider);
-    return { provider };
-  });
+  register(
+    "provider.add",
+    async (params: {
+      kind: ProviderKind;
+      displayName: string;
+      baseUrl?: string;
+      apiKey?: string;
+      options?: Record<string, string>;
+    }) => {
+      const preset = PROVIDER_PRESETS.find((p) => p.kind === params.kind);
+      const id = nanoid("prov") as ProviderConfig["id"];
+      let apiKeyRef: string | undefined;
+      if (params.apiKey) {
+        apiKeyRef = `provider:${id}:apiKey`;
+        await secrets.set(apiKeyRef, params.apiKey);
+      }
+      const provider: ProviderConfig = {
+        id,
+        kind: params.kind,
+        displayName: params.displayName,
+        enabled: true,
+        rateLimitRpm: 0,
+        timeoutMs: 120_000,
+        maxRetries: 3,
+        ...((params.baseUrl ?? preset?.baseUrl)
+          ? { baseUrl: params.baseUrl ?? preset!.baseUrl! }
+          : {}),
+        ...(apiKeyRef ? { apiKeyRef } : {}),
+        ...(params.options ? { options: params.options } : {}),
+      };
+      db.providers.put(provider);
+      return { provider };
+    },
+  );
 
   register("provider.remove", async (params: { providerId: string }) => {
     const provider = db.providers.get(params.providerId as ProviderConfig["id"]);
@@ -123,7 +128,11 @@ export function registerSystemHandlers(
       const models = await p.listModels();
       return { ok: true, latencyMs: Date.now() - started, models };
     } catch (err) {
-      return { ok: false, latencyMs: Date.now() - started, error: err instanceof Error ? err.message : String(err) };
+      return {
+        ok: false,
+        latencyMs: Date.now() - started,
+        error: err instanceof Error ? err.message : String(err),
+      };
     }
   });
 
@@ -135,33 +144,45 @@ export function registerSystemHandlers(
 
   // ── settings (scoped key/value; schema validation happens in config-schema) ──
   register("settings.get", (params: { scope?: string; scopeId?: string }) => {
-    const entries = db.settings.list(
-      (params.scope ?? "global") as never,
-      params.scopeId ?? "",
-    );
+    const entries = db.settings.list((params.scope ?? "global") as never, params.scopeId ?? "");
     const settings: Record<string, unknown> = {};
     for (const e of entries) settings[e.key] = e.value;
     return { settings };
   });
 
-  register("settings.set", (params: { key: string; value: unknown; scope?: string; scopeId?: string }) => {
-    db.settings.set((params.scope ?? "global") as never, params.scopeId ?? "", params.key, params.value);
-    return { ok: true as const };
-  });
+  register(
+    "settings.set",
+    (params: { key: string; value: unknown; scope?: string; scopeId?: string }) => {
+      db.settings.set(
+        (params.scope ?? "global") as never,
+        params.scopeId ?? "",
+        params.key,
+        params.value,
+      );
+      return { ok: true as const };
+    },
+  );
 
   // ── usage ────────────────────────────────────────────────────────────────
-  register("usage.summary", (params: { since?: string; groupBy?: "model" | "project" | "agent" | "automation" }) => {
-    const dim = params.groupBy ?? "model";
-    const rows =
-      dim === "model"
-        ? db.modelUsage.aggregateByModel(params.since)
-        : dim === "project"
-          ? db.modelUsage.aggregateByProject(params.since)
-          : dim === "agent"
-            ? db.modelUsage.aggregateByAgent(params.since)
-            : db.modelUsage.aggregateByAutomation(params.since);
-    return {
-      usage: rows.map((r) => ({ key: r.key ?? "(unattributed)", usage: r.usage, requests: r.samples })),
-    };
-  });
+  register(
+    "usage.summary",
+    (params: { since?: string; groupBy?: "model" | "project" | "agent" | "automation" }) => {
+      const dim = params.groupBy ?? "model";
+      const rows =
+        dim === "model"
+          ? db.modelUsage.aggregateByModel(params.since)
+          : dim === "project"
+            ? db.modelUsage.aggregateByProject(params.since)
+            : dim === "agent"
+              ? db.modelUsage.aggregateByAgent(params.since)
+              : db.modelUsage.aggregateByAutomation(params.since);
+      return {
+        usage: rows.map((r) => ({
+          key: r.key ?? "(unattributed)",
+          usage: r.usage,
+          requests: r.samples,
+        })),
+      };
+    },
+  );
 }

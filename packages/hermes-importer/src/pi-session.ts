@@ -70,7 +70,11 @@ const KNOWN_NON_MESSAGE_KINDS = new Set([
 ]);
 
 /** Convert one Pi content block (or raw string content) into our message parts. */
-function contentToParts(content: unknown, report: ImportReportBuilder, entryId: string): MessagePart[] {
+function contentToParts(
+  content: unknown,
+  report: ImportReportBuilder,
+  entryId: string,
+): MessagePart[] {
   if (typeof content === "string") {
     return content.length > 0 ? [{ type: "text", text: content }] : [];
   }
@@ -162,7 +166,11 @@ function toolResultJson(content: unknown): string {
     const rec = asRecord(block);
     if (rec === undefined) return block;
     if (asString(rec["type"]) === "image") {
-      return { type: "image", mimeType: asString(rec["mimeType"]) ?? "image/*", data: "[base64 omitted]" };
+      return {
+        type: "image",
+        mimeType: asString(rec["mimeType"]) ?? "image/*",
+        data: "[base64 omitted]",
+      };
     }
     return rec;
   });
@@ -187,9 +195,7 @@ function convertEntry(
   if (entry.parentId !== null) {
     const mapped = idMap.get(entry.parentId);
     if (mapped === undefined) {
-      report.warn(
-        `entry ${entry.id}: parentId ${entry.parentId} not found; attached at tree root`,
-      );
+      report.warn(`entry ${entry.id}: parentId ${entry.parentId} not found; attached at tree root`);
     } else {
       parentId = mapped;
     }
@@ -244,9 +250,7 @@ function convertEntry(
       } else {
         role = "system";
         kind = "raw";
-        report.warn(
-          `entry ${entry.id}: unknown message role "${msgRole ?? "?"}" preserved as raw`,
-        );
+        report.warn(`entry ${entry.id}: unknown message role "${msgRole ?? "?"}" preserved as raw`);
         parts = [{ type: "text", text: JSON.stringify(entry.raw) }];
       }
       break;
@@ -357,7 +361,7 @@ export function importPiSession(
   const firstLine = lines[0];
   const header = firstLine === undefined ? undefined : parseHeader(firstLine);
   if (header === undefined) {
-    report.error(path, "first line is not a valid Pi session header ({type:\"session\", id, ...})");
+    report.error(path, 'first line is not a valid Pi session header ({type:"session", id, ...})');
     return report.finish();
   }
   if (header.version !== undefined && header.version !== 3) {

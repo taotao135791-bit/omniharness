@@ -22,7 +22,12 @@ import { ModelsViewModel } from "../vm/models-vm.js";
 import { SessionsViewModel, SESSION_PAGE_SIZE } from "../vm/sessions-vm.js";
 import { SettingsViewModel } from "../vm/settings-vm.js";
 import { SkillsViewModel } from "../vm/skills-vm.js";
-import { APPROVAL_SCOPE_RPC, type ApprovalScope, type ConnectionState, type ViewName } from "./types.js";
+import {
+  APPROVAL_SCOPE_RPC,
+  type ApprovalScope,
+  type ConnectionState,
+  type ViewName,
+} from "./types.js";
 import { executeSlashCommand } from "./slash-commands.js";
 
 export interface ControllerCallbacks {
@@ -385,7 +390,9 @@ export class AppController {
         sessionId: this.currentSession.id,
         ...(label !== undefined ? { label } : {}),
       });
-      this.chat.addSystemMessage(`checkpoint created: ${res.checkpoint.label} (${res.checkpoint.id})`);
+      this.chat.addSystemMessage(
+        `checkpoint created: ${res.checkpoint.label} (${res.checkpoint.id})`,
+      );
     } catch (err) {
       this.reportError(err);
     }
@@ -492,7 +499,9 @@ export class AppController {
         ...(this.currentSession ? { sessionId: this.currentSession.id } : {}),
       });
       if (role === "primary") this.primaryModelId = modelId;
-      this.flash(modelId ? `${role} → ${this.models.modelDisplayName(modelId)}` : `${role} binding cleared`);
+      this.flash(
+        modelId ? `${role} → ${this.models.modelDisplayName(modelId)}` : `${role} binding cleared`,
+      );
       if (this.loaded.has("models")) await this.loadModels();
     } catch (err) {
       this.reportError(err);

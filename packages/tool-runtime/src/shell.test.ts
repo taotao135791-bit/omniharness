@@ -3,10 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Workspace } from "@omniharness/shared-types";
-import {
-  createShellExecTool,
-  LocalShellExecutor,
-} from "./index.js";
+import { createShellExecTool, LocalShellExecutor } from "./index.js";
 import type { SandboxExecutor, ToolContext, ToolOutputChunk, ToolResult } from "./index.js";
 
 /** tool.execute may also return a stream; shell.exec always resolves to a ToolResult. */
@@ -82,10 +79,12 @@ describe("shell.exec tool", () => {
     const tool = createShellExecTool();
     const chunks: ToolOutputChunk[] = [];
     const streamingCtx: ToolContext = { ...ctx, emit: (c) => chunks.push(c) };
-    const res = await asResult(tool.execute(
-      { command: "node", args: ["-e", "process.stdout.write('hello-stream')"] },
-      streamingCtx,
-    ));
+    const res = await asResult(
+      tool.execute(
+        { command: "node", args: ["-e", "process.stdout.write('hello-stream')"] },
+        streamingCtx,
+      ),
+    );
     expect(res.ok).toBe(true);
     expect(res.output).toContain("hello-stream");
     expect(chunks.map((c) => c.text).join("")).toContain("hello-stream");
@@ -93,7 +92,9 @@ describe("shell.exec tool", () => {
 
   it("marks non-zero exits as errors", async () => {
     const tool = createShellExecTool();
-    const res = await asResult(tool.execute({ command: "node", args: ["-e", "process.exit(2)"] }, ctx));
+    const res = await asResult(
+      tool.execute({ command: "node", args: ["-e", "process.exit(2)"] }, ctx),
+    );
     expect(res.ok).toBe(false);
     expect(res.isError).toBe(true);
     expect(res.output).toContain("exit code 2");
@@ -101,10 +102,12 @@ describe("shell.exec tool", () => {
 
   it("enforces timeout_ms", async () => {
     const tool = createShellExecTool();
-    const res = await asResult(tool.execute(
-      { command: "node", args: ["-e", "setTimeout(() => {}, 60_000)"], timeout_ms: 150 },
-      ctx,
-    ));
+    const res = await asResult(
+      tool.execute(
+        { command: "node", args: ["-e", "setTimeout(() => {}, 60_000)"], timeout_ms: 150 },
+        ctx,
+      ),
+    );
     expect(res.ok).toBe(false);
     expect(res.output).toContain("timed out");
   });

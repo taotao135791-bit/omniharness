@@ -17,7 +17,8 @@ export type AutomationTrigger =
   | { kind: "app_launch" }
   | { kind: "manual" };
 
-export type AutomationRunStatus = "queued" | "running" | "completed" | "failed" | "skipped" | "cancelled";
+export type AutomationRunStatus =
+  "queued" | "running" | "completed" | "failed" | "skipped" | "cancelled";
 
 export interface Automation {
   id: AutomationId;

@@ -32,7 +32,9 @@ describe("ModelCapabilityRegistry", () => {
     expect(seeded).toHaveLength(2);
     expect(seeded[0]?.id).toBe("openai:gpt-4o");
     expect(registry.get("openai:gpt-4o" as ModelId)?.capabilities.vision).toBe(true);
-    expect(registry.get("openai:text-embedding-3-small" as ModelId)?.capabilities.nativeToolCalling).toBe(false);
+    expect(
+      registry.get("openai:text-embedding-3-small" as ModelId)?.capabilities.nativeToolCalling,
+    ).toBe(false);
   });
 
   it("filters by capability requirements", () => {
@@ -82,9 +84,21 @@ describe("presets", () => {
 
   it("covers the required preset catalog", () => {
     for (const id of [
-      "openai", "openrouter", "groq", "xai", "kimi", "minimax", "deepseek",
-      "zhipu", "aliyun", "volcano", "mistral", "ollama", "lmstudio",
-      "azure-openai", "aws-bedrock",
+      "openai",
+      "openrouter",
+      "groq",
+      "xai",
+      "kimi",
+      "minimax",
+      "deepseek",
+      "zhipu",
+      "aliyun",
+      "volcano",
+      "mistral",
+      "ollama",
+      "lmstudio",
+      "azure-openai",
+      "aws-bedrock",
     ]) {
       expect(getPreset(id), id).toBeDefined();
     }

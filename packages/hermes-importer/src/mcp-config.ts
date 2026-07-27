@@ -47,7 +47,7 @@ export function parseMcpServers(
   const root = asRecord(value);
   const servers = root === undefined ? undefined : asRecord(root["mcpServers"]);
   if (servers === undefined) {
-    report.error(sourcePath, 'config does not match the expected shape ({mcpServers: {...}})');
+    report.error(sourcePath, "config does not match the expected shape ({mcpServers: {...}})");
     return [];
   }
   const out: McpServerRegistration[] = [];
@@ -101,7 +101,9 @@ export async function importMcpConfig(
     for (const [envKey, envValue] of Object.entries(server.env)) {
       if (!SECRETISH_ENV.test(envKey)) continue;
       if (options.secretStore === undefined) {
-        report.warn(`${server.name}: env.${envKey} looks secret but no SecretStore is configured; kept inline`);
+        report.warn(
+          `${server.name}: env.${envKey} looks secret but no SecretStore is configured; kept inline`,
+        );
         continue;
       }
       const ref = `mcp:${server.name}:env:${envKey}`;

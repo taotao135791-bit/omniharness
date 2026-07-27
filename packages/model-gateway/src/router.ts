@@ -143,10 +143,18 @@ export class ModelRouter {
   }
 
   private enforceBudget(): void {
-    if (this.budget?.maxCostUsd !== undefined && this.budget.maxCostUsd > 0 && this.spentCostUsd >= this.budget.maxCostUsd) {
+    if (
+      this.budget?.maxCostUsd !== undefined &&
+      this.budget.maxCostUsd > 0 &&
+      this.spentCostUsd >= this.budget.maxCostUsd
+    ) {
       throw new BudgetExceededError("cost", this.spentCostUsd, this.budget.maxCostUsd);
     }
-    if (this.budget?.maxTokens !== undefined && this.budget.maxTokens > 0 && this.spentTokens >= this.budget.maxTokens) {
+    if (
+      this.budget?.maxTokens !== undefined &&
+      this.budget.maxTokens > 0 &&
+      this.spentTokens >= this.budget.maxTokens
+    ) {
       throw new BudgetExceededError("tokens", this.spentTokens, this.budget.maxTokens);
     }
   }
@@ -156,7 +164,9 @@ export class ModelRouter {
     const inCost = model.costPerMInputTokens;
     const outCost = model.costPerMOutputTokens;
     if (inCost === undefined && outCost === undefined) return usage;
-    const costUsd = (usage.inputTokens / 1_000_000) * (inCost ?? 0) + (usage.outputTokens / 1_000_000) * (outCost ?? 0);
+    const costUsd =
+      (usage.inputTokens / 1_000_000) * (inCost ?? 0) +
+      (usage.outputTokens / 1_000_000) * (outCost ?? 0);
     return { ...usage, costUsd };
   }
 
@@ -236,7 +246,13 @@ export class ModelRouter {
     const provider = this.providers.get(providerId);
     let health: ProviderHealth;
     if (provider === undefined) {
-      health = { providerId, ok: false, latencyMs: 0, error: "provider not registered", checkedAt: now };
+      health = {
+        providerId,
+        ok: false,
+        latencyMs: 0,
+        error: "provider not registered",
+        checkedAt: now,
+      };
     } else {
       const started = Date.now();
       try {

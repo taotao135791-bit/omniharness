@@ -108,7 +108,10 @@ export class OmniAcpRuntime {
   }
 
   /** Create or find the OmniHarness session backing an OpenClaw session key. */
-  async ensureSession(sessionKey: string, opts: EnsureSessionOptions = {}): Promise<AcpRuntimeHandle> {
+  async ensureSession(
+    sessionKey: string,
+    opts: EnsureSessionOptions = {},
+  ): Promise<AcpRuntimeHandle> {
     const existing = this.sessionKeys.get(sessionKey);
     if (existing) {
       return { sessionKey, sessionId: existing.sessionId, profileId: existing.profileId };
@@ -156,7 +159,10 @@ export class OmniAcpRuntime {
   ): Promise<AcpRuntimeEvent & { type: "done" }> {
     const mapping = this.sessionKeys.get(sessionKey);
     if (!mapping) {
-      throw new AcpRuntimeError(`ensureSession must be called before runTurn (${sessionKey})`, "session_not_mapped");
+      throw new AcpRuntimeError(
+        `ensureSession must be called before runTurn (${sessionKey})`,
+        "session_not_mapped",
+      );
     }
     const sessionId = mapping.sessionId;
 
@@ -187,7 +193,8 @@ export class OmniAcpRuntime {
 
       const finish = (event: AcpRuntimeEvent & { type: "done" }): void => {
         if (turn.timeout) clearTimeout(turn.timeout);
-        if (turn.abortListener && opts.signal) opts.signal.removeEventListener("abort", turn.abortListener);
+        if (turn.abortListener && opts.signal)
+          opts.signal.removeEventListener("abort", turn.abortListener);
         turn.unsubscribe();
         this.activeTurns.delete(sessionId);
         this.audit(
@@ -213,16 +220,36 @@ export class OmniAcpRuntime {
             });
             break;
           case "tool.call.started":
-            emit({ type: "tool_call", text: event.toolName, toolCallId: event.toolCallId, status: "started" });
+            emit({
+              type: "tool_call",
+              text: event.toolName,
+              toolCallId: event.toolCallId,
+              status: "started",
+            });
             break;
           case "tool.call.completed":
-            emit({ type: "tool_call", text: event.toolCallId, toolCallId: event.toolCallId, status: "completed" });
+            emit({
+              type: "tool_call",
+              text: event.toolCallId,
+              toolCallId: event.toolCallId,
+              status: "completed",
+            });
             break;
           case "tool.call.failed":
-            emit({ type: "tool_call", text: event.error, toolCallId: event.toolCallId, status: "failed" });
+            emit({
+              type: "tool_call",
+              text: event.error,
+              toolCallId: event.toolCallId,
+              status: "failed",
+            });
             break;
           case "tool.call.denied":
-            emit({ type: "tool_call", text: event.reason, toolCallId: event.toolCallId, status: "denied" });
+            emit({
+              type: "tool_call",
+              text: event.reason,
+              toolCallId: event.toolCallId,
+              status: "denied",
+            });
             break;
           case "run.started":
             if (turn.runId === "") turn.runId = event.runId;
@@ -244,7 +271,8 @@ export class OmniAcpRuntime {
       this.activeTurns.set(sessionId, turn);
 
       const interrupt = (): void => {
-        if (turn.runId) void this.daemon.call("run.interrupt", { runId: turn.runId }).catch(() => {});
+        if (turn.runId)
+          void this.daemon.call("run.interrupt", { runId: turn.runId }).catch(() => {});
         finish({ type: "done", status: "cancelled", stopReason: "interrupted" });
       };
       if (opts.signal) {
@@ -258,7 +286,8 @@ export class OmniAcpRuntime {
       }
       const timeoutMs = opts.turnTimeoutMs ?? 10 * 60 * 1000;
       turn.timeout = setTimeout(() => {
-        if (turn.runId) void this.daemon.call("run.interrupt", { runId: turn.runId }).catch(() => {});
+        if (turn.runId)
+          void this.daemon.call("run.interrupt", { runId: turn.runId }).catch(() => {});
         emit({ type: "error", message: "turn timed out", code: "turn_timeout", retryable: true });
         finish({ type: "done", status: "cancelled", stopReason: "timeout" });
       }, timeoutMs);
@@ -267,7 +296,9 @@ export class OmniAcpRuntime {
         .call("run.start", {
           sessionId,
           input: prompt,
-          ...(opts.attachments && opts.attachments.length > 0 ? { attachments: opts.attachments } : {}),
+          ...(opts.attachments && opts.attachments.length > 0
+            ? { attachments: opts.attachments }
+            : {}),
         })
         .then(({ runId }) => {
           turn.runId = runId;
@@ -294,7 +325,8 @@ export class OmniAcpRuntime {
   async close(): Promise<void> {
     for (const [sessionId] of this.activeTurns) {
       const active = this.activeTurns.get(sessionId);
-      if (active?.runId) await this.daemon.call("run.interrupt", { runId: active.runId }).catch(() => {});
+      if (active?.runId)
+        await this.daemon.call("run.interrupt", { runId: active.runId }).catch(() => {});
     }
   }
 }
@@ -421,7 +453,12 @@ export class ChannelApprovalRelay {
     // replace any previous pending entry for this session
     const prev = this.pending.get(mapping.sessionKey);
     if (prev) clearTimeout(prev.timer);
-    this.pending.set(mapping.sessionKey, { approval, sessionKey: mapping.sessionKey, target, timer });
+    this.pending.set(mapping.sessionKey, {
+      approval,
+      sessionKey: mapping.sessionKey,
+      target,
+      timer,
+    });
   }
 
   private clearResolved(approvalId: string): void {
@@ -456,7 +493,10 @@ export class ChannelApprovalRelay {
     void this.deps.daemon
       .call("approval.resolve", { approvalId: p.approval.id, decision })
       .then(() =>
-        this.deps.send(p.target, `Approval ${decision === "approve" ? "granted ✅" : "denied ❌"}.`),
+        this.deps.send(
+          p.target,
+          `Approval ${decision === "approve" ? "granted ✅" : "denied ❌"}.`,
+        ),
       )
       .catch(() => {});
     return true;

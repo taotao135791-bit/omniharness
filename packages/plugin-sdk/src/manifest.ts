@@ -3,11 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve, sep } from "node:path";
 import { validatePluginManifest } from "@omniharness/config-schema";
 import type { PluginManifest, PluginPermissions } from "@omniharness/shared-types";
-import {
-  IntegrityMismatchError,
-  ManifestLoadError,
-  ManifestValidationError,
-} from "./errors.js";
+import { IntegrityMismatchError, ManifestLoadError, ManifestValidationError } from "./errors.js";
 
 export interface LoadedManifest {
   manifest: PluginManifest;

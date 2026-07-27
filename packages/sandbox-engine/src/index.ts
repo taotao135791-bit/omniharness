@@ -12,11 +12,7 @@ export { commandOnPath, probeCommand } from "./availability.js";
 export type { ProbeOutcome } from "./availability.js";
 export { generateSeatbeltProfile, SeatbeltBackend } from "./backends/seatbelt.js";
 export { BwrapBackend } from "./backends/bwrap.js";
-export {
-  buildDockerArgv,
-  DEFAULT_DOCKER_IMAGE,
-  DockerBackend,
-} from "./backends/docker.js";
+export { buildDockerArgv, DEFAULT_DOCKER_IMAGE, DockerBackend } from "./backends/docker.js";
 export type { DockerBackendOptions } from "./backends/docker.js";
 export { shellQuote, SshBackend } from "./backends/ssh.js";
 export type { SshBackendOptions } from "./backends/ssh.js";

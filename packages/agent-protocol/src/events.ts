@@ -45,9 +45,21 @@ export type SessionEvent = EventBase &
 export type MessageEvent = EventBase &
   (
     | { type: "message.started"; sessionId: SessionId; messageId: string; role: string }
-    | { type: "message.delta"; sessionId: SessionId; messageId: string; delta: string; channel: "text" | "reasoning" }
+    | {
+        type: "message.delta";
+        sessionId: SessionId;
+        messageId: string;
+        delta: string;
+        channel: "text" | "reasoning";
+      }
     | { type: "message.completed"; sessionId: SessionId; messageId: string }
-    | { type: "message.attachment"; sessionId: SessionId; messageId: string; uri: string; mimeType: string }
+    | {
+        type: "message.attachment";
+        sessionId: SessionId;
+        messageId: string;
+        uri: string;
+        mimeType: string;
+      }
   );
 
 export type RunEvent = EventBase &
@@ -56,7 +68,12 @@ export type RunEvent = EventBase &
     | { type: "run.paused"; sessionId: SessionId; runId: string }
     | { type: "run.resumed"; sessionId: SessionId; runId: string }
     | { type: "run.steered"; sessionId: SessionId; runId: string }
-    | { type: "run.completed"; sessionId: SessionId; runId: string; usage: { inputTokens: number; outputTokens: number; costUsd?: number } }
+    | {
+        type: "run.completed";
+        sessionId: SessionId;
+        runId: string;
+        usage: { inputTokens: number; outputTokens: number; costUsd?: number };
+      }
     | { type: "run.failed"; sessionId: SessionId; runId: string; error: string }
     | { type: "run.compacting"; sessionId: SessionId; runId: string; beforeTokens: number }
     | { type: "run.compacted"; sessionId: SessionId; runId: string; afterTokens: number }
@@ -64,9 +81,27 @@ export type RunEvent = EventBase &
 
 export type ToolEvent = EventBase &
   (
-    | { type: "tool.call.started"; sessionId: SessionId; toolCallId: ToolCallId; toolName: string; argumentsJson: string }
-    | { type: "tool.call.output"; sessionId: SessionId; toolCallId: ToolCallId; chunk: string; stream: "stdout" | "stderr" }
-    | { type: "tool.call.completed"; sessionId: SessionId; toolCallId: ToolCallId; resultJson: string; durationMs: number }
+    | {
+        type: "tool.call.started";
+        sessionId: SessionId;
+        toolCallId: ToolCallId;
+        toolName: string;
+        argumentsJson: string;
+      }
+    | {
+        type: "tool.call.output";
+        sessionId: SessionId;
+        toolCallId: ToolCallId;
+        chunk: string;
+        stream: "stdout" | "stderr";
+      }
+    | {
+        type: "tool.call.completed";
+        sessionId: SessionId;
+        toolCallId: ToolCallId;
+        resultJson: string;
+        durationMs: number;
+      }
     | { type: "tool.call.failed"; sessionId: SessionId; toolCallId: ToolCallId; error: string }
     | { type: "tool.call.denied"; sessionId: SessionId; toolCallId: ToolCallId; reason: string }
   );
@@ -74,14 +109,22 @@ export type ToolEvent = EventBase &
 export type ApprovalEvent = EventBase &
   (
     | { type: "approval.requested"; approval: ApprovalRequest }
-    | { type: "approval.resolved"; approvalId: ApprovalId; status: "approved" | "denied" | "expired" | "cancelled" }
+    | {
+        type: "approval.resolved";
+        approvalId: ApprovalId;
+        status: "approved" | "denied" | "expired" | "cancelled";
+      }
   );
 
 export type TaskEvent = EventBase &
   (
     | { type: "task.created"; taskId: TaskId; parentTaskId: TaskId | null; objective: string }
     | { type: "task.status"; taskId: TaskId; status: string }
-    | { type: "task.progress"; taskId: TaskId; consumed: { tokens: number; costUsd: number; toolCalls: number } }
+    | {
+        type: "task.progress";
+        taskId: TaskId;
+        consumed: { tokens: number; costUsd: number; toolCalls: number };
+      }
     | { type: "task.completed"; taskId: TaskId; result: string }
     | { type: "task.failed"; taskId: TaskId; error: string }
   );
@@ -89,7 +132,13 @@ export type TaskEvent = EventBase &
 export type ModelEvent = EventBase &
   (
     | { type: "model.changed"; sessionId: SessionId; modelId: string; role: string }
-    | { type: "model.fallback"; sessionId: SessionId; fromModelId: string; toModelId: string; reason: string }
+    | {
+        type: "model.fallback";
+        sessionId: SessionId;
+        fromModelId: string;
+        toModelId: string;
+        reason: string;
+      }
     | { type: "provider.health"; providerId: string; healthy: boolean; latencyMs?: number }
   );
 
@@ -110,7 +159,12 @@ export type SkillEvent = EventBase &
 export type AutomationEvent = EventBase &
   (
     | { type: "automation.fired"; automationId: AutomationId; runId: string }
-    | { type: "automation.run.completed"; automationId: AutomationId; runId: string; summary: string }
+    | {
+        type: "automation.run.completed";
+        automationId: AutomationId;
+        runId: string;
+        summary: string;
+      }
     | { type: "automation.run.failed"; automationId: AutomationId; runId: string; error: string }
     | { type: "automation.updated"; automation: Automation }
   );
@@ -119,7 +173,12 @@ export type SystemEvent = EventBase &
   (
     | { type: "daemon.heartbeat"; uptimeMs: number }
     | { type: "daemon.shutdown"; reason: string }
-    | { type: "diagnostic"; level: "info" | "warn" | "error"; message: string; context?: Record<string, string> }
+    | {
+        type: "diagnostic";
+        level: "info" | "warn" | "error";
+        message: string;
+        context?: Record<string, string>;
+      }
   );
 
 export interface AutomationRunPage {

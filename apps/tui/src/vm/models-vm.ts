@@ -116,7 +116,10 @@ export class ModelsViewModel {
     for (const role of EDITABLE_ROLES) {
       const bound = this.bindings[role];
       lines.push(
-        truncate(`  ${role.padEnd(12)} ${bound ? this.modelDisplayName(bound) : "(default)"}`, width),
+        truncate(
+          `  ${role.padEnd(12)} ${bound ? this.modelDisplayName(bound) : "(default)"}`,
+          width,
+        ),
       );
     }
     return lines;

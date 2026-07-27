@@ -132,7 +132,10 @@ describe("loadManifest", () => {
   it("hashes an entry file in a subdirectory", () => {
     mkdirSync(join(dir, "src"));
     writeFileSync(join(dir, "src", "main.js"), ENTRY_SOURCE);
-    writeFileSync(join(dir, "manifest.json"), JSON.stringify(validManifest({ entry: "src/main.js" })));
+    writeFileSync(
+      join(dir, "manifest.json"),
+      JSON.stringify(validManifest({ entry: "src/main.js" })),
+    );
     expect(loadManifest(dir).integrityHash).toBe(sha256(ENTRY_SOURCE));
   });
 });

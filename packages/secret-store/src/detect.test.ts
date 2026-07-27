@@ -17,7 +17,12 @@ afterEach(async () => {
 describe("createSecretStore", () => {
   it("returns a working store in the current environment", async () => {
     const { store, backend } = await createSecretStore(dataDir);
-    expect(["macos-keychain", "windows-credential", "linux-secret-tool", "encrypted-file"]).toContain(backend);
+    expect([
+      "macos-keychain",
+      "windows-credential",
+      "linux-secret-tool",
+      "encrypted-file",
+    ]).toContain(backend);
     expect(store).toBeDefined();
     expect(typeof store.get).toBe("function");
   });

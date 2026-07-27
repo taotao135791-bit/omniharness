@@ -39,12 +39,17 @@ export const telegramFormatter: ChannelFormatter = {
     const message = isRecord(body["message"]) ? body["message"] : body;
     const chat = isRecord(message["chat"]) ? message["chat"] : null;
     const from = isRecord(message["from"]) ? message["from"] : null;
-    const chatId = chat ? (str(chat["id"]) ?? String(num(chat["id"]) ?? "")) : str(message["chat_id"]);
-    const senderId = from ? (str(from["id"]) ?? String(num(from["id"]) ?? "")) : senderIdFallback(message);
+    const chatId = chat
+      ? (str(chat["id"]) ?? String(num(chat["id"]) ?? ""))
+      : str(message["chat_id"]);
+    const senderId = from
+      ? (str(from["id"]) ?? String(num(from["id"]) ?? ""))
+      : senderIdFallback(message);
     const text = str(message["text"]) ?? str(message["caption"]);
     if (!chatId || !senderId || !text) return null;
     const chatTypeRaw = str(chat?.["type"]) ?? "private";
-    const chatType = chatTypeRaw === "private" ? "direct" : chatTypeRaw === "channel" ? "channel" : "group";
+    const chatType =
+      chatTypeRaw === "private" ? "direct" : chatTypeRaw === "channel" ? "channel" : "group";
     const out: ReturnType<ChannelFormatter["parseInbound"]> = {
       from: chatId,
       chatType,

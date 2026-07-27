@@ -1,10 +1,4 @@
-import type {
-  DisplayInfo,
-  LogicalPoint,
-  MouseButton,
-  ScreenFrame,
-  WindowInfo,
-} from "./types.js";
+import type { DisplayInfo, LogicalPoint, MouseButton, ScreenFrame, WindowInfo } from "./types.js";
 
 export interface DriverAvailability {
   available: boolean;

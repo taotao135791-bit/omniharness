@@ -66,7 +66,10 @@ export function parseHermesSkillMd(content: string): ParsedHermesSkill {
   if (end === -1) throw new SkillParseError("frontmatter fence is not closed");
 
   const frontmatterText = normalized.slice(4, end);
-  const body = normalized.slice(end + 4).replace(/^\n+/, "").trim();
+  const body = normalized
+    .slice(end + 4)
+    .replace(/^\n+/, "")
+    .trim();
   if (body.length === 0) throw new SkillParseError("SKILL.md body must not be empty");
 
   // Only top-level `key: scalar` lines; nested blocks/arrays are skipped.
@@ -87,7 +90,7 @@ export function parseHermesSkillMd(content: string): ParsedHermesSkill {
   }
   const description = scalars.get("description");
   if (description === undefined || description.length === 0 || description.length > 1024) {
-    throw new SkillParseError("missing or over-long frontmatter \"description\"");
+    throw new SkillParseError('missing or over-long frontmatter "description"');
   }
   const version = scalars.get("version") ?? "0.1.0";
   return { frontmatter: { name, description, version }, body };

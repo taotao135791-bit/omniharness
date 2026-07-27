@@ -15,14 +15,14 @@ Audit date: 2026-07-23. Audited from a `git clone --depth 1` into `tmp/upstream/
 
 ### Packages (`packages/`)
 
-| Package | npm name | Role |
-|---|---|---|
-| `ai/` | `@earendil-works/pi-ai` | Unified multi-provider LLM API: message/model types, per-API stream implementations, OAuth, model catalog |
-| `agent/` | `@earendil-works/pi-agent-core` | Provider-agnostic agent runtime: agent loop, `Agent` class, harness (session tree, compaction, skills, env abstraction, built-in tool impls) |
-| `tui/` | `@earendil-works/pi-tui` | Terminal UI library with differential rendering; no external TUI framework — custom `Component` model |
-| `coding-agent/` | `@earendil-works/pi-coding-agent` | The `pi` CLI: modes (interactive TUI, print, json, RPC), extension system, session manager, settings, skills/prompts/themes/packages loading, built-in coding tools |
-| `server/` | `@earendil-works/pi-server` | Experimental headless server (supervisor, IPC, storage); explicitly unstable |
-| `storage/sqlite-node/` | — | SQLite-backed session storage variant |
+| Package                | npm name                          | Role                                                                                                                                                                |
+| ---------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ai/`                  | `@earendil-works/pi-ai`           | Unified multi-provider LLM API: message/model types, per-API stream implementations, OAuth, model catalog                                                           |
+| `agent/`               | `@earendil-works/pi-agent-core`   | Provider-agnostic agent runtime: agent loop, `Agent` class, harness (session tree, compaction, skills, env abstraction, built-in tool impls)                        |
+| `tui/`                 | `@earendil-works/pi-tui`          | Terminal UI library with differential rendering; no external TUI framework — custom `Component` model                                                               |
+| `coding-agent/`        | `@earendil-works/pi-coding-agent` | The `pi` CLI: modes (interactive TUI, print, json, RPC), extension system, session manager, settings, skills/prompts/themes/packages loading, built-in coding tools |
+| `server/`              | `@earendil-works/pi-server`       | Experimental headless server (supervisor, IPC, storage); explicitly unstable                                                                                        |
+| `storage/sqlite-node/` | —                                 | SQLite-backed session storage variant                                                                                                                               |
 
 ### Agent core (`packages/agent/src/`)
 
@@ -191,18 +191,18 @@ Re-exports tool factories `createCodingTools`, `createReadOnlyTools`, `createRea
 
 ### 3.9 Configuration files & precedence
 
-| File | Scope |
-|---|---|
-| `~/.pi/agent/settings.json` | global settings |
-| `.pi/settings.json` | project settings (wins; deep-merged, nested objects merge, arrays/primitives override) — only loaded when project is **trusted** |
-| `~/.pi/agent/auth.json` | OAuth credentials + API keys |
-| `~/.pi/agent/models.json` | custom providers/models |
-| `~/.pi/agent/trust.json` | saved project-trust decisions |
-| `~/.pi/agent/{extensions,skills,prompts,themes}/` | global resources |
-| `.pi/{extensions,skills,prompts,themes,settings.json}` | project resources (trust-gated) |
-| `~/.agents/skills/`, `.agents/skills/` (cwd + ancestors to git root) | cross-harness skills (agentskills.io standard) |
-| `AGENTS.md` / `CLAUDE.md` | context files: agentDir global + every ancestor of cwd, concatenated root→leaf |
-| env: `PI_CODING_AGENT_DIR`, `PI_CODING_AGENT_SESSION_DIR`, `PI_PACKAGE_DIR` | path overrides (prefix derived from `piConfig.name`) |
+| File                                                                        | Scope                                                                                                                            |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `~/.pi/agent/settings.json`                                                 | global settings                                                                                                                  |
+| `.pi/settings.json`                                                         | project settings (wins; deep-merged, nested objects merge, arrays/primitives override) — only loaded when project is **trusted** |
+| `~/.pi/agent/auth.json`                                                     | OAuth credentials + API keys                                                                                                     |
+| `~/.pi/agent/models.json`                                                   | custom providers/models                                                                                                          |
+| `~/.pi/agent/trust.json`                                                    | saved project-trust decisions                                                                                                    |
+| `~/.pi/agent/{extensions,skills,prompts,themes}/`                           | global resources                                                                                                                 |
+| `.pi/{extensions,skills,prompts,themes,settings.json}`                      | project resources (trust-gated)                                                                                                  |
+| `~/.agents/skills/`, `.agents/skills/` (cwd + ancestors to git root)        | cross-harness skills (agentskills.io standard)                                                                                   |
+| `AGENTS.md` / `CLAUDE.md`                                                   | context files: agentDir global + every ancestor of cwd, concatenated root→leaf                                                   |
+| env: `PI_CODING_AGENT_DIR`, `PI_CODING_AGENT_SESSION_DIR`, `PI_PACKAGE_DIR` | path overrides (prefix derived from `piConfig.name`)                                                                             |
 
 `package.json` `piConfig: { name, configDir }` allows full rebrand (app name, `.pi` dir name, env var names) — already used (`"configDir": ".pi"`).
 

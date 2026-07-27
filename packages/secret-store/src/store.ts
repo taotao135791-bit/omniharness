@@ -20,10 +20,7 @@ export interface SecretStore {
 }
 
 export type SecretStoreBackendKind =
-  | "macos-keychain"
-  | "windows-credential"
-  | "linux-secret-tool"
-  | "encrypted-file";
+  "macos-keychain" | "windows-credential" | "linux-secret-tool" | "encrypted-file";
 
 export class SecretStoreError extends Error {
   readonly ref?: string;

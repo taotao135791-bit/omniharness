@@ -14,7 +14,9 @@ describe("workspace boundary security", () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), "sec-ws-"));
     fs.writeFileSync(path.join(root, "file.txt"), "hello");
     fs.mkdirSync(path.join(root, "src"));
-    const manager = new WorkspaceManager({ dataDir: fs.mkdtempSync(path.join(os.tmpdir(), "sec-data-")) });
+    const manager = new WorkspaceManager({
+      dataDir: fs.mkdtempSync(path.join(os.tmpdir(), "sec-data-")),
+    });
     const workspace = await manager.register({ roots: [root], name: "sec" });
     return { root, workspace };
   }
@@ -30,7 +32,9 @@ describe("workspace boundary security", () => {
     const outside = fs.mkdtempSync(path.join(os.tmpdir(), "sec-outside-"));
     fs.writeFileSync(path.join(outside, "secret.txt"), "top secret");
     fs.symlinkSync(outside, path.join(root, "link-out"));
-    await expect(assertWritable(workspace, path.join(root, "link-out", "secret.txt"))).rejects.toThrow();
+    await expect(
+      assertWritable(workspace, path.join(root, "link-out", "secret.txt")),
+    ).rejects.toThrow();
   });
 
   it("honors protected and read-only paths", async () => {

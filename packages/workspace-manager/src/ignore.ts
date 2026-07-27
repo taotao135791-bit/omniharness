@@ -110,10 +110,7 @@ export class IgnoreMatcher {
         return "";
       }
     };
-    return IgnoreMatcher.fromContent(
-      await read(".gitignore"),
-      await read(".omniharnessignore"),
-    );
+    return IgnoreMatcher.fromContent(await read(".gitignore"), await read(".omniharnessignore"));
   }
 
   /** Tests a workspace-relative POSIX path. */

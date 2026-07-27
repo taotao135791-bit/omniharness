@@ -21,7 +21,9 @@ interface WsServer {
   close(cb?: () => void): void;
 }
 
-const require = createRequire(new URL("../../../../packages/client-sdk/package.json", import.meta.url));
+const require = createRequire(
+  new URL("../../../../packages/client-sdk/package.json", import.meta.url),
+);
 const { WebSocketServer } = require("ws") as {
   WebSocketServer: new (opts: { host: string; port: number }) => WsServer;
 };
@@ -139,7 +141,10 @@ export class FakeDaemon {
               type: "response",
               id: msg.id,
               ok: false,
-              error: { code: "internal", message: err instanceof Error ? err.message : String(err) },
+              error: {
+                code: "internal",
+                message: err instanceof Error ? err.message : String(err),
+              },
             }),
           );
         }
@@ -149,6 +154,9 @@ export class FakeDaemon {
 }
 
 /** Helper: respond with a daemon error from a handler. */
-export function daemonError(code: string, message: string): { __error: { code: string; message: string } } {
+export function daemonError(
+  code: string,
+  message: string,
+): { __error: { code: string; message: string } } {
   return { __error: { code, message } };
 }

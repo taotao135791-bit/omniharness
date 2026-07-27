@@ -27,8 +27,8 @@ SDK/RPC Client ──┘          │
   RPC protocol in `packages/agent-protocol`. No client talks to the database,
   the filesystem policy, or a model provider directly.
 - **One agent loop.** Pi is the only agent runtime. OpenClaw concerns (gateway,
-  channels, remote nodes) are an *adapter*; Hermes concerns (long-term memory,
-  skill learning, checkpoints) are *services*. Neither runs a parallel loop.
+  channels, remote nodes) are an _adapter_; Hermes concerns (long-term memory,
+  skill learning, checkpoints) are _services_. Neither runs a parallel loop.
 - **GUI never wraps TUI.** Both implement the same `client-sdk` contract.
 
 ## 2. Upstream strategy (Pi)
@@ -102,7 +102,7 @@ Models without native tool calling run through a deterministic compat layer.
 
 `agent-orchestrator` decomposes objectives into `AgentTask` graphs (dependencies,
 budgets, allowed tools, isolated contexts, git worktrees). The orchestrator runs
-tasks through the *same* daemon runtime with per-task policy scopes. Deadlock,
+tasks through the _same_ daemon runtime with per-task policy scopes. Deadlock,
 zombie and loop detection are part of the scheduler.
 
 ## 8. Computer Use & Browser

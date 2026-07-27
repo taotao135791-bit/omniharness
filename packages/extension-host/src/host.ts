@@ -13,8 +13,19 @@ import {
   type PluginToolSpec,
   type UiExtensionDescriptor,
 } from "@omniharness/plugin-sdk";
-import type { Capability, PluginId, PluginManifest, PluginTrustLevel } from "@omniharness/shared-types";
-import { ToolRegistry, type JsonSchema, type Tool, type ToolContext, type ToolResult } from "@omniharness/tool-runtime";
+import type {
+  Capability,
+  PluginId,
+  PluginManifest,
+  PluginTrustLevel,
+} from "@omniharness/shared-types";
+import {
+  ToolRegistry,
+  type JsonSchema,
+  type Tool,
+  type ToolContext,
+  type ToolResult,
+} from "@omniharness/tool-runtime";
 import { compilePluginEntry } from "./compile.js";
 import { createPiEntry, type PiExtensionFactory } from "./pi-adapter.js";
 

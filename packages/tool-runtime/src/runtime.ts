@@ -211,7 +211,10 @@ export class ToolRuntime {
         return result;
       }
 
-      if (evaluation.decision === "ask_every_time" || evaluation.decision === "ask_once_per_session") {
+      if (
+        evaluation.decision === "ask_every_time" ||
+        evaluation.decision === "ask_once_per_session"
+      ) {
         const grantKey = `${capability}`;
         const grants = this.sessionGrants.get(runCtx.sessionId);
         const alreadyGranted =
@@ -317,7 +320,9 @@ export class ToolRuntime {
       sessionId: runCtx.sessionId,
       workspaceId: runCtx.workspace.id,
     });
-    return answer.approved ? { ok: true } : { ok: false, ...(answer.reason !== undefined ? { reason: answer.reason } : {}) };
+    return answer.approved
+      ? { ok: true }
+      : { ok: false, ...(answer.reason !== undefined ? { reason: answer.reason } : {}) };
   }
 
   private executeWithTimeout(
@@ -342,12 +347,17 @@ export class ToolRuntime {
 
     return new Promise<ToolResult>((resolvePromise, rejectPromise) => {
       const onAbort = (): void => {
-        if (controller.signal.reason instanceof Error && controller.signal.reason.message === "timeout") {
+        if (
+          controller.signal.reason instanceof Error &&
+          controller.signal.reason.message === "timeout"
+        ) {
           rejectPromise(new TimeoutError(`timed out after ${timeoutMs} ms`));
         } else {
-          rejectPromise(controller.signal.reason instanceof Error
-            ? controller.signal.reason
-            : new Error("aborted"));
+          rejectPromise(
+            controller.signal.reason instanceof Error
+              ? controller.signal.reason
+              : new Error("aborted"),
+          );
         }
       };
       controller.signal.addEventListener("abort", onAbort, { once: true });

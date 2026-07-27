@@ -6,7 +6,11 @@ import { AutomationEngine, Scheduler } from "@omniharness/automation-engine";
 import { ExtensionHost, PluginRegistry, type PluginPersistence } from "@omniharness/extension-host";
 import type { InstalledPlugin, PluginId } from "@omniharness/shared-types";
 import { PolicyEngine } from "@omniharness/policy-engine";
-import { ApprovalEngine, type ApprovalStore, type ApprovalFilter } from "@omniharness/approval-engine";
+import {
+  ApprovalEngine,
+  type ApprovalStore,
+  type ApprovalFilter,
+} from "@omniharness/approval-engine";
 import type { ApprovalRequest, ApprovalId, ApprovalStatus } from "@omniharness/shared-types";
 import { ArtifactStore } from "@omniharness/artifact-store";
 import { Logger, Tracer, createNdjsonSink, createStderrSink } from "@omniharness/observability";
@@ -69,8 +73,8 @@ export async function createDaemonContext(opts: {
     list: async (filter?: ApprovalFilter) => {
       const rows = filter?.status
         ? db.approvals.listByStatus(filter.status as ApprovalStatus)
-        : (["pending", "approved", "denied", "expired", "cancelled"] as ApprovalStatus[]).flatMap((s) =>
-            db.approvals.listByStatus(s),
+        : (["pending", "approved", "denied", "expired", "cancelled"] as ApprovalStatus[]).flatMap(
+            (s) => db.approvals.listByStatus(s),
           );
       return rows;
     },

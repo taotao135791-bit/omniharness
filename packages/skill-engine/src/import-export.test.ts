@@ -20,7 +20,17 @@ async function writeSkillMd(dir: string, name: string, description: string): Pro
   await fs.mkdir(dir, { recursive: true });
   await fs.writeFile(
     path.join(dir, "SKILL.md"),
-    ["---", `name: ${name}`, `description: ${description}`, "version: 1.0.0", "---", "", `# ${name}`, "", "Body."].join("\n"),
+    [
+      "---",
+      `name: ${name}`,
+      `description: ${description}`,
+      "version: 1.0.0",
+      "---",
+      "",
+      `# ${name}`,
+      "",
+      "Body.",
+    ].join("\n"),
   );
 }
 
@@ -32,7 +42,11 @@ describe("importPiSkills", () => {
   it("imports from .pi/skills and .agents/skills", async () => {
     const engine = makeEngine();
     await writeSkillMd(path.join(tmpRoot, ".pi/skills/pi-one"), "pi-one", "From .pi.");
-    await writeSkillMd(path.join(tmpRoot, ".agents/skills/agent-two"), "agent-two", "From .agents.");
+    await writeSkillMd(
+      path.join(tmpRoot, ".agents/skills/agent-two"),
+      "agent-two",
+      "From .agents.",
+    );
     // A dir without SKILL.md is skipped.
     await fs.mkdir(path.join(tmpRoot, ".pi/skills/not-a-skill"), { recursive: true });
 

@@ -31,12 +31,23 @@ describe("gateway frame codec", () => {
     const frame = decodeGatewayFrame(raw);
     expect(frame.type).toBe("res");
     if (frame.type !== "res") return;
-    expect(frame.error).toEqual({ code: "FORBIDDEN", message: "nope", retryable: false, retryAfterMs: 0 });
+    expect(frame.error).toEqual({
+      code: "FORBIDDEN",
+      message: "nope",
+      retryable: false,
+      retryAfterMs: 0,
+    });
     expect(JSON.parse(encodeGatewayFrame(frame))).toEqual(JSON.parse(raw));
   });
 
   it("round-trips an event frame with seq", () => {
-    const raw = JSON.stringify({ type: "event", event: "tick", payload: { ts: 1 }, seq: 42, stateVersion: 7 });
+    const raw = JSON.stringify({
+      type: "event",
+      event: "tick",
+      payload: { ts: 1 },
+      seq: 42,
+      stateVersion: 7,
+    });
     const frame = decodeGatewayFrame(raw);
     expect(frame).toMatchObject({ type: "event", event: "tick", seq: 42, stateVersion: 7 });
     expect(JSON.parse(encodeGatewayFrame(frame))).toEqual(JSON.parse(raw));
@@ -95,7 +106,11 @@ describe("gateway frame codec", () => {
     const frame = decodeGatewayFrame(text);
     expect(frame).toMatchObject({ type: "req", id: "c1", method: "connect" });
     if (frame.type !== "req") return;
-    expect(frame.params).toMatchObject({ minProtocol: 4, maxProtocol: 4, auth: { token: "shared-secret" } });
+    expect(frame.params).toMatchObject({
+      minProtocol: 4,
+      maxProtocol: 4,
+      auth: { token: "shared-secret" },
+    });
   });
 
   it("parses hello-ok payloads defensively", () => {
@@ -119,7 +134,13 @@ describe("gateway frame codec", () => {
     const bad = [
       { type: "hello-ok" },
       { type: "hello-ok", protocol: 4, server: { version: "1" }, features: {}, auth: {} },
-      { type: "hello-ok", protocol: "4", server: { version: "1", connId: "c" }, features: { methods: [], events: [] }, auth: { role: "operator", scopes: [] } },
+      {
+        type: "hello-ok",
+        protocol: "4",
+        server: { version: "1", connId: "c" },
+        features: { methods: [], events: [] },
+        auth: { role: "operator", scopes: [] },
+      },
       { type: "not-hello", protocol: 4 },
     ];
     for (const payload of bad) {
@@ -129,11 +150,15 @@ describe("gateway frame codec", () => {
 
   it("parses connect.challenge events", () => {
     const frame = decodeGatewayFrame(
-      JSON.stringify({ type: "event", event: "connect.challenge", payload: { nonce: "n-1", ts: 123 } }),
+      JSON.stringify({
+        type: "event",
+        event: "connect.challenge",
+        payload: { nonce: "n-1", ts: 123 },
+      }),
     );
     expect(parseConnectChallenge(frame)).toEqual({ nonce: "n-1", ts: 123 });
-    expect(() => parseConnectChallenge(decodeGatewayFrame(JSON.stringify({ type: "event", event: "tick" })))).toThrow(
-      GatewayFrameError,
-    );
+    expect(() =>
+      parseConnectChallenge(decodeGatewayFrame(JSON.stringify({ type: "event", event: "tick" }))),
+    ).toThrow(GatewayFrameError);
   });
 });

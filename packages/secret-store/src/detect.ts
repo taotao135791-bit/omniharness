@@ -1,4 +1,9 @@
-import { LinuxSecretToolStore, MacosKeychainStore, runCommand, WindowsCredentialStore } from "./cli-stores.js";
+import {
+  LinuxSecretToolStore,
+  MacosKeychainStore,
+  runCommand,
+  WindowsCredentialStore,
+} from "./cli-stores.js";
 import { EncryptedFileStore } from "./encrypted-file-store.js";
 import type { SecretStore, SecretStoreBackendKind } from "./store.js";
 

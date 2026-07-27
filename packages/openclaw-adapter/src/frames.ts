@@ -100,7 +100,10 @@ function parseErrorShape(v: unknown, ctx: string): ErrorShape | undefined {
 }
 
 /** Collect fields not part of the known schema so re-encoding is lossless. */
-function collectExtra(raw: Record<string, unknown>, known: readonly string[]): Record<string, unknown> | undefined {
+function collectExtra(
+  raw: Record<string, unknown>,
+  known: readonly string[],
+): Record<string, unknown> | undefined {
   const knownSet = new Set(known);
   const extra: Record<string, unknown> = {};
   let count = 0;
@@ -130,7 +133,10 @@ export function decodeGatewayFrame(text: string): GatewayFrame {
   const type = parsed["type"];
   if (type === "req") {
     if (!isNonEmptyString(parsed["id"]) || !isNonEmptyString(parsed["method"])) {
-      throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "req frame requires non-empty id and method");
+      throw new GatewayFrameError(
+        GatewayErrorCodes.INVALID_REQUEST,
+        "req frame requires non-empty id and method",
+      );
     }
     const frame: RequestFrame = { type: "req", id: parsed["id"], method: parsed["method"] };
     if ("params" in parsed) frame.params = parsed["params"];
@@ -140,7 +146,10 @@ export function decodeGatewayFrame(text: string): GatewayFrame {
   }
   if (type === "res") {
     if (!isNonEmptyString(parsed["id"]) || typeof parsed["ok"] !== "boolean") {
-      throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "res frame requires non-empty id and boolean ok");
+      throw new GatewayFrameError(
+        GatewayErrorCodes.INVALID_REQUEST,
+        "res frame requires non-empty id and boolean ok",
+      );
     }
     const frame: ResponseFrame = { type: "res", id: parsed["id"], ok: parsed["ok"] };
     if ("payload" in parsed) frame.payload = parsed["payload"];
@@ -152,13 +161,23 @@ export function decodeGatewayFrame(text: string): GatewayFrame {
   }
   if (type === "event") {
     if (!isNonEmptyString(parsed["event"])) {
-      throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "event frame requires non-empty event name");
+      throw new GatewayFrameError(
+        GatewayErrorCodes.INVALID_REQUEST,
+        "event frame requires non-empty event name",
+      );
     }
     const frame: EventFrame = { type: "event", event: parsed["event"] };
     if ("payload" in parsed) frame.payload = parsed["payload"];
     if (parsed["seq"] !== undefined) {
-      if (typeof parsed["seq"] !== "number" || !Number.isInteger(parsed["seq"]) || parsed["seq"] < 0) {
-        throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "event frame seq must be a non-negative integer");
+      if (
+        typeof parsed["seq"] !== "number" ||
+        !Number.isInteger(parsed["seq"]) ||
+        parsed["seq"] < 0
+      ) {
+        throw new GatewayFrameError(
+          GatewayErrorCodes.INVALID_REQUEST,
+          "event frame seq must be a non-negative integer",
+        );
       }
       frame.seq = parsed["seq"];
     }
@@ -258,25 +277,47 @@ export function parseHelloOk(payload: unknown): HelloOk {
   const features = payload["features"];
   const auth = payload["auth"];
   if (typeof payload["protocol"] !== "number" || !Number.isInteger(payload["protocol"])) {
-    throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "hello-ok: protocol must be an integer");
+    throw new GatewayFrameError(
+      GatewayErrorCodes.INVALID_REQUEST,
+      "hello-ok: protocol must be an integer",
+    );
   }
-  if (!isRecord(server) || !isNonEmptyString(server["version"]) || !isNonEmptyString(server["connId"])) {
-    throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "hello-ok: malformed server block");
+  if (
+    !isRecord(server) ||
+    !isNonEmptyString(server["version"]) ||
+    !isNonEmptyString(server["connId"])
+  ) {
+    throw new GatewayFrameError(
+      GatewayErrorCodes.INVALID_REQUEST,
+      "hello-ok: malformed server block",
+    );
   }
   if (!isRecord(features)) {
-    throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "hello-ok: malformed features block");
+    throw new GatewayFrameError(
+      GatewayErrorCodes.INVALID_REQUEST,
+      "hello-ok: malformed features block",
+    );
   }
   const methods = asStringArray(features["methods"]);
   const events = asStringArray(features["events"]);
   if (!methods || !events) {
-    throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "hello-ok: features.methods/events must be string arrays");
+    throw new GatewayFrameError(
+      GatewayErrorCodes.INVALID_REQUEST,
+      "hello-ok: features.methods/events must be string arrays",
+    );
   }
   if (!isRecord(auth) || !isNonEmptyString(auth["role"])) {
-    throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "hello-ok: malformed auth block");
+    throw new GatewayFrameError(
+      GatewayErrorCodes.INVALID_REQUEST,
+      "hello-ok: malformed auth block",
+    );
   }
   const scopes = asStringArray(auth["scopes"]);
   if (!scopes) {
-    throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "hello-ok: auth.scopes must be a string array");
+    throw new GatewayFrameError(
+      GatewayErrorCodes.INVALID_REQUEST,
+      "hello-ok: auth.scopes must be a string array",
+    );
   }
   const hello: HelloOk = {
     type: "hello-ok",
@@ -287,12 +328,14 @@ export function parseHelloOk(payload: unknown): HelloOk {
   };
   const caps = asStringArray(features["capabilities"]);
   if (caps) hello.features = { ...hello.features, capabilities: caps };
-  if (typeof auth["deviceToken"] === "string") hello.auth = { ...hello.auth, deviceToken: auth["deviceToken"] };
+  if (typeof auth["deviceToken"] === "string")
+    hello.auth = { ...hello.auth, deviceToken: auth["deviceToken"] };
   const policy = payload["policy"];
   if (isRecord(policy)) {
     const p: NonNullable<HelloOk["policy"]> = {};
     if (typeof policy["maxPayload"] === "number") p.maxPayload = policy["maxPayload"];
-    if (typeof policy["maxBufferedBytes"] === "number") p.maxBufferedBytes = policy["maxBufferedBytes"];
+    if (typeof policy["maxBufferedBytes"] === "number")
+      p.maxBufferedBytes = policy["maxBufferedBytes"];
     if (typeof policy["tickIntervalMs"] === "number") p.tickIntervalMs = policy["tickIntervalMs"];
     hello.policy = p;
   }
@@ -307,11 +350,17 @@ export interface ConnectChallenge {
 
 export function parseConnectChallenge(frame: GatewayFrame): ConnectChallenge {
   if (frame.type !== "event" || frame.event !== "connect.challenge" || !isRecord(frame.payload)) {
-    throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "expected connect.challenge event frame");
+    throw new GatewayFrameError(
+      GatewayErrorCodes.INVALID_REQUEST,
+      "expected connect.challenge event frame",
+    );
   }
   const payload = frame.payload;
   if (!isNonEmptyString(payload["nonce"]) || typeof payload["ts"] !== "number") {
-    throw new GatewayFrameError(GatewayErrorCodes.INVALID_REQUEST, "malformed connect.challenge payload");
+    throw new GatewayFrameError(
+      GatewayErrorCodes.INVALID_REQUEST,
+      "malformed connect.challenge payload",
+    );
   }
   return { nonce: payload["nonce"], ts: payload["ts"] };
 }

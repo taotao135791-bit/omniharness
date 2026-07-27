@@ -33,7 +33,14 @@ async function startFakeDaemon(handler?: (cmd: { id: string; name: string }) => 
       if (msg.type === "command" && msg.id && msg.name) {
         received.push({ id: msg.id, name: msg.name });
         const result = handler?.({ id: msg.id, name: msg.name });
-        ws.send(JSON.stringify({ type: "response", id: msg.id, ok: true, result: result ?? { ok: true } }));
+        ws.send(
+          JSON.stringify({
+            type: "response",
+            id: msg.id,
+            ok: true,
+            result: result ?? { ok: true },
+          }),
+        );
       }
     });
   });

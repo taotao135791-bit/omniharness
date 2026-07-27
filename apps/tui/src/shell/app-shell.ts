@@ -304,7 +304,11 @@ export class AppShell implements Component, Focusable {
         if (c.models.providers.length === 0) await c.loadModels();
         this.openSelect(
           "Test provider",
-          c.models.providers.map((p) => ({ value: p.id, label: p.displayName, description: p.kind })),
+          c.models.providers.map((p) => ({
+            value: p.id,
+            label: p.displayName,
+            description: p.kind,
+          })),
           (item) => fire(c.testProvider(item.value)),
         );
         return;

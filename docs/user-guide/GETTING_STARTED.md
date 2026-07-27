@@ -73,14 +73,14 @@ phone via channels). Nothing high-risk happens silently. See
 
 ## 6. Where things live
 
-| What | Where |
-| --- | --- |
-| Database, events, settings | `~/.omniharness/omniharness.db` |
-| Auth token | `~/.omniharness/.auth-token` (0600) |
-| Logs | `~/.omniharness/daemon.log` (NDJSON, redacted) |
-| Artifacts (large outputs) | `~/.omniharness/artifacts/` |
-| Export everything | `omni data export --target-dir <dir>` |
-| Delete everything | `omni data delete --confirm true` |
+| What                       | Where                                          |
+| -------------------------- | ---------------------------------------------- |
+| Database, events, settings | `~/.omniharness/omniharness.db`                |
+| Auth token                 | `~/.omniharness/.auth-token` (0600)            |
+| Logs                       | `~/.omniharness/daemon.log` (NDJSON, redacted) |
+| Artifacts (large outputs)  | `~/.omniharness/artifacts/`                    |
+| Export everything          | `omni data export --target-dir <dir>`          |
+| Delete everything          | `omni data delete --confirm true`              |
 
 ## Next steps
 

@@ -13,14 +13,27 @@ describe("policy engine security", () => {
 
   it("shell.exec is never silently allowed by product defaults", () => {
     const engine = new PolicyEngine();
-    const evaln = engine.evaluate({ capability: "shell.exec", toolName: "shell.exec", target: "ls" });
+    const evaln = engine.evaluate({
+      capability: "shell.exec",
+      toolName: "shell.exec",
+      target: "ls",
+    });
     expect(["ask_every_time", "deny"]).toContain(evaln.decision);
   });
 
   it("dangerous commands classify as critical risk", () => {
     const engine = new PolicyEngine();
-    for (const cmd of ["rm -rf /", "mkfs /dev/sda", "dd if=/dev/zero of=/dev/sda", ":(){ :|:& };:"]) {
-      const evaln = engine.evaluate({ capability: "shell.exec", toolName: "shell.exec", target: cmd });
+    for (const cmd of [
+      "rm -rf /",
+      "mkfs /dev/sda",
+      "dd if=/dev/zero of=/dev/sda",
+      ":(){ :|:& };:",
+    ]) {
+      const evaln = engine.evaluate({
+        capability: "shell.exec",
+        toolName: "shell.exec",
+        target: cmd,
+      });
       expect(evaln.risk).toBe("critical");
     }
   });

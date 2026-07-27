@@ -41,7 +41,19 @@ if (pin.commit === latest) {
   process.exit(0);
 }
 
-const diff = run("git", ["diff", "--stat", `${pin.commit ?? "HEAD~1"}..${latest}`, "--", "packages/ai", "packages/agent", "packages/tui"], { cwd: cloneDir });
+const diff = run(
+  "git",
+  [
+    "diff",
+    "--stat",
+    `${pin.commit ?? "HEAD~1"}..${latest}`,
+    "--",
+    "packages/ai",
+    "packages/agent",
+    "packages/tui",
+  ],
+  { cwd: cloneDir },
+);
 console.log("\nchanges in packages we depend on:");
 console.log(diff.stdout || "(could not diff — pin missing)");
 
@@ -49,7 +61,9 @@ if (process.argv.includes("--update")) {
   pin.commit = latest;
   pin.syncedAt = new Date().toISOString();
   writeFileSync(pinFile, JSON.stringify(pin, null, 2));
-  console.log("pin updated. Next: bump @earendil-works/pi-* versions, run pnpm install, then pnpm verify.");
+  console.log(
+    "pin updated. Next: bump @earendil-works/pi-* versions, run pnpm install, then pnpm verify.",
+  );
 } else {
   console.log("\nrun with --update to record this ref as the new pin");
 }

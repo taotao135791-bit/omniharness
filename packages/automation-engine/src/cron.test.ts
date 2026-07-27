@@ -50,17 +50,37 @@ describe("parseCron", () => {
 describe("nextRun", () => {
   it.each([
     ["every minute", "* * * * *", "2024-03-01T09:00:30.000Z", "2024-03-01T09:01:00.000Z"],
-    ["exactly on a minute fires the next one", "* * * * *", "2024-03-01T09:00:00.000Z", "2024-03-01T09:01:00.000Z"],
+    [
+      "exactly on a minute fires the next one",
+      "* * * * *",
+      "2024-03-01T09:00:00.000Z",
+      "2024-03-01T09:01:00.000Z",
+    ],
     ["step minutes", "*/15 * * * *", "2024-03-01T09:07:00.000Z", "2024-03-01T09:15:00.000Z"],
     ["daily at 9", "0 9 * * *", "2024-03-01T09:00:00.000Z", "2024-03-02T09:00:00.000Z"],
     ["minute list", "0 9,17 * * *", "2024-03-01T10:00:00.000Z", "2024-03-01T17:00:00.000Z"],
-    ["hour range with step", "0 9-17/2 * * *", "2024-03-01T10:00:00.000Z", "2024-03-01T11:00:00.000Z"],
-    ["weekdays skips weekend", "0 9 * * 1-5", "2024-03-01T10:00:00.000Z", "2024-03-04T09:00:00.000Z"], // Fri → Mon
+    [
+      "hour range with step",
+      "0 9-17/2 * * *",
+      "2024-03-01T10:00:00.000Z",
+      "2024-03-01T11:00:00.000Z",
+    ],
+    [
+      "weekdays skips weekend",
+      "0 9 * * 1-5",
+      "2024-03-01T10:00:00.000Z",
+      "2024-03-04T09:00:00.000Z",
+    ], // Fri → Mon
     ["month rollover", "0 0 1 * *", "2024-01-15T00:00:00.000Z", "2024-02-01T00:00:00.000Z"],
     ["year rollover", "0 0 1 1 *", "2024-06-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"],
     ["named month/day", "0 9 * jan mon", "2024-03-01T00:00:00.000Z", "2025-01-06T09:00:00.000Z"], // 2025-01-06 is Monday
     ["leap day", "0 0 29 2 *", "2023-03-01T00:00:00.000Z", "2024-02-29T00:00:00.000Z"],
-    ["day 31 skips short months", "0 0 31 * *", "2024-04-01T00:00:00.000Z", "2024-05-31T00:00:00.000Z"],
+    [
+      "day 31 skips short months",
+      "0 0 31 * *",
+      "2024-04-01T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z",
+    ],
   ])("%s", (_label, expr, after, expected) => {
     expect(iso(nextRun(expr, d(after)))).toBe(expected);
   });
@@ -74,25 +94,39 @@ describe("nextRun", () => {
     // "13th OR Friday" is Friday Jan 5 — dow alone would give the same, but
     // after Jan 6 the OR must produce Sat Jan 13 (not Fri Jan 12's cousin).
     it("both restricted → either matches", () => {
-      expect(iso(nextRun("0 0 13 * 5", d("2024-01-01T00:00:00.000Z")))).toBe("2024-01-05T00:00:00.000Z");
-      expect(iso(nextRun("0 0 13 * 5", d("2024-01-06T00:00:00.000Z")))).toBe("2024-01-12T00:00:00.000Z"); // next Friday
-      expect(iso(nextRun("0 0 13 * 5", d("2024-01-12T00:00:01.000Z")))).toBe("2024-01-13T00:00:00.000Z"); // the 13th
+      expect(iso(nextRun("0 0 13 * 5", d("2024-01-01T00:00:00.000Z")))).toBe(
+        "2024-01-05T00:00:00.000Z",
+      );
+      expect(iso(nextRun("0 0 13 * 5", d("2024-01-06T00:00:00.000Z")))).toBe(
+        "2024-01-12T00:00:00.000Z",
+      ); // next Friday
+      expect(iso(nextRun("0 0 13 * 5", d("2024-01-12T00:00:01.000Z")))).toBe(
+        "2024-01-13T00:00:00.000Z",
+      ); // the 13th
     });
 
     it("dom restricted, dow * → only the 13th", () => {
-      expect(iso(nextRun("0 0 13 * *", d("2024-01-01T00:00:00.000Z")))).toBe("2024-01-13T00:00:00.000Z");
+      expect(iso(nextRun("0 0 13 * *", d("2024-01-01T00:00:00.000Z")))).toBe(
+        "2024-01-13T00:00:00.000Z",
+      );
     });
 
     it("dow restricted, dom * → only Fridays", () => {
-      expect(iso(nextRun("0 0 * * 5", d("2024-01-01T00:00:00.000Z")))).toBe("2024-01-05T00:00:00.000Z");
+      expect(iso(nextRun("0 0 * * 5", d("2024-01-01T00:00:00.000Z")))).toBe(
+        "2024-01-05T00:00:00.000Z",
+      );
     });
   });
 
   it("evaluates fields in the given timezone offset", () => {
     // 09:00 at UTC+1 = 08:00Z
-    expect(iso(nextRun("0 9 * * *", d("2024-03-01T00:00:00.000Z"), 60))).toBe("2024-03-01T08:00:00.000Z");
+    expect(iso(nextRun("0 9 * * *", d("2024-03-01T00:00:00.000Z"), 60))).toBe(
+      "2024-03-01T08:00:00.000Z",
+    );
     // 09:00 at UTC-5 = 14:00Z
-    expect(iso(nextRun("0 9 * * *", d("2024-03-01T00:00:00.000Z"), -300))).toBe("2024-03-01T14:00:00.000Z");
+    expect(iso(nextRun("0 9 * * *", d("2024-03-01T00:00:00.000Z"), -300))).toBe(
+      "2024-03-01T14:00:00.000Z",
+    );
   });
 
   it("accepts a pre-parsed schedule", () => {

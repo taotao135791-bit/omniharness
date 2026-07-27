@@ -267,7 +267,9 @@ export class ModelUsageRepo {
             modelId,
           )
         : allRows<UsageRow>(
-            this.db.prepare("SELECT * FROM model_usage WHERE model_id = ? AND at >= ? ORDER BY at, id"),
+            this.db.prepare(
+              "SELECT * FROM model_usage WHERE model_id = ? AND at >= ? ORDER BY at, id",
+            ),
             modelId,
             since,
           );

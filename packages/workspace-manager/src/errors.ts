@@ -1,11 +1,7 @@
 /** Error thrown when a path violates workspace boundary or path policy. */
 export class PathPolicyError extends Error {
   readonly path: string;
-  readonly reason:
-    | "outside-workspace"
-    | "protected"
-    | "read-only"
-    | "not-found";
+  readonly reason: "outside-workspace" | "protected" | "read-only" | "not-found";
 
   constructor(path: string, reason: PathPolicyError["reason"], message: string) {
     super(message);

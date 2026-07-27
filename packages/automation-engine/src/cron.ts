@@ -38,12 +38,28 @@ export interface CronSchedule {
 }
 
 const MONTH_NAMES: Record<string, number> = {
-  jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6,
-  jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12,
+  jan: 1,
+  feb: 2,
+  mar: 3,
+  apr: 4,
+  may: 5,
+  jun: 6,
+  jul: 7,
+  aug: 8,
+  sep: 9,
+  oct: 10,
+  nov: 11,
+  dec: 12,
 };
 
 const DOW_NAMES: Record<string, number> = {
-  sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6,
+  sun: 0,
+  mon: 1,
+  tue: 2,
+  wed: 3,
+  thu: 4,
+  fri: 5,
+  sat: 6,
 };
 
 function parseValue(raw: string, min: number, max: number, names?: Record<string, number>): number {
@@ -154,7 +170,8 @@ export function nextRun(
     }
     if (!s.hour.values.has(local.getUTCHours())) {
       // Jump to the next local hour.
-      t = Math.floor((t + offsetMs) / (60 * MINUTE_MS)) * 60 * MINUTE_MS + 60 * MINUTE_MS - offsetMs;
+      t =
+        Math.floor((t + offsetMs) / (60 * MINUTE_MS)) * 60 * MINUTE_MS + 60 * MINUTE_MS - offsetMs;
       continue;
     }
     if (!s.minute.values.has(local.getUTCMinutes())) {

@@ -5,13 +5,7 @@ import { join } from "node:path";
 import { nowIso } from "@omniharness/shared-types";
 import { findTool, runFile } from "../exec.js";
 import type { DriverAvailability } from "../driver.js";
-import type {
-  DisplayInfo,
-  LogicalPoint,
-  MouseButton,
-  ScreenFrame,
-  WindowInfo,
-} from "../types.js";
+import type { DisplayInfo, LogicalPoint, MouseButton, ScreenFrame, WindowInfo } from "../types.js";
 import { BaseInputDriver } from "./base.js";
 
 const XDOTOOL_KEYS: Record<string, string> = {
@@ -31,8 +25,18 @@ const XDOTOOL_KEYS: Record<string, string> = {
   end: "End",
   pageup: "Page_Up",
   pagedown: "Page_Down",
-  f1: "F1", f2: "F2", f3: "F3", f4: "F4", f5: "F5", f6: "F6",
-  f7: "F7", f8: "F8", f9: "F9", f10: "F10", f11: "F11", f12: "F12",
+  f1: "F1",
+  f2: "F2",
+  f3: "F3",
+  f4: "F4",
+  f5: "F5",
+  f6: "F6",
+  f7: "F7",
+  f8: "F8",
+  f9: "F9",
+  f10: "F10",
+  f11: "F11",
+  f12: "F12",
 };
 
 const XDOTOOL_MODIFIERS: Record<string, string> = {
@@ -203,13 +207,7 @@ export class LinuxInputDriver extends BaseInputDriver {
   }
 
   async activateWindow(target: string): Promise<boolean> {
-    const result = await runFile("xdotool", [
-      "search",
-      "--name",
-      target,
-      "windowactivate",
-      "%@",
-    ]);
+    const result = await runFile("xdotool", ["search", "--name", target, "windowactivate", "%@"]);
     return result.code === 0;
   }
 

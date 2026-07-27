@@ -213,10 +213,7 @@ export class ApprovalEngine {
     return current.filter((r) => {
       if (filter.status !== undefined && r.status !== filter.status) return false;
       if (filter.capability !== undefined && r.capability !== filter.capability) return false;
-      if (
-        filter.sessionId !== undefined &&
-        r.detail[DETAIL_SESSION_ID_KEY] !== filter.sessionId
-      ) {
+      if (filter.sessionId !== undefined && r.detail[DETAIL_SESSION_ID_KEY] !== filter.sessionId) {
         return false;
       }
       return true;
@@ -290,7 +287,10 @@ export class ApprovalEngine {
     return current;
   }
 
-  private recordGrant(request: ApprovalRequest, grantedScope: PolicyDecisionKind | undefined): void {
+  private recordGrant(
+    request: ApprovalRequest,
+    grantedScope: PolicyDecisionKind | undefined,
+  ): void {
     const sessionId = request.detail[DETAIL_SESSION_ID_KEY];
     const target = request.detail[DETAIL_TARGET_KEY];
     if (sessionId === undefined) return; // Grants are session-scoped; nothing to key on.

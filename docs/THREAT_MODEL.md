@@ -33,20 +33,20 @@ Status: v1, evolving with implementation. Security tests live in
 
 ## 4. Core mitigations
 
-| Threat | Mitigation | Where |
-| --- | --- | --- |
-| Prompt injection escalates privileges | Content is data; policy decisions never derived from content; tool args re-validated | tool-runtime, policy-engine |
-| Malicious skill/plugin exfiltrates secrets | Declared capabilities, unsigned warnings, secret-store ref model, no env leakage | plugin-sdk, sandbox env filter |
-| Path traversal / symlink escape | realpath boundary checks in workspace-manager; sandbox mounts | workspace-manager, sandbox-engine |
-| Shell injection | argv arrays only, command policy patterns, sandboxed execution | tool-runtime, sandbox-engine |
-| Secret exfiltration via network | Domain allowlists, network-off default in sandbox, audit | policy-engine, sandbox-engine |
-| SSRF / local port abuse | Network capability gating, loopback-only daemon, allowlist | policy-engine, daemon |
-| Unauthorized gateway/channel use | Pairing, allowlists, per-channel profile/workspace mapping, rate limits | openclaw-adapter |
-| Replay / IPC forgery | Per-install random auth token in a 0600 runtime file; event seq monotonic | daemon, agent-protocol |
-| Automation bypassing approvals | Automations get their own stricter policy scope; no silent grants | automation-engine, policy-engine |
-| Sub-agent privilege escalation | Child policy scope ⊆ parent scope, enforced at creation | agent-orchestrator |
-| Supply chain (plugins) | Integrity hashes, signature support, permission diff on update | plugin-sdk |
-| Data loss | WAL, migrations with rollback, backups, checkpoints, non-git snapshots | session-store, workspace-manager |
+| Threat                                     | Mitigation                                                                           | Where                             |
+| ------------------------------------------ | ------------------------------------------------------------------------------------ | --------------------------------- |
+| Prompt injection escalates privileges      | Content is data; policy decisions never derived from content; tool args re-validated | tool-runtime, policy-engine       |
+| Malicious skill/plugin exfiltrates secrets | Declared capabilities, unsigned warnings, secret-store ref model, no env leakage     | plugin-sdk, sandbox env filter    |
+| Path traversal / symlink escape            | realpath boundary checks in workspace-manager; sandbox mounts                        | workspace-manager, sandbox-engine |
+| Shell injection                            | argv arrays only, command policy patterns, sandboxed execution                       | tool-runtime, sandbox-engine      |
+| Secret exfiltration via network            | Domain allowlists, network-off default in sandbox, audit                             | policy-engine, sandbox-engine     |
+| SSRF / local port abuse                    | Network capability gating, loopback-only daemon, allowlist                           | policy-engine, daemon             |
+| Unauthorized gateway/channel use           | Pairing, allowlists, per-channel profile/workspace mapping, rate limits              | openclaw-adapter                  |
+| Replay / IPC forgery                       | Per-install random auth token in a 0600 runtime file; event seq monotonic            | daemon, agent-protocol            |
+| Automation bypassing approvals             | Automations get their own stricter policy scope; no silent grants                    | automation-engine, policy-engine  |
+| Sub-agent privilege escalation             | Child policy scope ⊆ parent scope, enforced at creation                              | agent-orchestrator                |
+| Supply chain (plugins)                     | Integrity hashes, signature support, permission diff on update                       | plugin-sdk                        |
+| Data loss                                  | WAL, migrations with rollback, backups, checkpoints, non-git snapshots               | session-store, workspace-manager  |
 
 ## 5. Approval classes
 

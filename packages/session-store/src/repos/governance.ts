@@ -78,9 +78,7 @@ export class PermissionRulesRepo {
   list(capability?: Capability): PermissionRuleRecord[] {
     const rows =
       capability === undefined
-        ? allRows<PermissionRuleRow>(
-            this.db.prepare("SELECT * FROM permission_rules ORDER BY id"),
-          )
+        ? allRows<PermissionRuleRow>(this.db.prepare("SELECT * FROM permission_rules ORDER BY id"))
         : allRows<PermissionRuleRow>(
             this.db.prepare("SELECT * FROM permission_rules WHERE capability = ? ORDER BY id"),
             capability,
@@ -143,7 +141,9 @@ export class AuditEventsRepo {
     return row === undefined ? undefined : rowToAuditEvent(row);
   }
 
-  list(options: { since?: IsoTimestamp; action?: string; limit?: number } = {}): AuditEventRecord[] {
+  list(
+    options: { since?: IsoTimestamp; action?: string; limit?: number } = {},
+  ): AuditEventRecord[] {
     const where: string[] = [];
     const params: Array<string | number> = [];
     if (options.since !== undefined) {

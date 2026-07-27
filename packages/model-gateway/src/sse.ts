@@ -232,7 +232,9 @@ export class AnthropicSseMapper {
     try {
       payload = JSON.parse(event.data) as AnthropicEventPayload;
     } catch {
-      return [{ type: "error", error: `Malformed Anthropic SSE payload: ${event.data.slice(0, 120)}` }];
+      return [
+        { type: "error", error: `Malformed Anthropic SSE payload: ${event.data.slice(0, 120)}` },
+      ];
     }
     const kind = event.event ?? payload.type ?? "";
     const chunks: ModelStreamChunk[] = [];

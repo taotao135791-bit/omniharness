@@ -29,7 +29,9 @@ afterEach(() => {
 
 describe("AutomationEngine CRUD + scheduling", () => {
   it("creates a cron automation with computed nextRunAt", () => {
-    const a = engine.create(makeInput(ids, { trigger: { kind: "cron", expression: "0 10 * * *" } }));
+    const a = engine.create(
+      makeInput(ids, { trigger: { kind: "cron", expression: "0 10 * * *" } }),
+    );
     expect(a.id).toMatch(/^auto_/);
     expect(a.nextRunAt).toBe("2024-03-01T10:00:00.000Z");
     expect(engine.get(a.id)?.name).toBe("test automation");
@@ -65,13 +67,17 @@ describe("AutomationEngine CRUD + scheduling", () => {
   });
 
   it("recomputes nextRunAt on update", () => {
-    const a = engine.create(makeInput(ids, { trigger: { kind: "cron", expression: "0 10 * * *" } }));
+    const a = engine.create(
+      makeInput(ids, { trigger: { kind: "cron", expression: "0 10 * * *" } }),
+    );
     const updated = engine.update(a.id, { trigger: { kind: "cron", expression: "30 22 * * *" } });
     expect(updated.nextRunAt).toBe("2024-03-01T22:30:00.000Z");
   });
 
   it("pausing clears nextRunAt, resuming recomputes it", () => {
-    const a = engine.create(makeInput(ids, { trigger: { kind: "cron", expression: "0 10 * * *" } }));
+    const a = engine.create(
+      makeInput(ids, { trigger: { kind: "cron", expression: "0 10 * * *" } }),
+    );
     const paused = engine.setEnabled(a.id, false);
     expect(paused.enabled).toBe(false);
     expect(paused.nextRunAt).toBeNull();
@@ -88,7 +94,9 @@ describe("AutomationEngine CRUD + scheduling", () => {
 
   it("rejects invalid input via config-schema validation", () => {
     expect(() => engine.create(makeInput(ids, { name: "" }))).toThrow(AutomationValidationError);
-    expect(() => engine.create(makeInput(ids, { timeoutMs: 0 }))).toThrow(AutomationValidationError);
+    expect(() => engine.create(makeInput(ids, { timeoutMs: 0 }))).toThrow(
+      AutomationValidationError,
+    );
   });
 
   it("rejects invalid cron expressions", () => {

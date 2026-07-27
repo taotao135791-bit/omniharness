@@ -24,7 +24,11 @@ export class UnsupportedEntryError extends Error {
 
 const DEFAULT_BINDING = "__omniDefault__";
 
-function substitute(code: string, pattern: RegExp, replacement: string): { code: string; hit: boolean } {
+function substitute(
+  code: string,
+  pattern: RegExp,
+  replacement: string,
+): { code: string; hit: boolean } {
   if (!pattern.test(code)) return { code, hit: false };
   return { code: code.replace(pattern, replacement), hit: true };
 }

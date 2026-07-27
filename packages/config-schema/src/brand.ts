@@ -44,7 +44,8 @@ export function loadBrand(fromDir: string = process.cwd()): BrandConfig {
       return cached;
     } catch {
       const parent = path.dirname(dir);
-      if (parent === dir) throw new Error("brand.config.json not found (searched upwards from " + fromDir + ")");
+      if (parent === dir)
+        throw new Error("brand.config.json not found (searched upwards from " + fromDir + ")");
       dir = parent;
     }
   }

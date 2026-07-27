@@ -5,12 +5,7 @@ export {
   type Frontmatter,
   type FrontmatterValue,
 } from "./frontmatter.js";
-export {
-  SkillMdParseError,
-  parseSkillMd,
-  serializeSkillMd,
-  type ParsedSkillMd,
-} from "./parser.js";
+export { SkillMdParseError, parseSkillMd, serializeSkillMd, type ParsedSkillMd } from "./parser.js";
 export { InMemorySkillStore, type SkillScope, type SkillStore } from "./store.js";
 export { routeSkills, type RoutedSkill } from "./routing.js";
 export {

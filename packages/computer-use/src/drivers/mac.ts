@@ -4,13 +4,7 @@ import { join } from "node:path";
 import { nowIso } from "@omniharness/shared-types";
 import { findTool, runFile } from "../exec.js";
 import type { DriverAvailability } from "../driver.js";
-import type {
-  DisplayInfo,
-  LogicalPoint,
-  MouseButton,
-  ScreenFrame,
-  WindowInfo,
-} from "../types.js";
+import type { DisplayInfo, LogicalPoint, MouseButton, ScreenFrame, WindowInfo } from "../types.js";
 import { BaseInputDriver } from "./base.js";
 
 /**
@@ -49,7 +43,14 @@ function run(argv) {
 
 type MouseOp =
   | { op: "move"; x: number; y: number }
-  | { op: "leftDown" | "leftUp" | "rightDown" | "rightUp" | "middleDown" | "middleUp"; x: number; y: number; button: MouseButton; count?: number; pause?: number }
+  | {
+      op: "leftDown" | "leftUp" | "rightDown" | "rightUp" | "middleDown" | "middleUp";
+      x: number;
+      y: number;
+      button: MouseButton;
+      count?: number;
+      pause?: number;
+    }
   | { op: "scroll"; dx: number; dy: number };
 
 /** Escapes a string for embedding in an AppleScript double-quoted literal. */
@@ -86,8 +87,18 @@ const KEY_CODES: Record<string, number> = {
   end: 119,
   pageup: 116,
   pagedown: 121,
-  f1: 122, f2: 120, f3: 99, f4: 118, f5: 96, f6: 97,
-  f7: 98, f8: 100, f9: 101, f10: 109, f11: 103, f12: 111,
+  f1: 122,
+  f2: 120,
+  f3: 99,
+  f4: 118,
+  f5: 96,
+  f6: 97,
+  f7: 98,
+  f8: 100,
+  f9: 101,
+  f10: 109,
+  f11: 103,
+  f12: 111,
 };
 
 function modifierClause(modifiers: readonly string[]): string {

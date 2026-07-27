@@ -59,7 +59,11 @@ export function createShellExecTool(executor?: SandboxExecutor): Tool {
       const output = parts.join("\n");
 
       if (result.timedOut || result.exitCode !== 0) {
-        return { ok: false, isError: true, output: output === "" ? `[exit code ${result.exitCode}]` : output };
+        return {
+          ok: false,
+          isError: true,
+          output: output === "" ? `[exit code ${result.exitCode}]` : output,
+        };
       }
       return ok(output);
     },

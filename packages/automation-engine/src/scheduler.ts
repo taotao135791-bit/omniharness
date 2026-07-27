@@ -10,8 +10,7 @@ import { AutomationNotFoundError, type AutomationEngine } from "./engine.js";
 
 /** Outcome of one automation execution, as reported by the daemon. */
 export type AutomationRunOutcome =
-  | { sessionId: SessionId; resultSummary: string }
-  | { error: string };
+  { sessionId: SessionId; resultSummary: string } | { error: string };
 
 export interface RunContext {
   /** 1-based attempt number; retries increment it. */
@@ -109,10 +108,13 @@ export class Scheduler {
     for (const automation of this.engine.listDue(nowIso)) {
       const next = this.engine.computeNextRunAt(automation, now);
       this.engine.markRun(automation.id, nowIso, next);
-      void this.launch({ ...automation, lastRunAt: nowIso, nextRunAt: next }, {
-        attempt: 1,
-        reason: "schedule",
-      });
+      void this.launch(
+        { ...automation, lastRunAt: nowIso, nextRunAt: next },
+        {
+          attempt: 1,
+          reason: "schedule",
+        },
+      );
     }
   }
 
@@ -182,10 +184,13 @@ export class Scheduler {
       automation.onFailure === "retry" &&
       context.attempt <= automation.maxRetries
     ) {
-      const timer = setTimeout(() => {
-        this.retryTimers.delete(timer);
-        void this.launch(automation, { attempt: context.attempt + 1, reason: context.reason });
-      }, this.retryBackoffMs(context.attempt + 1));
+      const timer = setTimeout(
+        () => {
+          this.retryTimers.delete(timer);
+          void this.launch(automation, { attempt: context.attempt + 1, reason: context.reason });
+        },
+        this.retryBackoffMs(context.attempt + 1),
+      );
       this.retryTimers.add(timer);
     }
     return run;

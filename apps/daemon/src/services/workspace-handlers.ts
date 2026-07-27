@@ -47,7 +47,8 @@ export function registerWorkspaceHandlers(register: Register, ctx: DaemonContext
     } else {
       throw new RpcError(ErrorCodes.INVALID_PARAMS, "workspaceId or worktreeId required");
     }
-    if (!(await git.isRepo(root))) throw new RpcError(ErrorCodes.INVALID_PARAMS, "not a git repository");
+    if (!(await git.isRepo(root)))
+      throw new RpcError(ErrorCodes.INVALID_PARAMS, "not a git repository");
     const files = await git.diff(root);
     const result: DiffResult = {
       files: files.map((f) => ({
@@ -55,39 +56,50 @@ export function registerWorkspaceHandlers(register: Register, ctx: DaemonContext
         status: f.status,
         additions: f.additions,
         deletions: f.deletions,
-        hunks: f.hunks.map((h) => ({ index: h.index, header: h.header, lines: h.lines, accepted: null })),
+        hunks: f.hunks.map((h) => ({
+          index: h.index,
+          header: h.header,
+          lines: h.lines,
+          accepted: null,
+        })),
       })),
       truncated: false,
     };
     return result;
   });
 
-  register("diff.accept", async (params: { workspaceId?: string; file?: string; hunkIndex?: number }) => {
-    const root = workspaceRoot(params.workspaceId ?? "");
-    const files = await git.diff(root);
-    const target = params.file ? files.filter((f) => f.path === params.file) : files;
-    if (target.length === 0) throw new RpcError(ErrorCodes.NOT_FOUND, "no matching diff");
-    for (const file of target) {
-      const hunkIndexes =
-        params.hunkIndex !== undefined ? [params.hunkIndex] : file.hunks.map((h) => h.index);
-      await git.applyHunks(root, file, hunkIndexes, { cached: false });
-    }
-    return { ok: true as const };
-  });
+  register(
+    "diff.accept",
+    async (params: { workspaceId?: string; file?: string; hunkIndex?: number }) => {
+      const root = workspaceRoot(params.workspaceId ?? "");
+      const files = await git.diff(root);
+      const target = params.file ? files.filter((f) => f.path === params.file) : files;
+      if (target.length === 0) throw new RpcError(ErrorCodes.NOT_FOUND, "no matching diff");
+      for (const file of target) {
+        const hunkIndexes =
+          params.hunkIndex !== undefined ? [params.hunkIndex] : file.hunks.map((h) => h.index);
+        await git.applyHunks(root, file, hunkIndexes, { cached: false });
+      }
+      return { ok: true as const };
+    },
+  );
 
-  register("diff.reject", async (params: { workspaceId?: string; file?: string; hunkIndex?: number }) => {
-    const root = workspaceRoot(params.workspaceId ?? "");
-    const files = await git.diff(root);
-    const target = params.file ? files.filter((f) => f.path === params.file) : files;
-    if (target.length === 0) throw new RpcError(ErrorCodes.NOT_FOUND, "no matching diff");
-    for (const file of target) {
-      const hunkIndexes =
-        params.hunkIndex !== undefined ? [params.hunkIndex] : file.hunks.map((h) => h.index);
-      // Rejecting = reverse-applying the working-tree change.
-      await git.applyHunks(root, file, hunkIndexes, { reverse: true });
-    }
-    return { ok: true as const };
-  });
+  register(
+    "diff.reject",
+    async (params: { workspaceId?: string; file?: string; hunkIndex?: number }) => {
+      const root = workspaceRoot(params.workspaceId ?? "");
+      const files = await git.diff(root);
+      const target = params.file ? files.filter((f) => f.path === params.file) : files;
+      if (target.length === 0) throw new RpcError(ErrorCodes.NOT_FOUND, "no matching diff");
+      for (const file of target) {
+        const hunkIndexes =
+          params.hunkIndex !== undefined ? [params.hunkIndex] : file.hunks.map((h) => h.index);
+        // Rejecting = reverse-applying the working-tree change.
+        await git.applyHunks(root, file, hunkIndexes, { reverse: true });
+      }
+      return { ok: true as const };
+    },
+  );
 
   register("checkpoint.create", async (params: { sessionId: SessionId; label?: string }) => {
     const session = db.sessions.get(params.sessionId);
@@ -143,22 +155,26 @@ export function registerWorkspaceHandlers(register: Register, ctx: DaemonContext
     return { ok: true as const };
   });
 
-  register("worktree.create", async (params: { workspaceId: string; branch?: string; ownerAgentId?: string }) => {
-    const root = workspaceRoot(params.workspaceId);
-    if (!(await git.isRepo(root))) throw new RpcError(ErrorCodes.INVALID_PARAMS, "worktrees require a git repo");
-    const branch = params.branch ?? `omniharness/${nanoid("wt")}`;
-    const info = await git.worktreeAdd(root, `${root}-wt-${branch.replaceAll("/", "-")}`, branch);
-    const worktree: Worktree = {
-      id: nanoid("wt") as Worktree["id"],
-      workspaceId: params.workspaceId as WorkspaceId,
-      path: info.path,
-      branch: info.branch ?? branch,
-      ownerAgentId: params.ownerAgentId ?? null,
-      createdAt: nowIso(),
-    };
-    db.worktrees.put(worktree);
-    return { worktree };
-  });
+  register(
+    "worktree.create",
+    async (params: { workspaceId: string; branch?: string; ownerAgentId?: string }) => {
+      const root = workspaceRoot(params.workspaceId);
+      if (!(await git.isRepo(root)))
+        throw new RpcError(ErrorCodes.INVALID_PARAMS, "worktrees require a git repo");
+      const branch = params.branch ?? `omniharness/${nanoid("wt")}`;
+      const info = await git.worktreeAdd(root, `${root}-wt-${branch.replaceAll("/", "-")}`, branch);
+      const worktree: Worktree = {
+        id: nanoid("wt") as Worktree["id"],
+        workspaceId: params.workspaceId as WorkspaceId,
+        path: info.path,
+        branch: info.branch ?? branch,
+        ownerAgentId: params.ownerAgentId ?? null,
+        createdAt: nowIso(),
+      };
+      db.worktrees.put(worktree);
+      return { worktree };
+    },
+  );
 
   register("worktree.list", (params: { workspaceId: string }) => ({
     worktrees: db.worktrees.listByWorkspace(params.workspaceId as WorkspaceId),

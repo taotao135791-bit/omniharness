@@ -13,12 +13,7 @@ import type {
   SessionId,
   ToolCallId,
 } from "@omniharness/shared-types";
-import type {
-  Capability,
-  PolicyRule,
-  PolicyScope,
-  TokenUsage,
-} from "@omniharness/shared-types";
+import type { Capability, PolicyRule, PolicyScope, TokenUsage } from "@omniharness/shared-types";
 
 /** A single recorded tool invocation (no shared-types counterpart yet). */
 export type ToolCallStatus = "pending" | "running" | "completed" | "failed" | "denied";

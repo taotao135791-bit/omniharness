@@ -4,7 +4,9 @@ import { PolicyEngine } from "./engine.js";
 
 const WORKSPACE = "/work/repo";
 
-function ctx(partial: Partial<PolicyEvaluationContext> & Pick<PolicyEvaluationContext, "capability">): PolicyEvaluationContext {
+function ctx(
+  partial: Partial<PolicyEvaluationContext> & Pick<PolicyEvaluationContext, "capability">,
+): PolicyEvaluationContext {
   return { toolName: "fs", ...partial };
 }
 
@@ -21,10 +23,16 @@ describe("PolicyEngine scope precedence", () => {
       target: "make build",
     });
 
-    engine.addRule("profile", "prof-1", { capability: "shell.exec", decision: "allow_for_workspace" });
+    engine.addRule("profile", "prof-1", {
+      capability: "shell.exec",
+      decision: "allow_for_workspace",
+    });
     expect(engine.evaluate(full).matchedScope).toBe("profile");
 
-    engine.addRule("workspace", "ws-1", { capability: "shell.exec", decision: "ask_once_per_session" });
+    engine.addRule("workspace", "ws-1", {
+      capability: "shell.exec",
+      decision: "ask_once_per_session",
+    });
     expect(engine.evaluate(full).matchedScope).toBe("workspace");
 
     engine.addRule("project", "proj-1", { capability: "shell.exec", decision: "deny" });
@@ -51,7 +59,10 @@ describe("PolicyEngine scope precedence", () => {
 
   it("a user-added product_default rule beats the built-in default", () => {
     const engine = new PolicyEngine({ workspaceRoot: WORKSPACE });
-    engine.addRule("product_default", { capability: "shell.exec", decision: "ask_once_per_session" });
+    engine.addRule("product_default", {
+      capability: "shell.exec",
+      decision: "ask_once_per_session",
+    });
     const evaluated = engine.evaluate(ctx({ capability: "shell.exec", target: "make build" }));
     expect(evaluated.matchedScope).toBe("product_default");
     expect(evaluated.decision).toBe("ask_once_per_session");
@@ -76,7 +87,9 @@ describe("PolicyEngine scope precedence", () => {
     const noTarget = engine.evaluate(ctx({ capability: "fs.write" }));
     expect(noTarget.matchedScope).toBe("product_default");
 
-    const outside = engine.evaluate(ctx({ capability: "fs.write", target: "/work/repo/docs/a.md" }));
+    const outside = engine.evaluate(
+      ctx({ capability: "fs.write", target: "/work/repo/docs/a.md" }),
+    );
     expect(outside.matchedScope).toBe("product_default");
 
     const inside = engine.evaluate(ctx({ capability: "fs.write", target: "/work/repo/src/a.ts" }));
@@ -92,9 +105,9 @@ describe("PolicyEngine built-in defaults", () => {
     expect(
       engine.evaluate(ctx({ capability: "fs.write", target: "/work/repo/a.ts" })).decision,
     ).toBe("always_allow");
-    expect(
-      engine.evaluate(ctx({ capability: "fs.write", target: "/etc/hosts" })).decision,
-    ).toBe("ask_every_time");
+    expect(engine.evaluate(ctx({ capability: "fs.write", target: "/etc/hosts" })).decision).toBe(
+      "ask_every_time",
+    );
 
     const noWorkspace = new PolicyEngine();
     expect(
@@ -107,9 +120,9 @@ describe("PolicyEngine built-in defaults", () => {
     expect(
       engine.evaluate(ctx({ capability: "fs.read", target: "/work/repo/a.ts" })).decision,
     ).toBe("always_allow");
-    expect(
-      engine.evaluate(ctx({ capability: "fs.read", target: "/etc/passwd" })).decision,
-    ).toBe("ask_once_per_session");
+    expect(engine.evaluate(ctx({ capability: "fs.read", target: "/etc/passwd" })).decision).toBe(
+      "ask_once_per_session",
+    );
 
     const noWorkspace = new PolicyEngine();
     expect(
@@ -210,9 +223,7 @@ describe("PolicyEngine rule management", () => {
   it("rejects malformed addRule calls", () => {
     const engine = new PolicyEngine();
     const rule: PolicyRule = { capability: "fs.read", decision: "deny" };
-    expect(() =>
-      (engine.addRule as (...args: unknown[]) => void)("tool", rule),
-    ).toThrow(TypeError);
+    expect(() => (engine.addRule as (...args: unknown[]) => void)("tool", rule)).toThrow(TypeError);
     expect(() =>
       (engine.addRule as (...args: unknown[]) => void)("product_default", "some-id", rule),
     ).toThrow(TypeError);

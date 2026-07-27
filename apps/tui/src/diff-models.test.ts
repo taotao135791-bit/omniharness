@@ -66,9 +66,9 @@ describe("diff view", () => {
   it("bulk accept-all sends diff.accept without file", async () => {
     await harness.controller.diffResolve("accept", "all");
     expect(daemon.lastCommand("diff.accept")?.params).toEqual({ sessionId: "sess-1" });
-    expect(harness.controller.diff.files.every((f) => f.hunks.every((h) => h.accepted === true))).toBe(
-      true,
-    );
+    expect(
+      harness.controller.diff.files.every((f) => f.hunks.every((h) => h.accepted === true)),
+    ).toBe(true);
   });
 
   it("diff snapshot", () => {
@@ -86,12 +86,20 @@ describe("models view", () => {
     daemon = await FakeDaemon.start();
     registerBaseHandlers(daemon, []);
     daemon.on("provider.list", () => ({
-      providers: [makeProvider({ id: "p1", displayName: "OpenAI" }), makeProvider({ id: "p2", kind: "ollama", displayName: "Ollama" })],
+      providers: [
+        makeProvider({ id: "p1", displayName: "OpenAI" }),
+        makeProvider({ id: "p2", kind: "ollama", displayName: "Ollama" }),
+      ],
     }));
     daemon.on("model.list", () => ({
       models: [
         makeModel({ id: "m1", providerId: "p1", displayName: "GPT-5" }),
-        makeModel({ id: "m2", providerId: "p2", displayName: "Llama", capabilities: { ...makeModel().capabilities, vision: false } }),
+        makeModel({
+          id: "m2",
+          providerId: "p2",
+          displayName: "Llama",
+          capabilities: { ...makeModel().capabilities, vision: false },
+        }),
       ],
     }));
     daemon.on("model.getRoleBindings", () => ({ bindings: { primary: "m1" } }));

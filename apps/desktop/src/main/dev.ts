@@ -8,9 +8,10 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const appDir = path.resolve(here, "..", "..");
 
-const electronBin = process.platform === "win32"
-  ? path.join(appDir, "node_modules", ".bin", "electron.cmd")
-  : path.join(appDir, "node_modules", ".bin", "electron");
+const electronBin =
+  process.platform === "win32"
+    ? path.join(appDir, "node_modules", ".bin", "electron.cmd")
+    : path.join(appDir, "node_modules", ".bin", "electron");
 
 const child = spawn(electronBin, [appDir], {
   stdio: "inherit",

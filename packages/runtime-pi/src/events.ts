@@ -18,7 +18,13 @@ export type RuntimeEvent =
   | { type: "run.failed"; sessionId: SessionId; runId: string; error: string }
   | { type: "run.compacting"; sessionId: SessionId; runId: string; beforeTokens: number }
   | { type: "run.compacted"; sessionId: SessionId; runId: string; afterTokens: number }
-  | { type: "message.started"; sessionId: SessionId; runId: string; messageId: string; role: string }
+  | {
+      type: "message.started";
+      sessionId: SessionId;
+      runId: string;
+      messageId: string;
+      role: string;
+    }
   | {
       type: "message.delta";
       sessionId: SessionId;
@@ -60,8 +66,20 @@ export type RuntimeEvent =
       resultJson: string;
       durationMs: number;
     }
-  | { type: "tool.call.failed"; sessionId: SessionId; runId: string; toolCallId: ToolCallId; error: string }
-  | { type: "tool.call.denied"; sessionId: SessionId; runId: string; toolCallId: ToolCallId; reason: string };
+  | {
+      type: "tool.call.failed";
+      sessionId: SessionId;
+      runId: string;
+      toolCallId: ToolCallId;
+      error: string;
+    }
+  | {
+      type: "tool.call.denied";
+      sessionId: SessionId;
+      runId: string;
+      toolCallId: ToolCallId;
+      reason: string;
+    };
 
 /** A non-image attachment reference supplied by the daemon. */
 export interface RuntimeAttachment {

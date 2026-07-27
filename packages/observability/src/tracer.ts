@@ -51,7 +51,12 @@ export class Tracer {
   private seq = 0;
   constructor(private readonly capacity = 5000) {}
 
-  startSpan(kind: SpanKind, name: string, parentId: string | null = null, attributes: Span["attributes"] = {}): string {
+  startSpan(
+    kind: SpanKind,
+    name: string,
+    parentId: string | null = null,
+    attributes: Span["attributes"] = {},
+  ): string {
     const id = `sp-${++this.seq}`;
     const span: Span = {
       id,
@@ -67,7 +72,10 @@ export class Tracer {
     return id;
   }
 
-  endSpan(id: string, opts: { ok: boolean; attributes?: Span["attributes"]; usage?: TokenUsage }): void {
+  endSpan(
+    id: string,
+    opts: { ok: boolean; attributes?: Span["attributes"]; usage?: TokenUsage },
+  ): void {
     const span = this.active.get(id);
     if (!span) return;
     this.active.delete(id);
@@ -92,7 +100,10 @@ export class Tracer {
       this.endSpan(id, { ok: true });
       return result;
     } catch (err) {
-      this.endSpan(id, { ok: false, attributes: { error: err instanceof Error ? err.message : String(err) } });
+      this.endSpan(id, {
+        ok: false,
+        attributes: { error: err instanceof Error ? err.message : String(err) },
+      });
       throw err;
     }
   }
@@ -108,7 +119,15 @@ export class Tracer {
       if (s.startedAt < cutoff || s.endedAt === null) continue;
       let b = buckets.get(s.kind);
       if (!b) {
-        b = { kind: s.kind, count: 0, totalMs: 0, errorCount: 0, inputTokens: 0, outputTokens: 0, costUsd: 0 };
+        b = {
+          kind: s.kind,
+          count: 0,
+          totalMs: 0,
+          errorCount: 0,
+          inputTokens: 0,
+          outputTokens: 0,
+          costUsd: 0,
+        };
         buckets.set(s.kind, b);
       }
       b.count += 1;

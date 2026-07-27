@@ -106,9 +106,9 @@ describe("path policy", () => {
 
     const ws = await makeWorkspace();
     // Writing through the symlink would land outside the root → must fail.
-    await expect(assertWritable(ws, join(dir, "root", "link-out", "victim.txt"))).rejects.toBeInstanceOf(
-      PathPolicyError,
-    );
+    await expect(
+      assertWritable(ws, join(dir, "root", "link-out", "victim.txt")),
+    ).rejects.toBeInstanceOf(PathPolicyError);
 
     // A symlink pointing INSIDE the workspace is fine.
     await symlink(join(dir, "root", "src"), join(dir, "root", "link-in"), "dir");

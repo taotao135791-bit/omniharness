@@ -9,13 +9,16 @@ type Register = (name: string, handler: (params: never) => unknown) => void;
 export function registerAutomationHandlers(register: Register, ctx: DaemonContext): void {
   const { automations, bus } = ctx;
 
-  register("automation.create", (params: {
-    automation: Omit<Automation, "id" | "createdAt" | "updatedAt" | "lastRunAt" | "nextRunAt">;
-  }) => {
-    const automation = automations.engine.create(params.automation);
-    bus.emit({ type: "automation.updated", automation });
-    return { automation };
-  });
+  register(
+    "automation.create",
+    (params: {
+      automation: Omit<Automation, "id" | "createdAt" | "updatedAt" | "lastRunAt" | "nextRunAt">;
+    }) => {
+      const automation = automations.engine.create(params.automation);
+      bus.emit({ type: "automation.updated", automation });
+      return { automation };
+    },
+  );
 
   register("automation.list", (params: { enabledOnly?: boolean }) => {
     return { automations: automations.engine.list(params.enabledOnly ?? false) };
@@ -34,13 +37,16 @@ export function registerAutomationHandlers(register: Register, ctx: DaemonContex
     return { runId: run.id };
   });
 
-  register("automation.runs", (params: { automationId?: string; limit?: number; offset?: number }) => {
-    const all = params.automationId
-      ? automations.engine.listRuns(params.automationId as Automation["id"])
-      : automations.engine.list().flatMap((a) => automations.engine.listRuns(a.id));
-    const offset = params.offset ?? 0;
-    return { runs: all.slice(offset, offset + (params.limit ?? 50)), total: all.length };
-  });
+  register(
+    "automation.runs",
+    (params: { automationId?: string; limit?: number; offset?: number }) => {
+      const all = params.automationId
+        ? automations.engine.listRuns(params.automationId as Automation["id"])
+        : automations.engine.list().flatMap((a) => automations.engine.listRuns(a.id));
+      const offset = params.offset ?? 0;
+      return { runs: all.slice(offset, offset + (params.limit ?? 50)), total: all.length };
+    },
+  );
 
   register("automation.delete", (params: { automationId: string }) => {
     automations.engine.delete(params.automationId as Automation["id"]);

@@ -64,7 +64,12 @@ describe("NodeBridge.invoke", () => {
     const transport = new RecordingTransport();
     const bridge = new NodeBridge(registry, transport);
 
-    const promise = bridge.invoke("node-1", "location.get", { accuracy: "high" }, { timeoutMs: 500 });
+    const promise = bridge.invoke(
+      "node-1",
+      "location.get",
+      { accuracy: "high" },
+      { timeoutMs: 500 },
+    );
     expect(transport.frames).toHaveLength(1);
     const frame = transport.frames[0];
     expect(frame?.event).toBe("node.invoke.request");
@@ -93,7 +98,12 @@ describe("NodeBridge.invoke", () => {
       type: "req",
       id: "r",
       method: "node.invoke.result",
-      params: { id: payload["id"], nodeId: "node-1", ok: false, error: { code: "UNAVAILABLE", message: "gps off" } },
+      params: {
+        id: payload["id"],
+        nodeId: "node-1",
+        ok: false,
+        error: { code: "UNAVAILABLE", message: "gps off" },
+      },
     });
     await expect(promise).resolves.toEqual({ ok: false, error: "gps off" });
   });
@@ -108,8 +118,12 @@ describe("NodeBridge.invoke", () => {
   it("rejects commands whose capability the node does not declare", async () => {
     const registry = new NodeRegistry();
     registry.pair(phone); // no "sms" capability
-    const bridge = new NodeBridge(registry, new RecordingTransport(), { armedCommands: ["sms.send"] });
-    await expect(bridge.invoke("node-1", "sms.send")).rejects.toMatchObject({ code: "capability_missing" });
+    const bridge = new NodeBridge(registry, new RecordingTransport(), {
+      armedCommands: ["sms.send"],
+    });
+    await expect(bridge.invoke("node-1", "sms.send")).rejects.toMatchObject({
+      code: "capability_missing",
+    });
   });
 
   it("refuses dangerous commands unless armed, and audits both", async () => {
@@ -119,13 +133,18 @@ describe("NodeBridge.invoke", () => {
     const transport = new RecordingTransport();
     const bridge = new NodeBridge(registry, transport, { audit: sink });
 
-    await expect(bridge.invoke("node-1", "camera.snap")).rejects.toMatchObject({ code: "not_armed" });
+    await expect(bridge.invoke("node-1", "camera.snap")).rejects.toMatchObject({
+      code: "not_armed",
+    });
     expect(transport.frames).toHaveLength(0);
     expect(
       events.some((e) => e.kind === "node.invoke" && !e.allowed && e.reason === "not_armed"),
     ).toBe(true);
 
-    const armed = new NodeBridge(registry, transport, { armedCommands: ["camera.snap"], audit: sink });
+    const armed = new NodeBridge(registry, transport, {
+      armedCommands: ["camera.snap"],
+      audit: sink,
+    });
     const promise = armed.invoke("node-1", "camera.snap", undefined, { timeoutMs: 500 });
     expect(transport.frames).toHaveLength(1);
     const payload = transport.frames[0]?.payload as Record<string, unknown>;
@@ -143,7 +162,9 @@ describe("NodeBridge.invoke", () => {
     const registry = new NodeRegistry();
     registry.pair(phone);
     const bridge = new NodeBridge(registry, new RecordingTransport());
-    await expect(bridge.invoke("node-1", "location.get", undefined, { timeoutMs: 20 })).rejects.toMatchObject({
+    await expect(
+      bridge.invoke("node-1", "location.get", undefined, { timeoutMs: 20 }),
+    ).rejects.toMatchObject({
       code: "timeout",
     });
     expect(bridge.pendingCount).toBe(0);

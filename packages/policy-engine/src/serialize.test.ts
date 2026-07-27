@@ -49,9 +49,9 @@ describe("ruleToRow / ruleFromRow", () => {
     expect(() =>
       ruleFromRow({ ...base, capability: "teleport" as PolicyRuleRow["capability"] }),
     ).toThrow(/capability/);
-    expect(() =>
-      ruleFromRow({ ...base, decision: "maybe" as PolicyRuleRow["decision"] }),
-    ).toThrow(/decision/);
+    expect(() => ruleFromRow({ ...base, decision: "maybe" as PolicyRuleRow["decision"] })).toThrow(
+      /decision/,
+    );
   });
 
   it("rejects malformed constraints JSON", () => {
@@ -86,7 +86,11 @@ describe("serializeRules / deserializeRules", () => {
           constraints: { pathGlobs: ["/work/**"], commandPatterns: ["npm *"] },
         },
       },
-      { scope: "product_default", scopeId: null, rule: { capability: "browser", decision: "ask_every_time" } },
+      {
+        scope: "product_default",
+        scopeId: null,
+        rule: { capability: "browser", decision: "ask_every_time" },
+      },
     ];
     const rows = serializeRules(rules);
     expect(rows).toHaveLength(3);

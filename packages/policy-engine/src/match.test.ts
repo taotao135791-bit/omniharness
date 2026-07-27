@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { globToRegExp } from "./glob.js";
-import {
-  constraintsMatch,
-  matchCommandPatterns,
-  matchDomain,
-  matchPathGlobs,
-} from "./match.js";
+import { constraintsMatch, matchCommandPatterns, matchDomain, matchPathGlobs } from "./match.js";
 
 describe("globToRegExp", () => {
   it("matches `*` within a single segment only", () => {

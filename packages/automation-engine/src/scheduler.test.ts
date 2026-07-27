@@ -31,7 +31,10 @@ const okRunner = (calls: string[] = []): AutomationRunner => ({
   },
 });
 
-function makeScheduler(runner: AutomationRunner, opts: Partial<ConstructorParameters<typeof Scheduler>[0]> = {}): Scheduler {
+function makeScheduler(
+  runner: AutomationRunner,
+  opts: Partial<ConstructorParameters<typeof Scheduler>[0]> = {},
+): Scheduler {
   return new Scheduler({ engine, runner, ...opts });
 }
 
@@ -39,7 +42,9 @@ describe("Scheduler", () => {
   it("runs a due automation and records the run", async () => {
     const calls: string[] = [];
     const scheduler = makeScheduler(okRunner(calls));
-    const a = engine.create(makeInput(ids, { trigger: { kind: "cron", expression: "0 10 * * *" } }));
+    const a = engine.create(
+      makeInput(ids, { trigger: { kind: "cron", expression: "0 10 * * *" } }),
+    );
 
     scheduler.tick(); // not due yet (09:00 < 10:00)
     expect(calls).toHaveLength(0);
@@ -178,8 +183,12 @@ describe("Scheduler", () => {
       },
     };
     const scheduler = makeScheduler(runner, { maxConcurrentRuns: 1 });
-    const a1 = engine.create(makeInput(ids, { name: "a1", trigger: { kind: "cron", expression: "0 10 * * *" } }));
-    const a2 = engine.create(makeInput(ids, { name: "a2", trigger: { kind: "cron", expression: "0 10 * * *" } }));
+    const a1 = engine.create(
+      makeInput(ids, { name: "a1", trigger: { kind: "cron", expression: "0 10 * * *" } }),
+    );
+    const a2 = engine.create(
+      makeInput(ids, { name: "a2", trigger: { kind: "cron", expression: "0 10 * * *" } }),
+    );
 
     vi.setSystemTime(new Date("2024-03-01T10:00:01.000Z"));
     scheduler.tick();
@@ -241,7 +250,9 @@ describe("Scheduler", () => {
       run: () => Promise.reject(new Error("session spawn failed")),
     };
     const scheduler = makeScheduler(runner);
-    const a = engine.create(makeInput(ids, { trigger: { kind: "cron", expression: "0 10 * * *" } }));
+    const a = engine.create(
+      makeInput(ids, { trigger: { kind: "cron", expression: "0 10 * * *" } }),
+    );
     vi.setSystemTime(new Date("2024-03-01T10:00:01.000Z"));
     scheduler.tick();
     await vi.waitFor(() => expect(engine.listRuns(a.id, "failed")).toHaveLength(1));
@@ -252,7 +263,9 @@ describe("Scheduler", () => {
   it("notifyFileChange runs enabled automations and skips disabled ones", async () => {
     const calls: string[] = [];
     const scheduler = makeScheduler(okRunner(calls));
-    const on = engine.create(makeInput(ids, { trigger: { kind: "file_change", pathGlob: "/repo/**" } }));
+    const on = engine.create(
+      makeInput(ids, { trigger: { kind: "file_change", pathGlob: "/repo/**" } }),
+    );
     const off = engine.create(
       makeInput(ids, { enabled: false, trigger: { kind: "file_change", pathGlob: "/repo/**" } }),
     );

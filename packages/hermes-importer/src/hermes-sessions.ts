@@ -80,7 +80,11 @@ function epochToIso(seconds: number | null): IsoTimestamp {
 }
 
 /** Parse a Hermes `content` cell (plain text or multimodal-parts JSON) into parts. */
-function hermesContentToParts(content: string | null, report: ImportReportBuilder, ctx: string): MessagePart[] {
+function hermesContentToParts(
+  content: string | null,
+  report: ImportReportBuilder,
+  ctx: string,
+): MessagePart[] {
   if (content === null || content.length === 0) return [];
   const trimmed = content.trim();
   if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
@@ -151,11 +155,14 @@ function hermesToolCallsToParts(toolCallsJson: string | null): MessagePart[] {
       const fn = asRecord(rec["function"]);
       const part: MessagePart = {
         type: "tool_call",
-        toolName: asString(rec["name"]) ?? (fn === undefined ? undefined : asString(fn["name"])) ?? "unknown",
+        toolName:
+          asString(rec["name"]) ??
+          (fn === undefined ? undefined : asString(fn["name"])) ??
+          "unknown",
         argumentsJson:
           typeof rec["arguments"] === "string"
             ? rec["arguments"]
-            : JSON.stringify(rec["arguments"] ?? (fn === undefined ? {} : fn["arguments"] ?? {})),
+            : JSON.stringify(rec["arguments"] ?? (fn === undefined ? {} : (fn["arguments"] ?? {}))),
       };
       const callId = asString(rec["id"]);
       if (callId !== undefined) part.toolCallId = callId as ToolCallId;
@@ -191,7 +198,9 @@ function sessionStatus(row: HermesSessionRow): SessionStatus {
 
 function tableExists(db: DatabaseSync, name: string): boolean {
   const row = db
-    .prepare("SELECT name FROM sqlite_master WHERE (type='table' OR type='virtual table') AND name = ?")
+    .prepare(
+      "SELECT name FROM sqlite_master WHERE (type='table' OR type='virtual table') AND name = ?",
+    )
     .get(name);
   return row !== undefined;
 }
@@ -218,7 +227,9 @@ export function importHermesSessions(options: HermesSessionsImportOptions): Impo
     // FTS sidecars are informational: our store keeps its own FTS index, but
     // note when the source lacks one (history search there was degraded).
     if (!tableExists(source, "messages_fts")) {
-      report.warn("state.db has no messages_fts table; nothing to note, FTS is rebuilt on our side");
+      report.warn(
+        "state.db has no messages_fts table; nothing to note, FTS is rebuilt on our side",
+      );
     }
 
     const workspace = options.db.workspaces.get(options.workspaceId);

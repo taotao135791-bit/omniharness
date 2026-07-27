@@ -34,7 +34,8 @@ const PATTERN_RULES: readonly PatternRule[] = [
   },
   {
     kind: "message_send",
-    pattern: /\bsend\b|\bmessage\b|\breply\b|\bemail\b|\bpost\b|\bpublish\b|\bcomment\b|\btweet\b|\bshare\b/i,
+    pattern:
+      /\bsend\b|\bmessage\b|\breply\b|\bemail\b|\bpost\b|\bpublish\b|\bcomment\b|\btweet\b|\bshare\b/i,
     reason: "may send or publish a message visible to others",
   },
   {

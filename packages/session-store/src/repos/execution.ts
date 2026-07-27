@@ -101,7 +101,9 @@ export class ToolCallsRepo {
   ): boolean {
     return (
       this.db
-        .prepare("UPDATE tool_calls SET status = ?, ended_at = ?, result_json = ?, error = ? WHERE id = ?")
+        .prepare(
+          "UPDATE tool_calls SET status = ?, ended_at = ?, result_json = ?, error = ? WHERE id = ?",
+        )
         .run(status, endedAt, resultJson ?? null, error ?? null, id).changes > 0
     );
   }

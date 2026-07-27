@@ -100,9 +100,9 @@ describe("learning loop", () => {
 
   it("rejects empty summaries", async () => {
     const engine = makeEngine();
-    await expect(
-      engine.proposeFromSession({ sessionId: "ses_3", summary: "   " }),
-    ).rejects.toThrow(/must not be empty/);
+    await expect(engine.proposeFromSession({ sessionId: "ses_3", summary: "   " })).rejects.toThrow(
+      /must not be empty/,
+    );
   });
 });
 

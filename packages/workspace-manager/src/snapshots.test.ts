@@ -2,12 +2,7 @@ import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promise
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import {
-  createSnapshot,
-  restoreSnapshot,
-  walkWorkspaceFiles,
-  WorkspaceManager,
-} from "./index.js";
+import { createSnapshot, restoreSnapshot, walkWorkspaceFiles, WorkspaceManager } from "./index.js";
 import type { Workspace } from "@omniharness/shared-types";
 
 let dir: string;

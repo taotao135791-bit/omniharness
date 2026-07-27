@@ -7,7 +7,11 @@ import { ErrorCodes } from "@omniharness/agent-protocol";
 type Register = (name: string, handler: (params: never) => unknown) => void;
 
 /** Agent run commands + model role bindings. */
-export function registerRunHandlers(register: Register, ctx: DaemonContext, runs: RunService): void {
+export function registerRunHandlers(
+  register: Register,
+  ctx: DaemonContext,
+  runs: RunService,
+): void {
   const { db } = ctx;
 
   const findRun = (runId: string) => {
@@ -18,13 +22,16 @@ export function registerRunHandlers(register: Register, ctx: DaemonContext, runs
     throw new RpcError(ErrorCodes.NOT_FOUND, `run not found: ${runId}`);
   };
 
-  register("run.start", async (params: { sessionId: SessionId; input: string; modelId?: string }) => {
-    return runs.startRun({
-      sessionId: params.sessionId,
-      input: params.input,
-      ...(params.modelId ? { modelId: params.modelId } : {}),
-    });
-  });
+  register(
+    "run.start",
+    async (params: { sessionId: SessionId; input: string; modelId?: string }) => {
+      return runs.startRun({
+        sessionId: params.sessionId,
+        input: params.input,
+        ...(params.modelId ? { modelId: params.modelId } : {}),
+      });
+    },
+  );
 
   register("run.steer", (params: { runId: string; input: string }) => {
     runs.steer(params.runId, params.input);
@@ -63,24 +70,22 @@ export function registerRunHandlers(register: Register, ctx: DaemonContext, runs
     agents: params.sessionId ? db.agents.listBySession(params.sessionId) : [],
   }));
 
-  register("model.setRoleBinding", (params: {
-    role: ModelRole;
-    modelId: string | null;
-    scope?: string;
-    sessionId?: string;
-  }) => {
-    const scope = params.scope ?? "profile";
-    const scopeId = scope === "session" ? (params.sessionId ?? "") : "";
-    db.settings.set(scope as never, scopeId, `models.bindings.${params.role}`, params.modelId);
-    runs.invalidateRouter();
-    ctx.bus.emit({
-      type: "model.changed",
-      sessionId: (params.sessionId ?? "") as SessionId,
-      modelId: params.modelId ?? "",
-      role: params.role,
-    });
-    return { ok: true as const };
-  });
+  register(
+    "model.setRoleBinding",
+    (params: { role: ModelRole; modelId: string | null; scope?: string; sessionId?: string }) => {
+      const scope = params.scope ?? "profile";
+      const scopeId = scope === "session" ? (params.sessionId ?? "") : "";
+      db.settings.set(scope as never, scopeId, `models.bindings.${params.role}`, params.modelId);
+      runs.invalidateRouter();
+      ctx.bus.emit({
+        type: "model.changed",
+        sessionId: (params.sessionId ?? "") as SessionId,
+        modelId: params.modelId ?? "",
+        role: params.role,
+      });
+      return { ok: true as const };
+    },
+  );
 
   register("model.getRoleBindings", (params: { sessionId?: string }) => {
     const entries = db.settings.list("profile" as never, "");

@@ -81,9 +81,9 @@ describe("diffPermissions", () => {
     expect(diffPermissions(base, { ...base, registersProviders: true }).registersProviders).toEqual(
       { added: true, removed: false },
     );
-    expect(
-      diffPermissions({ ...base, registersProviders: true }, base).registersProviders,
-    ).toEqual({ added: false, removed: true });
+    expect(diffPermissions({ ...base, registersProviders: true }, base).registersProviders).toEqual(
+      { added: false, removed: true },
+    );
   });
 
   it("hasPermissionExpansion is false for pure removals and true for additions", () => {

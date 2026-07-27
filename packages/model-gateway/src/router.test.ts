@@ -125,8 +125,13 @@ describe("ModelRouter", () => {
 
   it("throws NoModelForRoleError for an unbound role", async () => {
     const modelA = makeModel("a", "p1");
-    const router = makeRouter({ models: [modelA], providers: new Map([["p1", new FixtureProvider([])]]) });
-    await expect(collect(router.complete("reviewer", request()))).rejects.toThrow(NoModelForRoleError);
+    const router = makeRouter({
+      models: [modelA],
+      providers: new Map([["p1", new FixtureProvider([])]]),
+    });
+    await expect(collect(router.complete("reviewer", request()))).rejects.toThrow(
+      NoModelForRoleError,
+    );
   });
 
   it("does not retry non-retryable errors", async () => {
@@ -136,7 +141,11 @@ describe("ModelRouter", () => {
     const router = makeRouter({
       models: [modelA],
       providers: new Map([["p1", provider]]),
-      router: { sleep: async (ms) => { sleeps.push(ms); } },
+      router: {
+        sleep: async (ms) => {
+          sleeps.push(ms);
+        },
+      },
     });
     await expect(collect(router.complete("primary", request()))).rejects.toThrow(ProviderHttpError);
     expect(provider.requests).toHaveLength(1);
@@ -148,10 +157,7 @@ describe("ModelRouter retry/backoff (fake timers)", () => {
   it("retries a 429 with exponential backoff + jitter, then succeeds", async () => {
     vi.useFakeTimers();
     const modelA = makeModel("a", "p1");
-    const provider = new FixtureProvider([
-      fixture.httpError(429),
-      fixture.text("recovered"),
-    ]);
+    const provider = new FixtureProvider([fixture.httpError(429), fixture.text("recovered")]);
     const router = makeRouter({
       models: [modelA],
       providers: new Map([["p1", provider]]),
@@ -233,7 +239,9 @@ describe("ModelRouter budget", () => {
 
     await collect(router.complete("primary", request()));
     expect(router.totals().tokens).toBe(150);
-    await expect(collect(router.complete("primary", request()))).rejects.toThrow(BudgetExceededError);
+    await expect(collect(router.complete("primary", request()))).rejects.toThrow(
+      BudgetExceededError,
+    );
     // The blocked call never reached the provider.
     expect(provider.requests).toHaveLength(1);
   });

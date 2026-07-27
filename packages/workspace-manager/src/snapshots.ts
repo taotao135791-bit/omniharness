@@ -1,15 +1,6 @@
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
-import {
-  copyFile,
-  mkdir,
-  readdir,
-  readFile,
-  rm,
-  rmdir,
-  stat,
-  writeFile,
-} from "node:fs/promises";
+import { copyFile, mkdir, readdir, readFile, rm, rmdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { Workspace } from "@omniharness/shared-types";
 import { nowIso } from "@omniharness/shared-types";
@@ -149,7 +140,13 @@ export async function createSnapshot(
   for (const file of files) {
     totalBytes += file.size;
     if (file.size > maxSize) {
-      entries.push({ root: file.root, path: file.rel, size: file.size, mode: file.mode, skipped: true });
+      entries.push({
+        root: file.root,
+        path: file.rel,
+        size: file.size,
+        mode: file.mode,
+        skipped: true,
+      });
       skippedFiles.push(file.rel);
       continue;
     }

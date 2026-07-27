@@ -17,7 +17,11 @@ import type { CompactionTransform } from "./compaction.js";
 import type { RuntimeEvent, StartRunInput } from "./events.js";
 import { createRouterStreamFn, toPiModel } from "./model-bridge.js";
 import { createAgentTools } from "./tool-bridge.js";
-import type { BridgedToolCallRecord, BridgedToolCallStatus, ToolBridgeRunContext } from "./tool-bridge.js";
+import type {
+  BridgedToolCallRecord,
+  BridgedToolCallStatus,
+  ToolBridgeRunContext,
+} from "./tool-bridge.js";
 
 export interface RecordedMessage {
   sessionId: SessionId;
@@ -374,7 +378,9 @@ export class PiAgentRuntime {
       },
       streamFn: createRouterStreamFn(this.options.router, "primary"),
       ...(compaction !== undefined ? { transformContext: compaction.transformContext } : {}),
-      ...(this.options.toolExecution !== undefined ? { toolExecution: this.options.toolExecution } : {}),
+      ...(this.options.toolExecution !== undefined
+        ? { toolExecution: this.options.toolExecution }
+        : {}),
     });
 
     const session: SessionState = {
@@ -392,7 +398,11 @@ export class PiAgentRuntime {
     return session;
   }
 
-  private async executeRun(session: SessionState, run: RunState, input: StartRunInput): Promise<void> {
+  private async executeRun(
+    session: SessionState,
+    run: RunState,
+    input: StartRunInput,
+  ): Promise<void> {
     const { sessionId, runId } = run;
 
     if (input.modelId !== undefined) {
@@ -422,7 +432,13 @@ export class PiAgentRuntime {
     });
 
     const userMessageId = `msg_${++run.messageCounter}`;
-    this.push(run, { type: "message.started", sessionId, runId, messageId: userMessageId, role: "user" });
+    this.push(run, {
+      type: "message.started",
+      sessionId,
+      runId,
+      messageId: userMessageId,
+      role: "user",
+    });
     for (const attachment of input.attachments ?? []) {
       this.push(run, {
         type: "message.attachment",
@@ -435,7 +451,12 @@ export class PiAgentRuntime {
     }
     this.push(run, { type: "message.completed", sessionId, runId, messageId: userMessageId });
     this.record(run, (recorder) =>
-      recorder.recordMessage?.(runId, { sessionId: run.sessionId, messageId: userMessageId, role: "user", text: input.input }),
+      recorder.recordMessage?.(runId, {
+        sessionId: run.sessionId,
+        messageId: userMessageId,
+        role: "user",
+        text: input.input,
+      }),
     );
 
     let text = input.input;
@@ -470,7 +491,10 @@ export class PiAgentRuntime {
     }
   }
 
-  private onAgentEvent(session: SessionState, event: import("@earendil-works/pi-agent-core").AgentEvent): void {
+  private onAgentEvent(
+    session: SessionState,
+    event: import("@earendil-works/pi-agent-core").AgentEvent,
+  ): void {
     const run = this.activeRun(session.sessionId);
     if (run === undefined) return;
     const base = { sessionId: run.sessionId, runId: run.runId };
@@ -488,7 +512,13 @@ export class PiAgentRuntime {
         if (messageId === undefined) return;
         const streamEvent = event.assistantMessageEvent;
         if (streamEvent.type === "text_delta") {
-          this.push(run, { ...base, type: "message.delta", messageId, delta: streamEvent.delta, channel: "text" });
+          this.push(run, {
+            ...base,
+            type: "message.delta",
+            messageId,
+            delta: streamEvent.delta,
+            channel: "text",
+          });
         } else if (streamEvent.type === "thinking_delta") {
           this.push(run, {
             ...base,
@@ -551,7 +581,12 @@ export class PiAgentRuntime {
               durationMs: record.durationMs,
             });
           } else if (record.status === "denied") {
-            this.push(run, { ...base, type: "tool.call.denied", toolCallId, reason: record.output });
+            this.push(run, {
+              ...base,
+              type: "tool.call.denied",
+              toolCallId,
+              reason: record.output,
+            });
           } else {
             this.push(run, { ...base, type: "tool.call.failed", toolCallId, error: record.output });
           }
@@ -572,7 +607,12 @@ export class PiAgentRuntime {
         // argument validation failure, or a blocked call).
         const text = resultText(event.result);
         if (event.isError) {
-          this.push(run, { ...base, type: "tool.call.failed", toolCallId, error: text || "Tool call failed" });
+          this.push(run, {
+            ...base,
+            type: "tool.call.failed",
+            toolCallId,
+            error: text || "Tool call failed",
+          });
         } else {
           this.push(run, {
             ...base,
@@ -603,7 +643,12 @@ export class PiAgentRuntime {
     // Push the terminal event BEFORE marking the run ended; push() drops
     // events for ended runs.
     if (run.failure !== undefined) {
-      run.queue.push({ type: "run.failed", sessionId: run.sessionId, runId: run.runId, error: run.failure });
+      run.queue.push({
+        type: "run.failed",
+        sessionId: run.sessionId,
+        runId: run.runId,
+        error: run.failure,
+      });
     } else {
       run.queue.push({
         type: "run.completed",

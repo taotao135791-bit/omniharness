@@ -17,7 +17,9 @@ export async function createProviderFromConfig(
   let apiKey: string | undefined;
   if (config.apiKeyRef !== undefined) {
     if (secrets === undefined) {
-      throw new Error(`Provider "${config.id}" declares apiKeyRef "${config.apiKeyRef}" but no secret store was provided`);
+      throw new Error(
+        `Provider "${config.id}" declares apiKeyRef "${config.apiKeyRef}" but no secret store was provided`,
+      );
     }
     apiKey = (await secrets.get(config.apiKeyRef)) ?? undefined;
   }
@@ -31,7 +33,8 @@ export async function createProviderFromConfig(
   }
 
   if (config.kind === "anthropic") {
-    if (apiKey === undefined) throw new Error(`Anthropic provider "${config.id}" has no API key (apiKeyRef unresolved)`);
+    if (apiKey === undefined)
+      throw new Error(`Anthropic provider "${config.id}" has no API key (apiKeyRef unresolved)`);
     return new AnthropicProvider({
       apiKey,
       ...(config.baseUrl !== undefined ? { baseUrl: config.baseUrl } : {}),
@@ -56,7 +59,9 @@ export async function createProviderFromConfig(
       const resolved = resolvePreset("azure-openai", {
         resource,
         deployment,
-        ...(config.options?.["apiVersion"] !== undefined ? { apiVersion: config.options["apiVersion"] } : {}),
+        ...(config.options?.["apiVersion"] !== undefined
+          ? { apiVersion: config.options["apiVersion"] }
+          : {}),
       });
       baseUrl = resolved.baseUrl;
       queryParams = resolved.queryParams;

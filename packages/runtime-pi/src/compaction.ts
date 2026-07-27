@@ -55,7 +55,11 @@ export function createCompactionTransform(options: {
   const { router, contextWindow, settings, hooks } = options;
   let memo: { source: AgentMessage[]; cutIndex: number; summary: UserMessage } | undefined;
 
-  function compactedView(messages: AgentMessage[], cutIndex: number, summary: UserMessage): AgentMessage[] {
+  function compactedView(
+    messages: AgentMessage[],
+    cutIndex: number,
+    summary: UserMessage,
+  ): AgentMessage[] {
     return [summary, ...messages.slice(cutIndex)];
   }
 

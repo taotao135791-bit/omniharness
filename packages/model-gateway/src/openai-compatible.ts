@@ -29,7 +29,11 @@ interface OaiOutMessage {
   role: string;
   content: string | null;
   tool_call_id?: string;
-  tool_calls?: Array<{ id: string; type: "function"; function: { name: string; arguments: string } }>;
+  tool_calls?: Array<{
+    id: string;
+    type: "function";
+    function: { name: string; arguments: string };
+  }>;
 }
 
 function toOaiMessages(messages: ChatMessage[]): OaiOutMessage[] {
@@ -111,7 +115,10 @@ export class OpenAICompatibleProvider implements ModelProvider {
     const res = await this.fetchImpl(this.url("/models"), { headers: this.authHeaders() });
     if (!res.ok) {
       const text = await res.text().catch(() => "");
-      throw new ProviderHttpError(res.status, `listModels failed with HTTP ${res.status}: ${text.slice(0, 300)}`);
+      throw new ProviderHttpError(
+        res.status,
+        `listModels failed with HTTP ${res.status}: ${text.slice(0, 300)}`,
+      );
     }
     const json = (await res.json()) as { data?: Array<{ id?: string }> };
     return (json.data ?? []).flatMap((m) => (typeof m.id === "string" ? [m.id] : []));
@@ -124,7 +131,8 @@ export class OpenAICompatibleProvider implements ModelProvider {
       stream: true,
       stream_options: { include_usage: true },
     };
-    if (request.tools !== undefined && request.tools.length > 0) body.tools = toOaiTools(request.tools);
+    if (request.tools !== undefined && request.tools.length > 0)
+      body.tools = toOaiTools(request.tools);
     if (request.temperature !== undefined) body.temperature = request.temperature;
     if (request.maxTokens !== undefined) body.max_tokens = request.maxTokens;
 

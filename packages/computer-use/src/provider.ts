@@ -118,17 +118,37 @@ export class ComposedComputerUseProvider implements ComputerUseProvider {
     }
   }
 
-  private async dispatchNonSecret(action: Exclude<ComputerAction, { kind: "secure_fill" }>): Promise<void> {
+  private async dispatchNonSecret(
+    action: Exclude<ComputerAction, { kind: "secure_fill" }>,
+  ): Promise<void> {
     switch (action.kind) {
-      case "mouse_move": await this.driver.moveTo(action.point); break;
-      case "click": await this.driver.click(action.point, action.button); break;
-      case "double_click": await this.driver.doubleClick(action.point, action.button); break;
-      case "drag": await this.driver.drag(action.from, action.to, action.button); break;
-      case "scroll": await this.driver.scroll(action.point, action.deltaX, action.deltaY); break;
-      case "type": await this.driver.typeText(action.text); break;
-      case "key_press": await this.driver.keyPress(action.key, action.modifiers); break;
-      case "shortcut": await this.driver.shortcut(action.keys); break;
-      case "launch_app": await this.driver.launchApp(action.app, action.args); break;
+      case "mouse_move":
+        await this.driver.moveTo(action.point);
+        break;
+      case "click":
+        await this.driver.click(action.point, action.button);
+        break;
+      case "double_click":
+        await this.driver.doubleClick(action.point, action.button);
+        break;
+      case "drag":
+        await this.driver.drag(action.from, action.to, action.button);
+        break;
+      case "scroll":
+        await this.driver.scroll(action.point, action.deltaX, action.deltaY);
+        break;
+      case "type":
+        await this.driver.typeText(action.text);
+        break;
+      case "key_press":
+        await this.driver.keyPress(action.key, action.modifiers);
+        break;
+      case "shortcut":
+        await this.driver.shortcut(action.keys);
+        break;
+      case "launch_app":
+        await this.driver.launchApp(action.app, action.args);
+        break;
       case "switch_window": {
         const activate = this.driver.activateWindow?.bind(this.driver);
         if (activate === undefined || !(await activate(action.target))) {
@@ -136,8 +156,12 @@ export class ComposedComputerUseProvider implements ComputerUseProvider {
         }
         break;
       }
-      case "wait": await new Promise((r) => setTimeout(r, Math.max(0, action.ms))); break;
-      case "screenshot": await this.driver.screenshot(); break;
+      case "wait":
+        await new Promise((r) => setTimeout(r, Math.max(0, action.ms)));
+        break;
+      case "screenshot":
+        await this.driver.screenshot();
+        break;
       case "choose_file":
         await this.driver.typeText(action.paths.join("\n"));
         await this.driver.keyPress("return");
@@ -150,7 +174,11 @@ export class ComposedComputerUseProvider implements ComputerUseProvider {
       return { verified: result.ok, reason: "no verifier configured" };
     }
     const frame = await this.driver.screenshot();
-    const observation: Observation = this.lastObservation ?? { frame, description: null, elements: [] };
+    const observation: Observation = this.lastObservation ?? {
+      frame,
+      description: null,
+      elements: [],
+    };
     return this.proposer.verify(action, result, observation);
   }
 }

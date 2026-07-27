@@ -48,13 +48,13 @@ State root: `HERMES_HOME` (`hermes_constants.get_hermes_home()`, default `~/.her
 
 ### 3.1 What actually exists vs. the marketing taxonomy
 
-| Claimed | Reality in code |
-|---|---|
-| Semantic memory | Two flat text files, `~/.hermes/memories/MEMORY.md` + `USER.md`, injected **whole** into the system prompt (`tools/memory_tool.py`) |
-| Episodic memory | SQLite `~/.hermes/state.db` (sessions/messages + FTS5), recalled on demand via the `session_search` tool — no automatic injection |
+| Claimed           | Reality in code                                                                                                                                                      |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Semantic memory   | Two flat text files, `~/.hermes/memories/MEMORY.md` + `USER.md`, injected **whole** into the system prompt (`tools/memory_tool.py`)                                  |
+| Episodic memory   | SQLite `~/.hermes/state.db` (sessions/messages + FTS5), recalled on demand via the `session_search` tool — no automatic injection                                    |
 | Procedural memory | The **skills** subsystem (`~/.hermes/skills/`); the memory tool schema itself says "Reusable procedures belong in a skill, not memory" (`tools/memory_tool.py:1096`) |
-| User model | Built-in: `USER.md`. External: Honcho plugin (peers/representations/cards/conclusions, data server-side) |
-| Vector/embeddings | **None in built-in memory.** Only the holographic plugin (HRR vectors, local SQLite) and Honcho (remote) do anything vector-like |
+| User model        | Built-in: `USER.md`. External: Honcho plugin (peers/representations/cards/conclusions, data server-side)                                                             |
+| Vector/embeddings | **None in built-in memory.** Only the holographic plugin (HRR vectors, local SQLite) and Honcho (remote) do anything vector-like                                     |
 
 ### 3.2 Built-in memory storage format (importer-critical)
 
@@ -159,6 +159,7 @@ SQLite `~/.hermes/state.db`, WAL mode. `SCHEMA_SQL` at `hermes_state.py:867-1036
 ```
 
 Counters only — **no success/failure metrics**. Skill identity is the frontmatter `name:`, not the dir name (`_read_skill_name`, `skill_usage.py:398`).
+
 - Other sidecars: `.bundled_manifest` (`name:md5` per bundled skill), `.curator_state`, `.curator_suppressed`, `.archive/`, `.hub/lock.json` (provenance: `content_hash`, `scan_provenance{scanner_version, verdict, findings, bundle_hash, scanned_at}`), `.skills_prompt_snapshot.json` (prompt-index cache).
 
 ### 4.2 Creation loop
@@ -216,6 +217,7 @@ Only background-review-fork creations get `created_by: "agent"` (`mark_agent_cre
 ## 7. Adopt as ideas / import as data / avoid
 
 **Adopt as ideas (re-implement as OmniHarness services):**
+
 - §-delimited curated memory files with **char budgets and model-driven consolidation** (error-embeds-entries, atomic batch ops, per-turn circuit breaker) — simple, cache-friendly, no embedding infra.
 - **Frozen prompt snapshot** of memory per session (prefix-cache preservation) with threat-scan-on-snapshot.
 - **Nudge-driven background review fork**: turn counters → quiet forked agent with a **runtime tool whitelist** (memory+skills only), digest-vs-full replay depending on model, post-response spawn only on uninterrupted turns.
@@ -230,6 +232,7 @@ Only background-review-fork creations get `created_by: "agent"` (`mark_agent_cre
 - Security scanning as a first-class pipeline stage (quarantine → scan → trust-level policy → provenance lock file).
 
 **Import as data (importer targets):**
+
 - `~/.hermes/memories/{MEMORY.md,USER.md}` — split on `\n§\n`; respect 2200/1375 char budgets; no metadata recoverable (no timestamps/IDs).
 - `~/.hermes/state.db` — `sessions`/`messages` tables (schema §3.8); use their `create_session`/`append_message` semantics if writing back; `active`/`compacted` flags; honor import caps.
 - `~/.hermes/skills/**/SKILL.md` + `references|templates|scripts|assets` — frontmatter per §4.1; identity = frontmatter `name`; write `.usage.json` records (`created_by` decides curator-manageability).
@@ -238,6 +241,7 @@ Only background-review-fork creations get `created_by: "agent"` (`mark_agent_cre
 - Skip: `checkpoints/store/` (shadow git, machine-specific), `.hub/` caches, honcho remote data.
 
 **Avoid (do not reuse):**
+
 - `agent/conversation_loop.py` + `agent/tool_executor.py` + `run_agent.py`/`cli.py` — the agent loop itself (explicit boundary).
 - The provider/credential zoo (`agent/credential_pool.py`, `agent/transports/`, `providers/`) — OmniHarness has its own.
 - `gateway/` platform plumbing, `tui_gateway/`, `ui-tui/`, `web/` — product surface, not memory IP.

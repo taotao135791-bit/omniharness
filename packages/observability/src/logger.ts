@@ -91,6 +91,8 @@ export function createNdjsonSink(filePath: string, maxBytes = 10_000_000): LogSi
 export function createStderrSink(): LogSink {
   return (record) => {
     const ctx = record.context ? ` ${JSON.stringify(record.context)}` : "";
-    process.stderr.write(`${record.at} [${record.level}] ${record.subsystem}: ${record.message}${ctx}\n`);
+    process.stderr.write(
+      `${record.at} [${record.level}] ${record.subsystem}: ${record.message}${ctx}\n`,
+    );
   };
 }

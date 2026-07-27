@@ -5,7 +5,11 @@ import path from "node:path";
 import { OmniClient } from "@omniharness/client-sdk";
 import { startDaemon, stopDaemon, type DaemonContext } from "./index.js";
 import { fixture, type FixtureResponse } from "@omniharness/model-gateway";
-import { DEFAULT_CAPABILITIES, type ModelDefinition, type ProviderConfig } from "@omniharness/shared-types";
+import {
+  DEFAULT_CAPABILITIES,
+  type ModelDefinition,
+  type ProviderConfig,
+} from "@omniharness/shared-types";
 
 /**
  * Acceptance scenario #1 with a deterministic fake model — a full agent run
@@ -34,7 +38,11 @@ describe("agent run e2e (fixture provider)", () => {
       ),
       fixture.text("I wrote hello.txt.", { usage: { inputTokens: 10, outputTokens: 5 } }),
       // Turn 2 (second session): model calls shell.exec (policy: ask_every_time).
-      fixture.toolCall("shell.exec", JSON.stringify({ command: "echo approval-works" }), "call_shell"),
+      fixture.toolCall(
+        "shell.exec",
+        JSON.stringify({ command: "echo approval-works" }),
+        "call_shell",
+      ),
       fixture.text("Shell command done.", { usage: { inputTokens: 12, outputTokens: 6 } }),
     ];
 
@@ -124,7 +132,10 @@ describe("agent run e2e (fixture provider)", () => {
   }, 30_000);
 
   it("shell.exec requires approval; approving lets the run finish", async () => {
-    const { session } = await client.call("session.create", { workspaceId, title: "shell-approval" });
+    const { session } = await client.call("session.create", {
+      workspaceId,
+      title: "shell-approval",
+    });
     const done = waitForRunEnd(session.id);
 
     const approvalSeen = new Promise<string>((resolve, reject) => {

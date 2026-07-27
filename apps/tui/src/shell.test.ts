@@ -1,7 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TUI, type Terminal } from "@earendil-works/pi-tui";
 import { FakeDaemon } from "./test/fake-daemon.js";
-import { connectController, makeSession, registerBaseHandlers, sid, type TestHarness } from "./test/harness.js";
+import {
+  connectController,
+  makeSession,
+  registerBaseHandlers,
+  sid,
+  type TestHarness,
+} from "./test/harness.js";
 import { AppShell } from "./shell/app-shell.js";
 
 function stubTerminal(columns = 120, rows = 40): Terminal {
@@ -81,7 +87,17 @@ describe("app shell", () => {
       dbSizeBytes: 1024,
       eventLogSize: 10,
     }));
-    for (const view of ["sessions", "diff", "models", "approvals", "memory", "skills", "automations", "logs", "settings"] as const) {
+    for (const view of [
+      "sessions",
+      "diff",
+      "models",
+      "approvals",
+      "memory",
+      "skills",
+      "automations",
+      "logs",
+      "settings",
+    ] as const) {
       await harness.controller.setView(view);
       const lines = shell.render(100);
       expect(lines.length).toBeGreaterThan(1);

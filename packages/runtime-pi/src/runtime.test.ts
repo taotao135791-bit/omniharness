@@ -142,7 +142,9 @@ describe("PiAgentRuntime", () => {
       "run.completed",
     ]);
     const deltas = events.filter((e) => e.type === "message.delta");
-    expect(deltas.map((d) => (d.type === "message.delta" ? d.delta : "")).join("")).toBe("Hello world");
+    expect(deltas.map((d) => (d.type === "message.delta" ? d.delta : "")).join("")).toBe(
+      "Hello world",
+    );
     const completed = events.find((e) => e.type === "run.completed");
     expect(completed).toMatchObject({
       usage: { inputTokens: 12, outputTokens: 7, costUsd: 0.001 },
@@ -157,7 +159,11 @@ describe("PiAgentRuntime", () => {
   });
 
   it("executes an fs.write tool call through ToolRuntime", async () => {
-    const { runtime, provider, root: wsRoot } = makeHarness(root, [
+    const {
+      runtime,
+      provider,
+      root: wsRoot,
+    } = makeHarness(root, [
       fixture.toolCall(
         "fs.write",
         JSON.stringify({ path: path.join(root, "note.txt"), content: "hello file" }),
@@ -186,7 +192,11 @@ describe("PiAgentRuntime", () => {
 
   it("emits tool.call.denied when policy denies shell.exec", async () => {
     const { runtime, provider, policy } = makeHarness(root, [
-      fixture.toolCall("shell.exec", JSON.stringify({ command: "echo", args: ["hi"] }), "call_shell"),
+      fixture.toolCall(
+        "shell.exec",
+        JSON.stringify({ command: "echo", args: ["hi"] }),
+        "call_shell",
+      ),
       fixture.text("understood, I cannot run that"),
     ]);
     policy.addRule("product_default", { capability: "shell.exec", decision: "deny" });
@@ -196,7 +206,9 @@ describe("PiAgentRuntime", () => {
     const denied = events.find((e) => e.type === "tool.call.denied");
     expect(denied).toBeDefined();
     expect(denied).toMatchObject({ toolCallId: "call_shell" });
-    expect(denied?.type === "tool.call.denied" && denied.reason).toContain("Policy denied shell.exec");
+    expect(denied?.type === "tool.call.denied" && denied.reason).toContain(
+      "Policy denied shell.exec",
+    );
     expect(types(events)).not.toContain("tool.call.failed");
     // The denial is fed back to the model as an error tool result.
     const second = provider.requests[1];
@@ -271,7 +283,11 @@ describe("PiAgentRuntime", () => {
     ]);
     toolRegistry.register(slow);
 
-    const stream = runtime.startRun({ sessionId: SESSION, input: "run slow tool", runId: "run_int" });
+    const stream = runtime.startRun({
+      sessionId: SESSION,
+      input: "run slow tool",
+      runId: "run_int",
+    });
     const iterator = stream[Symbol.asyncIterator]();
     const events: RuntimeEvent[] = [];
     for (;;) {

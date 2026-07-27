@@ -58,9 +58,7 @@ export async function checkpointCommit(
     if (head.code === 0) {
       commitArgs.push("-p", head.stdout.trim());
     }
-    const commit = (
-      await git(commitArgs, { cwd: repo, env, input: `${label}\n` })
-    ).trim();
+    const commit = (await git(commitArgs, { cwd: repo, env, input: `${label}\n` })).trim();
 
     await git(["update-ref", ref, commit], { cwd: repo });
     return { id, ref, commit, label };
@@ -73,10 +71,7 @@ export async function checkpointCommit(
  * Resets the working tree hard to a checkpoint ref. Before resetting, any
  * uncommitted changes are pushed onto the stash as a safety net.
  */
-export async function restoreCheckpoint(
-  repo: string,
-  ref: string,
-): Promise<{ stashed: boolean }> {
+export async function restoreCheckpoint(repo: string, ref: string): Promise<{ stashed: boolean }> {
   const current = await status(repo);
   let stashed = false;
   if (current.dirty) {

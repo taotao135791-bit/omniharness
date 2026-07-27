@@ -29,7 +29,10 @@ export function registerSkillHandlers(register: Register, ctx: DaemonContext): v
 
   register("skill.install", async (params: { source: string; ref: string; scope?: string }) => {
     if (params.source !== "local") {
-      throw new RpcError(ErrorCodes.INVALID_PARAMS, `skill install source "${params.source}" not yet supported (local only)`);
+      throw new RpcError(
+        ErrorCodes.INVALID_PARAMS,
+        `skill install source "${params.source}" not yet supported (local only)`,
+      );
     }
     const dir = path.resolve(params.ref);
     const skill = await skills.installFromDir(dir, {
@@ -41,7 +44,9 @@ export function registerSkillHandlers(register: Register, ctx: DaemonContext): v
 
   register("skill.proposals", async (params: { status?: string }) => {
     const proposals = await skills.listProposals();
-    return { proposals: params.status ? proposals.filter((p) => p.status === params.status) : proposals };
+    return {
+      proposals: params.status ? proposals.filter((p) => p.status === params.status) : proposals,
+    };
   });
 
   register("skill.approveProposal", async (params: { proposalId: string }) => {

@@ -11,13 +11,7 @@ import type {
 import { DEFAULT_CAPABILITIES, nowIso } from "@omniharness/shared-types";
 import type { OmniDatabase, SettingsScope } from "@omniharness/session-store";
 import { ImportStateTracker } from "./import-state.js";
-import {
-  asNumber,
-  asRecord,
-  asString,
-  asStringArray,
-  readJsonFile,
-} from "./json-utils.js";
+import { asNumber, asRecord, asString, asStringArray, readJsonFile } from "./json-utils.js";
 import {
   type ImportError,
   type ImportOptions,
@@ -271,7 +265,7 @@ async function importModelsJson(
   const root = asRecord(result.value);
   const providers = root === undefined ? undefined : asRecord(root["providers"]);
   if (providers === undefined) {
-    report.error(path, 'models.json does not match the expected shape ({providers: {...}})');
+    report.error(path, "models.json does not match the expected shape ({providers: {...}})");
     return;
   }
 
@@ -454,7 +448,10 @@ export async function importPiSettings(
     { path: join(options.agentDir, "settings.json"), label: "global" },
   ];
   if (options.projectDir !== undefined) {
-    settingsFiles.push({ path: join(options.projectDir, ".pi", "settings.json"), label: "project" });
+    settingsFiles.push({
+      path: join(options.projectDir, ".pi", "settings.json"),
+      label: "project",
+    });
   }
   for (const { path, label } of settingsFiles) {
     const sourceKey = `settings:${label}:${path}`;
@@ -474,7 +471,11 @@ export async function importPiSettings(
       continue;
     }
     importSettingsObject(settings, path, options, report, schemaKeys);
-    if (!dryRun) tracker.mark(sourceKey, `${options.settingsScope ?? "global"}/${options.settingsScopeId ?? "global"}`);
+    if (!dryRun)
+      tracker.mark(
+        sourceKey,
+        `${options.settingsScope ?? "global"}/${options.settingsScopeId ?? "global"}`,
+      );
   }
 
   // 2. Resource directories.
@@ -511,9 +512,7 @@ export async function importPiSettings(
 export class PiSettingsImporter {
   constructor(private readonly db: OmniDatabase) {}
 
-  import(
-    options: Omit<PiSettingsImportOptions, "db">,
-  ): Promise<PiSettingsImportReport> {
+  import(options: Omit<PiSettingsImportOptions, "db">): Promise<PiSettingsImportReport> {
     return importPiSettings({ ...options, db: this.db });
   }
 }

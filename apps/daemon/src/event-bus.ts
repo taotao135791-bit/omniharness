@@ -44,7 +44,9 @@ export class EventBus {
   since(seq: number, limit = 1000): { events: DomainEvent[]; latestSeq: number } {
     const rows = this.db.events.since(seq, limit);
     return {
-      events: rows.map((r) => ({ ...(r.payload as object), seq: r.seq, at: r.at }) as unknown as DomainEvent),
+      events: rows.map(
+        (r) => ({ ...(r.payload as object), seq: r.seq, at: r.at }) as unknown as DomainEvent,
+      ),
       latestSeq: this.db.events.latestSeq(),
     };
   }

@@ -46,14 +46,72 @@ describe("chat view-model layout snapshots", () => {
     const vm = new ChatViewModel();
     vm.reset("sess-1", "Test session");
     vm.addUserMessage("please fix the tests");
-    vm.applyEvent({ type: "run.started", seq: 1, at: "2026-07-22T00:00:00Z", sessionId: sid("sess-1"), runId: "r1", agentId: "a1", modelId: "m1" });
-    vm.applyEvent({ type: "message.started", seq: 2, at: "2026-07-22T00:00:01Z", sessionId: sid("sess-1"), messageId: "m1", role: "assistant" });
-    vm.applyEvent({ type: "message.delta", seq: 3, at: "2026-07-22T00:00:02Z", sessionId: sid("sess-1"), messageId: "m1", delta: "Looking at the failures now.", channel: "text" });
-    vm.applyEvent({ type: "message.completed", seq: 4, at: "2026-07-22T00:00:03Z", sessionId: sid("sess-1"), messageId: "m1" });
-    vm.applyEvent({ type: "tool.call.started", seq: 5, at: "2026-07-22T00:00:04Z", sessionId: sid("sess-1"), toolCallId: tid("t1"), toolName: "bash", argumentsJson: "{\"command\":\"pnpm test\"}" });
-    vm.applyEvent({ type: "tool.call.output", seq: 6, at: "2026-07-22T00:00:05Z", sessionId: sid("sess-1"), toolCallId: tid("t1"), chunk: "3 passed", stream: "stdout" });
-    vm.applyEvent({ type: "tool.call.completed", seq: 7, at: "2026-07-22T00:00:06Z", sessionId: sid("sess-1"), toolCallId: tid("t1"), resultJson: "{}", durationMs: 900 });
-    vm.applyEvent({ type: "approval.requested", seq: 8, at: "2026-07-22T00:00:07Z", approval: makeApproval() });
+    vm.applyEvent({
+      type: "run.started",
+      seq: 1,
+      at: "2026-07-22T00:00:00Z",
+      sessionId: sid("sess-1"),
+      runId: "r1",
+      agentId: "a1",
+      modelId: "m1",
+    });
+    vm.applyEvent({
+      type: "message.started",
+      seq: 2,
+      at: "2026-07-22T00:00:01Z",
+      sessionId: sid("sess-1"),
+      messageId: "m1",
+      role: "assistant",
+    });
+    vm.applyEvent({
+      type: "message.delta",
+      seq: 3,
+      at: "2026-07-22T00:00:02Z",
+      sessionId: sid("sess-1"),
+      messageId: "m1",
+      delta: "Looking at the failures now.",
+      channel: "text",
+    });
+    vm.applyEvent({
+      type: "message.completed",
+      seq: 4,
+      at: "2026-07-22T00:00:03Z",
+      sessionId: sid("sess-1"),
+      messageId: "m1",
+    });
+    vm.applyEvent({
+      type: "tool.call.started",
+      seq: 5,
+      at: "2026-07-22T00:00:04Z",
+      sessionId: sid("sess-1"),
+      toolCallId: tid("t1"),
+      toolName: "bash",
+      argumentsJson: '{"command":"pnpm test"}',
+    });
+    vm.applyEvent({
+      type: "tool.call.output",
+      seq: 6,
+      at: "2026-07-22T00:00:05Z",
+      sessionId: sid("sess-1"),
+      toolCallId: tid("t1"),
+      chunk: "3 passed",
+      stream: "stdout",
+    });
+    vm.applyEvent({
+      type: "tool.call.completed",
+      seq: 7,
+      at: "2026-07-22T00:00:06Z",
+      sessionId: sid("sess-1"),
+      toolCallId: tid("t1"),
+      resultJson: "{}",
+      durationMs: 900,
+    });
+    vm.applyEvent({
+      type: "approval.requested",
+      seq: 8,
+      at: "2026-07-22T00:00:07Z",
+      approval: makeApproval(),
+    });
     expect(vm.renderLines(72)).toMatchSnapshot();
     vm.toggleTool("t1");
     expect(vm.renderLines(72)).toMatchSnapshot();
@@ -62,7 +120,14 @@ describe("chat view-model layout snapshots", () => {
   it("ignores events for other sessions", () => {
     const vm = new ChatViewModel();
     vm.reset("sess-1", "t");
-    const changed = vm.applyEvent({ type: "message.started", seq: 1, at: "2026-07-22T00:00:00Z", sessionId: sid("sess-OTHER"), messageId: "m9", role: "assistant" });
+    const changed = vm.applyEvent({
+      type: "message.started",
+      seq: 1,
+      at: "2026-07-22T00:00:00Z",
+      sessionId: sid("sess-OTHER"),
+      messageId: "m9",
+      role: "assistant",
+    });
     expect(changed).toBe(false);
     expect(vm.blocks).toHaveLength(0);
   });

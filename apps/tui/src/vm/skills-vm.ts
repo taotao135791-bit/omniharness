@@ -17,7 +17,12 @@ export class SkillsViewModel {
     this.error = null;
     const rows: ListRow[] = [];
     if (proposals.length > 0) {
-      rows.push({ id: "h:proposals", label: `proposals (${proposals.length})`, detail: "", header: true });
+      rows.push({
+        id: "h:proposals",
+        label: `proposals (${proposals.length})`,
+        detail: "",
+        header: true,
+      });
       for (const p of proposals) {
         rows.push({
           id: `prop:${p.id}`,

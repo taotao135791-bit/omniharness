@@ -233,12 +233,13 @@ function rowToMessage(r: MessageRow): Message {
     createdAt: r.created_at,
   };
   if (r.model_id !== null) message.modelId = r.model_id as ModelId;
-  if (r.usage !== null) message.usage = jparse<TokenUsage>(r.usage, {
-    inputTokens: 0,
-    outputTokens: 0,
-    cacheReadTokens: 0,
-    cacheWriteTokens: 0,
-  });
+  if (r.usage !== null)
+    message.usage = jparse<TokenUsage>(r.usage, {
+      inputTokens: 0,
+      outputTokens: 0,
+      cacheReadTokens: 0,
+      cacheWriteTokens: 0,
+    });
   return message;
 }
 

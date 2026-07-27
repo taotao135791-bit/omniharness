@@ -213,7 +213,8 @@ export class ModelsView extends ListViewComponent {
                 description: m.id,
               })),
             ],
-            (modelItem) => fire(c.setRoleBinding(role, modelItem.value === "" ? null : modelItem.value)),
+            (modelItem) =>
+              fire(c.setRoleBinding(role, modelItem.value === "" ? null : modelItem.value)),
           );
         },
       );

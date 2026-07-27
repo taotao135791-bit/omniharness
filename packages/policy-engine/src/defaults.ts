@@ -35,7 +35,11 @@ export function productDefault(
 
   switch (capability) {
     case "fs.write": {
-      if (workspaceRoot !== undefined && target !== undefined && isInsideWorkspace(workspaceRoot, target)) {
+      if (
+        workspaceRoot !== undefined &&
+        target !== undefined &&
+        isInsideWorkspace(workspaceRoot, target)
+      ) {
         return {
           decision: "always_allow",
           reason: `Product default: fs.write inside the workspace (${workspaceRoot}) is always allowed.`,
@@ -50,7 +54,11 @@ export function productDefault(
       };
     }
     case "fs.read": {
-      if (workspaceRoot !== undefined && target !== undefined && isInsideWorkspace(workspaceRoot, target)) {
+      if (
+        workspaceRoot !== undefined &&
+        target !== undefined &&
+        isInsideWorkspace(workspaceRoot, target)
+      ) {
         return {
           decision: "always_allow",
           reason: `Product default: fs.read inside the workspace (${workspaceRoot}) is always allowed.`,
@@ -64,7 +72,8 @@ export function productDefault(
       }
       return {
         decision: "deny",
-        reason: "Product default: no workspace configured; fs.read outside the workspace is denied.",
+        reason:
+          "Product default: no workspace configured; fs.read outside the workspace is denied.",
       };
     }
     case "network": {

@@ -62,28 +62,36 @@ export function registerTaskHandlers(
     return orchestratorFor(task.workspaceId);
   };
 
-  register("task.create", async (params: {
-    objective: string;
-    sessionId: SessionId;
-    parentTaskId?: TaskId;
-    dependencies?: TaskId[];
-    allowedTools?: string[];
-    budget?: Record<string, number>;
-  }) => {
-    const session = db.sessions.get(params.sessionId);
-    if (!session) throw new RpcError(ErrorCodes.NOT_FOUND, "session not found");
-    const task = orchestratorFor(session.workspaceId).createTask({
-      objective: params.objective,
-      sessionId: params.sessionId,
-      ...(params.parentTaskId ? { parentTaskId: params.parentTaskId } : {}),
-      ...(params.dependencies ? { dependencies: params.dependencies } : {}),
-      ...(params.allowedTools ? { allowedTools: params.allowedTools } : {}),
-      ...(params.budget ? { budget: params.budget as AgentTask["budget"] } : {}),
-    });
-    taskSessions.set(task.id, params.sessionId);
-    bus.emit({ type: "task.created", taskId: task.id, parentTaskId: task.parentTaskId, objective: task.objective });
-    return { task };
-  });
+  register(
+    "task.create",
+    async (params: {
+      objective: string;
+      sessionId: SessionId;
+      parentTaskId?: TaskId;
+      dependencies?: TaskId[];
+      allowedTools?: string[];
+      budget?: Record<string, number>;
+    }) => {
+      const session = db.sessions.get(params.sessionId);
+      if (!session) throw new RpcError(ErrorCodes.NOT_FOUND, "session not found");
+      const task = orchestratorFor(session.workspaceId).createTask({
+        objective: params.objective,
+        sessionId: params.sessionId,
+        ...(params.parentTaskId ? { parentTaskId: params.parentTaskId } : {}),
+        ...(params.dependencies ? { dependencies: params.dependencies } : {}),
+        ...(params.allowedTools ? { allowedTools: params.allowedTools } : {}),
+        ...(params.budget ? { budget: params.budget as AgentTask["budget"] } : {}),
+      });
+      taskSessions.set(task.id, params.sessionId);
+      bus.emit({
+        type: "task.created",
+        taskId: task.id,
+        parentTaskId: task.parentTaskId,
+        objective: task.objective,
+      });
+      return { task };
+    },
+  );
 
   register("task.list", (params: { sessionId?: SessionId; status?: string }) => {
     let tasks: AgentTask[];
@@ -94,9 +102,11 @@ export function registerTaskHandlers(
         .listByWorkspace(session.workspaceId)
         .filter((t) => taskSessions.get(t.id) === params.sessionId);
     } else {
-      tasks = db.projects.list().flatMap((p) =>
-        db.workspaces.listByProject(p.id).flatMap((w) => db.tasks.listByWorkspace(w.id)),
-      );
+      tasks = db.projects
+        .list()
+        .flatMap((p) =>
+          db.workspaces.listByProject(p.id).flatMap((w) => db.tasks.listByWorkspace(w.id)),
+        );
     }
     if (params.status) tasks = tasks.filter((t) => t.status === params.status);
     return { tasks };

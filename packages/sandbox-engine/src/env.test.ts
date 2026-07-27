@@ -15,10 +15,7 @@ describe("filterEnv", () => {
   });
 
   it("keeps variables named in the allowlist (exact match)", () => {
-    const out = filterEnv(
-      { API_TOKEN: "y", OTHER_TOKEN: "z" },
-      ["API_TOKEN"],
-    );
+    const out = filterEnv({ API_TOKEN: "y", OTHER_TOKEN: "z" }, ["API_TOKEN"]);
     expect(out).toEqual({ API_TOKEN: "y" });
   });
 

@@ -111,7 +111,10 @@ export type AuditSink = (event: AuditEvent) => void;
 export const noopAudit: AuditSink = () => {};
 
 /** Test/dev helper: collect records in memory. */
-export function collectingAudit(events: AuditEvent[] = []): { sink: AuditSink; events: AuditEvent[] } {
+export function collectingAudit(events: AuditEvent[] = []): {
+  sink: AuditSink;
+  events: AuditEvent[];
+} {
   return { sink: (e) => events.push(e), events };
 }
 

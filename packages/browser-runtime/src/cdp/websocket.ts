@@ -34,7 +34,9 @@ export interface WsFrame {
 export const MAX_PAYLOAD_BYTES = 64 * 1024 * 1024;
 
 export function computeAcceptKey(secWebSocketKey: string): string {
-  return createHash("sha1").update(secWebSocketKey + WS_GUID).digest("base64");
+  return createHash("sha1")
+    .update(secWebSocketKey + WS_GUID)
+    .digest("base64");
 }
 
 /** Serializes one frame. Clients MUST mask; servers MUST NOT. */
@@ -201,7 +203,9 @@ export class WebSocketConnection {
     const url = new URL(options.url);
     if (url.protocol !== "ws:") {
       return Promise.reject(
-        new Error(`only ws:// URLs are supported (CDP is loopback plain HTTP), got ${url.protocol}`),
+        new Error(
+          `only ws:// URLs are supported (CDP is loopback plain HTTP), got ${url.protocol}`,
+        ),
       );
     }
     const host = url.hostname;
@@ -344,7 +348,10 @@ export class WebSocketConnection {
       case OPCODES.PING:
         if (!this.closeSent && !this.closed) {
           this.socket.write(
-            encodeFrame({ fin: true, opcode: OPCODES.PONG, payload: frame.payload }, { mask: true }),
+            encodeFrame(
+              { fin: true, opcode: OPCODES.PONG, payload: frame.payload },
+              { mask: true },
+            ),
           );
         }
         return;

@@ -50,7 +50,8 @@ export class PolicyEngine {
 
   constructor(options: PolicyEngineOptions = {}) {
     this.workspaceRoot = options.workspaceRoot;
-    this.allowedDomains = options.allowedDomains !== undefined ? [...options.allowedDomains] : undefined;
+    this.allowedDomains =
+      options.allowedDomains !== undefined ? [...options.allowedDomains] : undefined;
   }
 
   addRule(scope: "product_default", rule: PolicyRule): void;

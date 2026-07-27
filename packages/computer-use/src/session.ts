@@ -48,12 +48,7 @@ export interface ComputerUseSessionOptions {
 }
 
 export type SessionEndReason =
-  | "done"
-  | "max_steps"
-  | "stopped"
-  | "takeover"
-  | "approval_denied"
-  | "error";
+  "done" | "max_steps" | "stopped" | "takeover" | "approval_denied" | "error";
 
 export interface SessionSummary {
   reason: SessionEndReason;
@@ -201,7 +196,9 @@ export class ComputerUseSession {
     }
   }
 
-  private async runIteration(): Promise<"continue" | Exclude<SessionEndReason, "stopped" | "takeover">> {
+  private async runIteration(): Promise<
+    "continue" | Exclude<SessionEndReason, "stopped" | "takeover">
+  > {
     const frame = await this.driver.screenshot();
     this.pushFrame(frame);
     const observation: Observation = { frame, description: null, elements: [] };
@@ -293,11 +290,11 @@ export class ComputerUseSession {
     if (result.ok && this.proposer.verify !== undefined) {
       const after = await this.driver.screenshot();
       this.pushFrame(after);
-      verification = await this.proposer.verify(
-        action,
-        result,
-        { frame: after, description: null, elements: [] },
-      );
+      verification = await this.proposer.verify(action, result, {
+        frame: after,
+        description: null,
+        elements: [],
+      });
     }
 
     this.trace.push({
@@ -375,14 +372,21 @@ export class ComputerUseSession {
           // Defense in depth: the resolved value must never have leaked into
           // anything the proposer has already seen.
           assertNoSecretLeak(this.trace, value);
-          assertNoSecretLeak(this.buildContext({
-            frame: this.screenshotRing[this.screenshotRing.length - 1] ?? {
-              width: 0, height: 0, scaleFactor: 1, pngBase64: "",
-              capturedAt: startedAt, displayId: "unknown",
-            },
-            description: null,
-            elements: [],
-          }), value);
+          assertNoSecretLeak(
+            this.buildContext({
+              frame: this.screenshotRing[this.screenshotRing.length - 1] ?? {
+                width: 0,
+                height: 0,
+                scaleFactor: 1,
+                pngBase64: "",
+                capturedAt: startedAt,
+                displayId: "unknown",
+              },
+              description: null,
+              elements: [],
+            }),
+            value,
+          );
           await this.driver.typeText(value);
           break;
         }

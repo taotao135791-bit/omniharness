@@ -4,10 +4,14 @@ import type { CompletionRequest, ModelProvider } from "./types.js";
 
 /** One scripted response: either a chunk sequence to stream or an error to throw. */
 export type FixtureResponse =
-  | { kind: "chunks"; chunks: ModelStreamChunk[] }
-  | { kind: "error"; error: unknown };
+  { kind: "chunks"; chunks: ModelStreamChunk[] } | { kind: "error"; error: unknown };
 
-const zeroUsage: TokenUsage = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 };
+const zeroUsage: TokenUsage = {
+  inputTokens: 0,
+  outputTokens: 0,
+  cacheReadTokens: 0,
+  cacheWriteTokens: 0,
+};
 
 /** Deterministic response builders for FixtureProvider scripts. */
 export const fixture = {
@@ -20,7 +24,8 @@ export const fixture = {
       type: "text_delta",
       text,
     }));
-    if (options?.usage !== undefined) chunks.push({ type: "usage", usage: { ...zeroUsage, ...options.usage } });
+    if (options?.usage !== undefined)
+      chunks.push({ type: "usage", usage: { ...zeroUsage, ...options.usage } });
     chunks.push({ type: "finish", finishReason: options?.finishReason ?? "stop" });
     return { kind: "chunks", chunks };
   },

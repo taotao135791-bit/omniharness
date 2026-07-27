@@ -34,14 +34,18 @@ describe("websocket frame codec", () => {
 
   it("handles 16-bit extended lengths", () => {
     const payload = Buffer.alloc(300, 0x61);
-    const frames = new WsFrameParser().push(encodeFrame({ fin: true, opcode: OPCODES.BINARY, payload }, { mask: true }));
+    const frames = new WsFrameParser().push(
+      encodeFrame({ fin: true, opcode: OPCODES.BINARY, payload }, { mask: true }),
+    );
     expect(frames[0]?.payload).toHaveLength(300);
     expect(frames[0]?.payload.equals(payload)).toBe(true);
   });
 
   it("handles 64-bit extended lengths", () => {
     const payload = Buffer.alloc(70_000, 0x62);
-    const frames = new WsFrameParser().push(encodeFrame({ fin: true, opcode: OPCODES.BINARY, payload }, { mask: false }));
+    const frames = new WsFrameParser().push(
+      encodeFrame({ fin: true, opcode: OPCODES.BINARY, payload }, { mask: false }),
+    );
     expect(frames[0]?.payload).toHaveLength(70_000);
     expect(frames[0]?.payload.equals(payload)).toBe(true);
   });
@@ -59,8 +63,14 @@ describe("websocket frame codec", () => {
   });
 
   it("parses multiple frames from one push", () => {
-    const a = encodeFrame({ fin: true, opcode: OPCODES.TEXT, payload: Buffer.from("a") }, { mask: false });
-    const b = encodeFrame({ fin: true, opcode: OPCODES.TEXT, payload: Buffer.from("b") }, { mask: false });
+    const a = encodeFrame(
+      { fin: true, opcode: OPCODES.TEXT, payload: Buffer.from("a") },
+      { mask: false },
+    );
+    const b = encodeFrame(
+      { fin: true, opcode: OPCODES.TEXT, payload: Buffer.from("b") },
+      { mask: false },
+    );
     const frames = new WsFrameParser().push(Buffer.concat([a, b]));
     expect(frames.map((f) => f.payload.toString("utf8"))).toEqual(["a", "b"]);
   });
@@ -168,15 +178,23 @@ class LoopbackServer {
   sendText(text: string, fragment = false): void {
     const payload = Buffer.from(text, "utf8");
     if (!fragment) {
-      this.socket?.write(encodeFrame({ fin: true, opcode: OPCODES.TEXT, payload }, { mask: false }));
+      this.socket?.write(
+        encodeFrame({ fin: true, opcode: OPCODES.TEXT, payload }, { mask: false }),
+      );
       return;
     }
     const cut = Math.floor(payload.length / 2);
     this.socket?.write(
-      encodeFrame({ fin: false, opcode: OPCODES.TEXT, payload: payload.subarray(0, cut) }, { mask: false }),
+      encodeFrame(
+        { fin: false, opcode: OPCODES.TEXT, payload: payload.subarray(0, cut) },
+        { mask: false },
+      ),
     );
     this.socket?.write(
-      encodeFrame({ fin: true, opcode: OPCODES.CONTINUATION, payload: payload.subarray(cut) }, { mask: false }),
+      encodeFrame(
+        { fin: true, opcode: OPCODES.CONTINUATION, payload: payload.subarray(cut) },
+        { mask: false },
+      ),
     );
   }
 

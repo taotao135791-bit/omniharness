@@ -7,12 +7,21 @@
  */
 
 const DAY_NAMES: Record<string, number> = {
-  sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
-  thursday: 4, friday: 5, saturday: 6,
+  sunday: 0,
+  monday: 1,
+  tuesday: 2,
+  wednesday: 3,
+  thursday: 4,
+  friday: 5,
+  saturday: 6,
 };
 
 /** Parse "9", "9am", "9:30pm", "18:00" → [hour, minute], or null. */
-function parseTime(hRaw: string, mRaw: string | undefined, meridiem: string | undefined): [number, number] | null {
+function parseTime(
+  hRaw: string,
+  mRaw: string | undefined,
+  meridiem: string | undefined,
+): [number, number] | null {
   let hour = Number(hRaw);
   const minute = mRaw === undefined ? 0 : Number(mRaw);
   if (!Number.isInteger(hour) || !Number.isInteger(minute) || minute > 59) return null;

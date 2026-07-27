@@ -96,13 +96,17 @@ describe("ToolCallCompatLayer", () => {
     expect(messages[0]?.role).toBe("system");
 
     // Simulated weak-model reply following the injected instructions.
-    const reply = 'Checking.\n```json\n{"tool_calls":[{"name":"get_weather","arguments":{"city":"Paris"}}]}\n```';
+    const reply =
+      'Checking.\n```json\n{"tool_calls":[{"name":"get_weather","arguments":{"city":"Paris"}}]}\n```';
     const parsed = layer.parseResponse(reply);
     expect(parsed.toolCalls).toHaveLength(1);
     const call = parsed.toolCalls[0];
     expect(call?.name).toBe("get_weather");
 
-    const resultMessage = layer.formatToolResult(call ?? { id: "x", name: "x", argumentsJson: "{}" }, "18°C, cloudy");
+    const resultMessage = layer.formatToolResult(
+      call ?? { id: "x", name: "x", argumentsJson: "{}" },
+      "18°C, cloudy",
+    );
     expect(resultMessage.role).toBe("user");
     const part = resultMessage.parts[0];
     expect(part?.type).toBe("text");

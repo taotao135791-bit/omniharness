@@ -45,7 +45,9 @@ export function App(): React.JSX.Element {
 
   const refreshSessions = useCallback(async () => {
     try {
-      const r = (await window.omni.call("session.list", { limit: 100 })) as { sessions: SessionRow[] };
+      const r = (await window.omni.call("session.list", { limit: 100 })) as {
+        sessions: SessionRow[];
+      };
       setSessions(r.sessions);
     } catch {
       /* daemon not ready yet */
@@ -81,11 +83,16 @@ export function App(): React.JSX.Element {
             next[idx] = { ...next[idx]!, text: next[idx]!.text + (e.delta ?? "") };
             return next;
           }
-          return [...prev, { id: e.messageId!, role: "assistant", text: e.delta ?? "", streaming: true }];
+          return [
+            ...prev,
+            { id: e.messageId!, role: "assistant", text: e.delta ?? "", streaming: true },
+          ];
         });
       }
       if (e.type === "message.completed" && e.messageId) {
-        setMessages((prev) => prev.map((m) => (m.id === e.messageId ? { ...m, streaming: false } : m)));
+        setMessages((prev) =>
+          prev.map((m) => (m.id === e.messageId ? { ...m, streaming: false } : m)),
+        );
       }
       if (e.type === "run.completed" || e.type === "run.failed") setRunning(false);
       if (e.type === "approval.requested" && e.approval) {
@@ -117,7 +124,11 @@ export function App(): React.JSX.Element {
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { id: `err-${Date.now()}`, role: "assistant", text: `Error: ${err instanceof Error ? err.message : String(err)}` },
+        {
+          id: `err-${Date.now()}`,
+          role: "assistant",
+          text: `Error: ${err instanceof Error ? err.message : String(err)}`,
+        },
       ]);
       setRunning(false);
     }
@@ -141,7 +152,15 @@ export function App(): React.JSX.Element {
               void window.omni
                 .call("session.messages", { sessionId: s.id, limit: 100 })
                 .then((r) => {
-                  const msgs = (r as { messages: Array<{ id: string; role: string; parts: Array<{ type: string; text?: string }> }> }).messages;
+                  const msgs = (
+                    r as {
+                      messages: Array<{
+                        id: string;
+                        role: string;
+                        parts: Array<{ type: string; text?: string }>;
+                      }>;
+                    }
+                  ).messages;
                   setMessages(
                     msgs.map((m) => ({
                       id: m.id,
@@ -156,7 +175,9 @@ export function App(): React.JSX.Element {
             {s.title || s.id}
           </div>
         ))}
-        {sessions.length === 0 && <div style={{ color: "var(--muted)", fontSize: 12 }}>No sessions yet</div>}
+        {sessions.length === 0 && (
+          <div style={{ color: "var(--muted)", fontSize: 12 }}>No sessions yet</div>
+        )}
       </aside>
       <main className="main">
         <div className="statusbar">
@@ -184,7 +205,9 @@ export function App(): React.JSX.Element {
             ))}
           {messages.length === 0 && (
             <div className="empty">
-              {activeSession ? "No messages yet — say something." : "Select a session or create one via the CLI/TUI."}
+              {activeSession
+                ? "No messages yet — say something."
+                : "Select a session or create one via the CLI/TUI."}
             </div>
           )}
           {messages.map((m) => (
@@ -198,7 +221,11 @@ export function App(): React.JSX.Element {
         <div className="composer">
           <textarea
             value={input}
-            placeholder={activeSession ? "Message the agent… (Enter to send, Shift+Enter for newline)" : "Select a session first"}
+            placeholder={
+              activeSession
+                ? "Message the agent… (Enter to send, Shift+Enter for newline)"
+                : "Select a session first"
+            }
             disabled={!activeSession || running}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {

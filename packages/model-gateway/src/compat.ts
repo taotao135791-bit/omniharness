@@ -41,7 +41,7 @@ export class ToolCallCompatLayer {
       FENCE,
       '{"tool_calls":[{"name":"<tool name>","arguments":{}}]}',
       "```",
-      "Each entry in \"tool_calls\" must use one of the listed tool names and arguments matching its JSON schema.",
+      'Each entry in "tool_calls" must use one of the listed tool names and arguments matching its JSON schema.',
       "Put any regular answer text outside the fenced block. If you do not need a tool, answer normally.",
     ].join("\n");
   }
@@ -82,7 +82,9 @@ export class ToolCallCompatLayer {
         name: call.name,
         argumentsJson: JSON.stringify(call.arguments ?? {}),
       }));
-      const cleaned = (text.slice(0, match.index) + text.slice(match.index + match[0].length)).trim();
+      const cleaned = (
+        text.slice(0, match.index) + text.slice(match.index + match[0].length)
+      ).trim();
       return { text: cleaned, toolCalls };
     }
     return { text: text.trim(), toolCalls: [] };

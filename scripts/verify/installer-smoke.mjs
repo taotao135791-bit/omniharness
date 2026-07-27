@@ -30,7 +30,9 @@ if (existsSync(cliMain)) {
 
 // 3. Desktop packages, if produced
 if (existsSync(releaseDir)) {
-  const artifacts = readdirSync(releaseDir).filter((f) => /\.(dmg|zip|exe|msi|AppImage|deb|tar\.gz)$/.test(f));
+  const artifacts = readdirSync(releaseDir).filter((f) =>
+    /\.(dmg|zip|exe|msi|AppImage|deb|tar\.gz)$/.test(f),
+  );
   check("desktop installer artifacts exist", artifacts.length > 0, artifacts.join(", ") || "none");
 } else {
   console.log("⚠️  desktop release dir absent — installers not built in this environment");

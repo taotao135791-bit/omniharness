@@ -105,10 +105,33 @@ describe("OmniAcpRuntime against a fake daemon (ws)", () => {
             agentId: "a1" as AgentId,
             modelId: "m1" as ModelId,
           });
-          scripted.emit({ type: "message.started", sessionId, messageId: "msg-1" as MessageId, role: "assistant" });
-          scripted.emit({ type: "message.delta", sessionId, messageId: "msg-1" as MessageId, delta: "Hello ", channel: "text" });
-          scripted.emit({ type: "message.delta", sessionId, messageId: "msg-1" as MessageId, delta: "hmm", channel: "reasoning" });
-          scripted.emit({ type: "message.delta", sessionId, messageId: "msg-1" as MessageId, delta: "world", channel: "text" });
+          scripted.emit({
+            type: "message.started",
+            sessionId,
+            messageId: "msg-1" as MessageId,
+            role: "assistant",
+          });
+          scripted.emit({
+            type: "message.delta",
+            sessionId,
+            messageId: "msg-1" as MessageId,
+            delta: "Hello ",
+            channel: "text",
+          });
+          scripted.emit({
+            type: "message.delta",
+            sessionId,
+            messageId: "msg-1" as MessageId,
+            delta: "hmm",
+            channel: "reasoning",
+          });
+          scripted.emit({
+            type: "message.delta",
+            sessionId,
+            messageId: "msg-1" as MessageId,
+            delta: "world",
+            channel: "text",
+          });
           scripted.emit({
             type: "tool.call.started",
             sessionId,
@@ -123,7 +146,12 @@ describe("OmniAcpRuntime against a fake daemon (ws)", () => {
             resultJson: "{}",
             durationMs: 5,
           });
-          scripted.emit({ type: "run.completed", sessionId, runId, usage: { inputTokens: 3, outputTokens: 5 } });
+          scripted.emit({
+            type: "run.completed",
+            sessionId,
+            runId,
+            usage: { inputTokens: 3, outputTokens: 5 },
+          });
         }, 10);
         return { runId };
       }
@@ -214,7 +242,9 @@ describe("OmniAcpRuntime against a fake daemon (ws)", () => {
     expect(sent[1]?.text).toContain("granted");
 
     const relayed = events.filter((e) => e.kind === "approval.relayed");
-    expect(relayed.some((e) => e.kind === "approval.relayed" && e.decision === "approve")).toBe(true);
+    expect(relayed.some((e) => e.kind === "approval.relayed" && e.decision === "approve")).toBe(
+      true,
+    );
     relay.stop();
   });
 
@@ -261,7 +291,10 @@ describe("OmniAcpRuntime against a fake daemon (ws)", () => {
     await waitFor(() => sent.length === 3);
     expect(relay.handleChannelReply({ sessionKey, senderId: "alice", body: "no" })).toBe(true);
     await waitFor(() => daemon.calls("approval.resolve").length === 1);
-    expect(daemon.calls("approval.resolve")[0]).toMatchObject({ approvalId: "appr-3", decision: "deny" });
+    expect(daemon.calls("approval.resolve")[0]).toMatchObject({
+      approvalId: "appr-3",
+      decision: "deny",
+    });
     relay.stop();
   });
 
@@ -297,9 +330,26 @@ describe("OpenClawAdapter end-to-end (fake daemon + mock connector)", () => {
         const sessionId = params["sessionId"] as SessionId;
         const runId = "run-1";
         setTimeout(() => {
-          daemon.emit({ type: "message.delta", sessionId, messageId: "m1" as MessageId, delta: "Hello ", channel: "text" });
-          daemon.emit({ type: "message.delta", sessionId, messageId: "m1" as MessageId, delta: "world", channel: "text" });
-          daemon.emit({ type: "run.completed", sessionId, runId, usage: { inputTokens: 1, outputTokens: 2 } });
+          daemon.emit({
+            type: "message.delta",
+            sessionId,
+            messageId: "m1" as MessageId,
+            delta: "Hello ",
+            channel: "text",
+          });
+          daemon.emit({
+            type: "message.delta",
+            sessionId,
+            messageId: "m1" as MessageId,
+            delta: "world",
+            channel: "text",
+          });
+          daemon.emit({
+            type: "run.completed",
+            sessionId,
+            runId,
+            usage: { inputTokens: 1, outputTokens: 2 },
+          });
         }, 10);
         return { runId };
       }
@@ -360,7 +410,9 @@ describe("OpenClawAdapter end-to-end (fake daemon + mock connector)", () => {
     await new Promise((r) => setTimeout(r, 100));
     expect(telegram.sent).toHaveLength(1);
     expect(daemon.calls("run.start")).toHaveLength(1);
-    expect(events.some((e) => e.kind === "authz.decision" && !e.allowed && e.senderId === "mallory")).toBe(true);
+    expect(
+      events.some((e) => e.kind === "authz.decision" && !e.allowed && e.senderId === "mallory"),
+    ).toBe(true);
 
     await adapter.stop();
     await client.close();

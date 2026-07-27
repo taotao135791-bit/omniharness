@@ -350,7 +350,13 @@ describe("providers, models, usage aggregation", () => {
       sessionId: null,
       agentId: "agent_1" as AgentId,
       automationId: null,
-      usage: { inputTokens: 100, outputTokens: 50, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0.001 },
+      usage: {
+        inputTokens: 100,
+        outputTokens: 50,
+        cacheReadTokens: 0,
+        cacheWriteTokens: 0,
+        costUsd: 0.001,
+      },
     });
     db.modelUsage.record({
       at: tick(),
@@ -360,7 +366,13 @@ describe("providers, models, usage aggregation", () => {
       sessionId: null,
       agentId: "agent_2" as AgentId,
       automationId: null,
-      usage: { inputTokens: 200, outputTokens: 100, cacheReadTokens: 10, cacheWriteTokens: 0, costUsd: 0.002 },
+      usage: {
+        inputTokens: 200,
+        outputTokens: 100,
+        cacheReadTokens: 10,
+        cacheWriteTokens: 0,
+        costUsd: 0.002,
+      },
     });
     db.modelUsage.record({
       at: tick(),

@@ -16,7 +16,11 @@ export interface ExecOptions {
  * Runs a command via execFile with an argv array — never through a shell, so
  * no argument is ever subject to shell interpolation.
  */
-export function runFile(file: string, args: readonly string[], options: ExecOptions = {}): Promise<ExecResult> {
+export function runFile(
+  file: string,
+  args: readonly string[],
+  options: ExecOptions = {},
+): Promise<ExecResult> {
   const timeoutMs = options.timeoutMs ?? 30_000;
   return new Promise((resolve, reject) => {
     execFile(

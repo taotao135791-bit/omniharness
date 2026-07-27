@@ -93,7 +93,9 @@ export class RpcServer {
       try {
         msg = JSON.parse(String(raw)) as ClientMessage;
       } catch {
-        ws.send(JSON.stringify(this.errorResponse(null, ErrorCodes.INVALID_PARAMS, "malformed json")));
+        ws.send(
+          JSON.stringify(this.errorResponse(null, ErrorCodes.INVALID_PARAMS, "malformed json")),
+        );
         return;
       }
       if (msg.type === "hello") {
@@ -102,7 +104,9 @@ export class RpcServer {
         return;
       }
       if (!state.hello) {
-        ws.send(JSON.stringify(this.errorResponse(null, ErrorCodes.UNAUTHORIZED, "hello required")));
+        ws.send(
+          JSON.stringify(this.errorResponse(null, ErrorCodes.UNAUTHORIZED, "hello required")),
+        );
         return;
       }
       if (msg.type === "command") {
@@ -120,7 +124,14 @@ export class RpcServer {
   private onHello(state: ClientState, hello: HelloMessage): void {
     const { ws } = state;
     if (hello.authToken !== this.opts.authToken) {
-      ws.send(JSON.stringify({ type: "response", id: null, ok: false, error: { code: ErrorCodes.UNAUTHORIZED, message: "bad token" } }));
+      ws.send(
+        JSON.stringify({
+          type: "response",
+          id: null,
+          ok: false,
+          error: { code: ErrorCodes.UNAUTHORIZED, message: "bad token" },
+        }),
+      );
       ws.close(4003, "unauthorized");
       return;
     }
@@ -130,7 +141,10 @@ export class RpcServer {
           type: "response",
           id: null,
           ok: false,
-          error: { code: ErrorCodes.CONFLICT, message: `protocol ${PROTOCOL_VERSION.major}.${PROTOCOL_VERSION.minor} required` },
+          error: {
+            code: ErrorCodes.CONFLICT,
+            message: `protocol ${PROTOCOL_VERSION.major}.${PROTOCOL_VERSION.minor} required`,
+          },
         }),
       );
       ws.close(4002, "protocol mismatch");
@@ -165,7 +179,10 @@ export class RpcServer {
   ): Promise<void> {
     const handler = this.handlers.get(msg.name);
     if (!handler) {
-      this.send(state.ws, this.errorResponse(msg.id, ErrorCodes.NOT_FOUND, `unknown command: ${msg.name}`));
+      this.send(
+        state.ws,
+        this.errorResponse(msg.id, ErrorCodes.NOT_FOUND, `unknown command: ${msg.name}`),
+      );
       return;
     }
     const ctx: CommandContext = {
@@ -179,16 +196,28 @@ export class RpcServer {
       if (err instanceof RpcError) {
         this.send(state.ws, this.errorResponse(msg.id, err.code, err.message, err.retriable));
       } else {
-        this.opts.log.error("command failed", { name: msg.name, error: err instanceof Error ? err.message : String(err) });
+        this.opts.log.error("command failed", {
+          name: msg.name,
+          error: err instanceof Error ? err.message : String(err),
+        });
         this.send(
           state.ws,
-          this.errorResponse(msg.id, ErrorCodes.INTERNAL, err instanceof Error ? err.message : "internal error"),
+          this.errorResponse(
+            msg.id,
+            ErrorCodes.INTERNAL,
+            err instanceof Error ? err.message : "internal error",
+          ),
         );
       }
     }
   }
 
-  private errorResponse(id: string | null, code: string, message: string, retriable = false): ServerMessage {
+  private errorResponse(
+    id: string | null,
+    code: string,
+    message: string,
+    retriable = false,
+  ): ServerMessage {
     return { type: "response", id: id ?? "", ok: false, error: { code, message, retriable } };
   }
 

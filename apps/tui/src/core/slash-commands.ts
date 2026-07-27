@@ -8,12 +8,24 @@ export interface SlashCommand {
 
 export const SLASH_COMMANDS: readonly SlashCommand[] = [
   { name: "model", usage: "/model [model-id]", description: "Show or switch the primary model" },
-  { name: "session", usage: "/session new|rename|archive", description: "Manage the current session" },
+  {
+    name: "session",
+    usage: "/session new|rename|archive",
+    description: "Manage the current session",
+  },
   { name: "diff", usage: "/diff", description: "Review pending changes" },
-  { name: "checkpoint", usage: "/checkpoint create|restore [label|id]", description: "Manage checkpoints" },
+  {
+    name: "checkpoint",
+    usage: "/checkpoint create|restore [label|id]",
+    description: "Manage checkpoints",
+  },
   { name: "interrupt", usage: "/interrupt", description: "Interrupt the active run" },
   { name: "enqueue", usage: "/enqueue <text>", description: "Queue a follow-up message" },
-  { name: "compact-status", usage: "/compact-status", description: "Show context/compaction status" },
+  {
+    name: "compact-status",
+    usage: "/compact-status",
+    description: "Show context/compaction status",
+  },
   { name: "skills", usage: "/skills", description: "Open the skills view" },
   { name: "memory", usage: "/memory", description: "Open the memory view" },
   { name: "usage", usage: "/usage", description: "Show token/cost usage" },
@@ -53,7 +65,9 @@ export async function executeSlashCommand(
       const subArg = subRest.join(" ").trim();
       if (sub === "new") {
         if (!controller.currentSession) {
-          chat.addSystemMessage("no current session to derive a workspace from — use ctrl+n in the sessions view");
+          chat.addSystemMessage(
+            "no current session to derive a workspace from — use ctrl+n in the sessions view",
+          );
           return true;
         }
         const session = await controller.createSession(

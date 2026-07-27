@@ -68,7 +68,8 @@ export class SettingsViewModel {
       const parts = field.key.split(".");
       let cur: unknown = settings;
       for (const p of parts) {
-        cur = typeof cur === "object" && cur !== null ? (cur as Record<string, unknown>)[p] : undefined;
+        cur =
+          typeof cur === "object" && cur !== null ? (cur as Record<string, unknown>)[p] : undefined;
       }
       return { field, value: cur };
     });

@@ -1,13 +1,7 @@
 import type { IsoTimestamp, MemoryId, ProfileId, ProjectId, SessionId } from "./ids.js";
 
 export type MemoryKind =
-  | "working"
-  | "session"
-  | "episodic"
-  | "semantic"
-  | "userPreference"
-  | "project"
-  | "procedural";
+  "working" | "session" | "episodic" | "semantic" | "userPreference" | "project" | "procedural";
 
 export type Sensitivity = "normal" | "sensitive" | "secret-adjacent";
 

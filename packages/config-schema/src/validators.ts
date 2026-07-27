@@ -63,11 +63,15 @@ export function validatePluginManifest(input: unknown): SchemaIssue[] {
   } else {
     const validCaps = new Set<string>(ALL_CAPABILITIES);
     for (const cap of perms.capabilities ?? []) {
-      if (!validCaps.has(cap)) issues.push({ path: `permissions.capabilities`, message: `unknown capability: ${cap}` });
+      if (!validCaps.has(cap))
+        issues.push({ path: `permissions.capabilities`, message: `unknown capability: ${cap}` });
     }
-    if (!Array.isArray(perms.tools)) issues.push({ path: "permissions.tools", message: "expected array" });
-    if (!Array.isArray(perms.networkDomains)) issues.push({ path: "permissions.networkDomains", message: "expected array" });
-    if (!Array.isArray(perms.secrets)) issues.push({ path: "permissions.secrets", message: "expected array" });
+    if (!Array.isArray(perms.tools))
+      issues.push({ path: "permissions.tools", message: "expected array" });
+    if (!Array.isArray(perms.networkDomains))
+      issues.push({ path: "permissions.networkDomains", message: "expected array" });
+    if (!Array.isArray(perms.secrets))
+      issues.push({ path: "permissions.secrets", message: "expected array" });
   }
   if (!Array.isArray(m.platforms) || m.platforms.length === 0)
     issues.push({ path: "platforms", message: "expected non-empty array" });
@@ -98,7 +102,8 @@ export function validateAutomation(input: unknown): SchemaIssue[] {
     issues.push({ path: "trigger", message: "required" });
   } else {
     const kinds = ["once", "cron", "file_change", "git_change", "webhook", "app_launch", "manual"];
-    if (!kinds.includes(String(t.kind))) issues.push({ path: "trigger.kind", message: "invalid trigger kind" });
+    if (!kinds.includes(String(t.kind)))
+      issues.push({ path: "trigger.kind", message: "invalid trigger kind" });
     if (t.kind === "cron" && !isStr((t as { expression?: string }).expression))
       issues.push({ path: "trigger.expression", message: "cron trigger requires expression" });
   }

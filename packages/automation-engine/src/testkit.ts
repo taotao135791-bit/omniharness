@@ -3,7 +3,10 @@ import type { ProfileId, ProjectId, WorkspaceId } from "@omniharness/shared-type
 import type { CreateAutomationInput } from "./engine.js";
 
 /** Seed the FK chain profile → project → workspace that automations reference. */
-export function seedBase(db: OmniDatabase, at: string): {
+export function seedBase(
+  db: OmniDatabase,
+  at: string,
+): {
   profileId: ProfileId;
   workspaceId: WorkspaceId;
 } {

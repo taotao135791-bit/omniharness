@@ -24,23 +24,25 @@ side effect stays inside OmniHarness packages:
 
 ```ts
 const runtime = new PiAgentRuntime({
-  router,          // ModelRouter (model-gateway)
-  registry,        // ToolRegistry (tool-runtime)
-  policy,          // PolicyEvaluator (policy-engine)
-  approvalGate,    // optional ApprovalGate for ask_* decisions
-  workspace,       // Workspace all tool executions are scoped to
-  systemPrompt,    // optional base system prompt
-  buildContext,    // optional (sessionId) => string[] extra prompt sections
-  recorder,        // optional RunRecorder persistence hook
-  compaction,      // optional CompactionSettings overrides, or false
+  router, // ModelRouter (model-gateway)
+  registry, // ToolRegistry (tool-runtime)
+  policy, // PolicyEvaluator (policy-engine)
+  approvalGate, // optional ApprovalGate for ask_* decisions
+  workspace, // Workspace all tool executions are scoped to
+  systemPrompt, // optional base system prompt
+  buildContext, // optional (sessionId) => string[] extra prompt sections
+  recorder, // optional RunRecorder persistence hook
+  compaction, // optional CompactionSettings overrides, or false
 });
 
 const events = runtime.startRun({ sessionId, input: "fix the bug" });
-for await (const event of events) { /* RuntimeEvent */ }
+for await (const event of events) {
+  /* RuntimeEvent */
+}
 
-runtime.steer(runId, "also update the tests");   // inject mid-run
+runtime.steer(runId, "also update the tests"); // inject mid-run
 runtime.enqueueFollowUp(runId, "then summarize"); // run after agent stops
-runtime.interrupt(runId);                         // abort cleanly
+runtime.interrupt(runId); // abort cleanly
 ```
 
 `RuntimeEvent` mirrors the run/message/tool shapes of
@@ -56,12 +58,12 @@ run per session. The first event of every run is `run.started`; the last is
 
 ## Architecture
 
-| Piece | File | Seam used |
-|---|---|---|
+| Piece        | File                  | Seam used                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Model bridge | `src/model-bridge.ts` | Pi's `StreamFn` (`(model, context, options) => AssistantMessageEventStream`). Translates Pi `Context` ↔ gateway `ChatMessage[]`/`ToolSpec[]`, folds gateway `ModelStreamChunk`s into Pi's assistant-message event protocol (text/thinking/toolcall/done/error), maps usage and stop reasons both ways. Never throws — failures become `stopReason: "error" \| "aborted"` per Pi's contract. The `Model<Api>` given to Pi is synthetic metadata (`toPiModel`). |
-| Tool bridge | `src/tool-bridge.ts` | Converts each `ToolRegistry` entry into a Pi `AgentTool`. Our plain-JSON-Schema `parametersSchema` is passed through as-is — pi-ai's `validateToolArguments` supports non-TypeBox schemas (verified). Execution goes through `ToolRuntime.run`; `ToolOutputChunk`s stream out as `tool.call.output`. |
-| Compaction | `src/compaction.ts` | Pi `transformContext` hook + pi-agent-core's `estimateContextTokens`/`estimateTokens`/`shouldCompact`/`serializeConversation` helpers. Summarization runs through the router's **summarizer** role. |
-| Runtime | `src/runtime.ts` | `Agent` per session, `RuntimeEvent` queue per run, steering/follow-up/interrupt, recorder + buildContext hooks. |
+| Tool bridge  | `src/tool-bridge.ts`  | Converts each `ToolRegistry` entry into a Pi `AgentTool`. Our plain-JSON-Schema `parametersSchema` is passed through as-is — pi-ai's `validateToolArguments` supports non-TypeBox schemas (verified). Execution goes through `ToolRuntime.run`; `ToolOutputChunk`s stream out as `tool.call.output`.                                                                                                                                                          |
+| Compaction   | `src/compaction.ts`   | Pi `transformContext` hook + pi-agent-core's `estimateContextTokens`/`estimateTokens`/`shouldCompact`/`serializeConversation` helpers. Summarization runs through the router's **summarizer** role.                                                                                                                                                                                                                                                           |
+| Runtime      | `src/runtime.ts`      | `Agent` per session, `RuntimeEvent` queue per run, steering/follow-up/interrupt, recorder + buildContext hooks.                                                                                                                                                                                                                                                                                                                                               |
 
 ## Deliberate deviations from upstream Pi
 

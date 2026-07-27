@@ -31,7 +31,11 @@ function runReq(overrides: Partial<SandboxRequest> = {}): SandboxRequest {
 describe("SandboxEngine backend selection", () => {
   it("auto picks the first available backend in order", async () => {
     const engine = new SandboxEngine({
-      backends: [fakeBackend("seatbelt", false), fakeBackend("bwrap", true), fakeBackend("docker", true)],
+      backends: [
+        fakeBackend("seatbelt", false),
+        fakeBackend("bwrap", true),
+        fakeBackend("docker", true),
+      ],
     });
     const backend = await engine.selectBackend();
     expect(backend.name).toBe("bwrap");
@@ -72,9 +76,7 @@ describe("SandboxEngine backend selection", () => {
       backends: [fakeBackend("seatbelt", false)],
     });
     await expect(missing.selectBackend()).rejects.toThrow(/not available/);
-    expect(missing.diagnostics().probes).toEqual([
-      { backend: "seatbelt", available: false },
-    ]);
+    expect(missing.diagnostics().probes).toEqual([{ backend: "seatbelt", available: false }]);
   });
 
   it("records probe errors in diagnostics", async () => {
@@ -108,7 +110,7 @@ describe("SandboxEngine.run", () => {
     const engine = new SandboxEngine({ backend: "null" });
     const result = await engine.run(
       runReq({
-        argv: ["/bin/sh", "-c", "echo \"token=${API_TOKEN:-unset} path=$PATH\""],
+        argv: ["/bin/sh", "-c", 'echo "token=${API_TOKEN:-unset} path=$PATH"'],
         env: { PATH: process.env.PATH ?? "/usr/bin", API_TOKEN: "supersecret" },
       }),
     );

@@ -16,12 +16,7 @@ import {
   TaskNotFoundError,
   TaskOrchestrator,
 } from "./index.js";
-import type {
-  TaskRunOutcome,
-  TaskRunner,
-  TaskRunnerContext,
-  WorktreeAllocation,
-} from "./index.js";
+import type { TaskRunOutcome, TaskRunner, TaskRunnerContext, WorktreeAllocation } from "./index.js";
 
 const WS = "ws_test" as WorkspaceId;
 
@@ -58,8 +53,7 @@ class FakeWorktreeAllocator {
   }
 }
 
-const sleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 let db: OmniDatabase;
 let runner: ScriptedRunner;
@@ -104,16 +98,16 @@ describe("create + dependencies", () => {
   });
 
   it("rejects unknown dependencies", () => {
-    expect(() =>
-      orch.createTask({ objective: "X", dependencies: ["task_999" as TaskId] }),
-    ).toThrow(TaskNotFoundError);
+    expect(() => orch.createTask({ objective: "X", dependencies: ["task_999" as TaskId] })).toThrow(
+      TaskNotFoundError,
+    );
   });
 
   it("rejects dependency cycles", () => {
     orch.createTask({ objective: "A" });
-    expect(() =>
-      orch.createTask({ objective: "self", dependencies: [nextId()] }),
-    ).toThrow(CyclicDependencyError);
+    expect(() => orch.createTask({ objective: "self", dependencies: [nextId()] })).toThrow(
+      CyclicDependencyError,
+    );
   });
 });
 
@@ -243,9 +237,7 @@ describe("budgets", () => {
       objective: "pre-spent",
       budget: { maxToolCalls: 1 },
     });
-    expect(() => orch.recordUsage(task.id, { toolCalls: 2 })).toThrow(
-      BudgetExceededError,
-    );
+    expect(() => orch.recordUsage(task.id, { toolCalls: 2 })).toThrow(BudgetExceededError);
     await expect(orch.run(task.id)).rejects.toThrow(BudgetExceededError);
     expect(orch.getTask(task.id).status).toBe("failed");
     expect(runner.executed).toEqual([]);
@@ -271,9 +263,7 @@ describe("lifecycle", () => {
     let calls = 0;
     runner.handlers.set("flaky", () => {
       calls += 1;
-      return Promise.resolve(
-        calls === 1 ? { error: "boom" } : { result: "ok" },
-      );
+      return Promise.resolve(calls === 1 ? { error: "boom" } : { result: "ok" });
     });
     const task = orch.createTask({ objective: "flaky" });
 

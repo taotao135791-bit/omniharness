@@ -57,7 +57,11 @@ describe("PluginRegistry", () => {
   beforeEach(() => {
     dir = mkdtempSync(join(tmpdir(), "omniharness-registry-test-"));
     host = new ExtensionHost({ logger: silentLogger });
-    registry = new PluginRegistry(host, new InMemoryPluginPersistence(), () => "2026-01-01T00:00:00.000Z");
+    registry = new PluginRegistry(
+      host,
+      new InMemoryPluginPersistence(),
+      () => "2026-01-01T00:00:00.000Z",
+    );
     counter = 0;
   });
 
@@ -106,9 +110,7 @@ describe("PluginRegistry", () => {
     await registry.enable(record.manifest.id);
 
     // v2 drops a capability the plugin no longer needs: not an expansion.
-    const v2 = writePlugin(
-      baseManifest("test.update", "2.0.0", { capabilities: [], secrets: [] }),
-    );
+    const v2 = writePlugin(baseManifest("test.update", "2.0.0", { capabilities: [], secrets: [] }));
     const pending = registry.prepareUpdate(v2);
     expect(pending.pluginId).toBe(record.manifest.id);
     expect(pending.currentVersion).toBe("1.0.0");

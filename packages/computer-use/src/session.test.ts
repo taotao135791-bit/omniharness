@@ -30,7 +30,14 @@ class FakeDriver implements InputDriver {
   readonly platform = "fake";
   readonly calls: DriverCall[] = [];
   private readonly displays: DisplayInfo[] = [
-    { displayId: "display-0", name: "fake", width: 1000, height: 800, scaleFactor: 1, primary: true },
+    {
+      displayId: "display-0",
+      name: "fake",
+      width: 1000,
+      height: 800,
+      scaleFactor: 1,
+      primary: true,
+    },
   ];
 
   private record(method: string, args: unknown[]): void {
@@ -188,10 +195,7 @@ describe("ComputerUseSession", () => {
 
   it("denies sensitive actions when no gate is configured (fail closed)", async () => {
     const driver = new FakeDriver();
-    const proposer = new ScriptedProposer([
-      [{ kind: "secure_fill", secretRef: "anything" }],
-      [],
-    ]);
+    const proposer = new ScriptedProposer([[{ kind: "secure_fill", secretRef: "anything" }], []]);
     const session = new ComputerUseSession({
       driver,
       proposer,
@@ -254,10 +258,7 @@ describe("ComputerUseSession", () => {
 
   it("supports step mode", async () => {
     const driver = new FakeDriver();
-    const proposer = new ScriptedProposer([
-      [{ kind: "wait", ms: 0 }],
-      [],
-    ]);
+    const proposer = new ScriptedProposer([[{ kind: "wait", ms: 0 }], []]);
     const session = new ComputerUseSession({ driver, proposer, goal: "step" });
     expect(await session.step()).toBe("continue");
     expect(await session.step()).toBe("done");

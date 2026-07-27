@@ -116,8 +116,14 @@ Three seams between the session/router and "the agent":
      ensureSession(input: AcpRuntimeEnsureInput): Promise<AcpRuntimeHandle>;
      startTurn?(input: AcpRuntimeTurnInput): AcpRuntimeTurn;
      runTurn(input: AcpRuntimeTurnInput): AsyncIterable<AcpRuntimeEvent>;
-     getCapabilities?(); getStatus?(); setMode?(); setConfigOption?();
-     prepareFreshSession?(); cancel(); close(); doctor?();
+     getCapabilities?();
+     getStatus?();
+     setMode?();
+     setConfigOption?();
+     prepareFreshSession?();
+     cancel();
+     close();
+     doctor?();
    }
    ```
    - `AcpRuntimeEnsureInput`: `{sessionKey, agent, mode:"persistent"|"oneshot", resumeSessionId?, model?, modelExplicit?, thinking?, cwd?, env?}`.
@@ -126,7 +132,7 @@ Three seams between the session/router and "the agent":
    - Registry `registerAcpRuntimeBackend({id, runtime, healthy?})` (`src/acp/runtime/registry.ts:53`); control plane `AcpSessionManager` (`src/acp/control-plane/manager.*.ts`: `resolveSession`, `initializeSession`, `runTurn({cfg, sessionKey, provenance:"human"|"agent"|"system", text, attachments?, mode, requestId, signal?, onEvent?})`, `closeSession`, backend failover). ACP session keys start with `acp:` (`isAcpSessionKey`). Config `OpenClawConfig.acp` (`src/config/types.acp.ts`): `enabled, dispatch.enabled, backend (default "acpx"), fallbacks[], defaultAgent, allowedAgents[], stream.deliveryMode`.
    - Bundled backend `extensions/acpx` (`AcpxRuntime implements AcpRuntime`, `extensions/acpx/src/runtime.ts:748`) spawns `claude-agent-acp` / `codex-acp` **subprocesses**, tracked by `AcpxProcessLeaseStore` + orphan reaper.
    - Channel path: `tryDispatchAcpReply` (`src/auto-reply/reply/dispatch-acp.ts:396`) → `acpManager.runTurn` (:747) → `createAcpReplyProjector` maps events to channel replies.
-   - **Tool allowlists are NOT enforceable through ACP** — `dispatch-acp.ts:637` throws `ACP_DISPATCH_DISABLED`: *"ACP dispatch cannot enforce runtime toolsAllow for this session; use an embedded runtime for restricted tool policy."* ACP backends are fully trusted subprocesses.
+   - **Tool allowlists are NOT enforceable through ACP** — `dispatch-acp.ts:637` throws `ACP_DISPATCH_DISABLED`: _"ACP dispatch cannot enforce runtime toolsAllow for this session; use an embedded runtime for restricted tool policy."_ ACP backends are fully trusted subprocesses.
    - Note: `extensions/opencode` is a **model provider** plugin, not an agent backend — don't be misled by the name.
 
 ### Config, credentials, allowlists (`src/config/`, `src/secrets/`, `src/pairing/`)
@@ -141,7 +147,7 @@ Three seams between the session/router and "the agent":
 - **Cron:** `CronJob` (`src/cron/types.ts:453`) with `CronSchedule` = `{kind:"at"}|{kind:"every",everyMs}|{kind:"cron",expr,tz?}` (croner lib, IANA tz) `|{kind:"on-exit",command}|{kind:"stream",command[]}` (supervised long-lived processes whose stdout batches into prompts); payloads `systemEvent|agentTurn|command|script|heartbeat`; delivery `none|announce|webhook` with `channel/to/threadId/accountId` or `source:"last"` (session's last delivery context). Storage: SQLite table `cron_jobs` in the shared state DB. Execution `executeJobCore` (`src/cron/service/timer.ts:2482`): main-session jobs enqueue system events; isolated jobs run embedded agent turns (`runCronIsolatedAgentTurn`, lane `"cron"`, watchdog); `command` payloads exec on the gateway host. Webhook delivery by the gateway (`postCronWebhook`, `src/gateway/server-cron-notifications.ts:200`) with Bearer `cron.webhookToken` + SSRF guard. **Cron jobs default to `toolsAllow: ["*"]`** (`applyDefaultCronToolsAllow`).
 - **Hooks:** `/hooks/wake` and `/hooks/agent` (`src/gateway/server/hooks-request-handler.ts`) — Bearer `hooks.token` only (query-param tokens explicitly rejected), rate-limited; `/hooks/agent` synthesizes an ephemeral isolated cron job. `hooks.allowRequestSessionKey` + `hooks.allowedSessionKeyPrefixes` let a token holder pick the target session. Gmail: supervised `gog gmail watch serve` sidecar POSTing to `/hooks/gmail` (`src/hooks/gmail*.ts`).
 - **Webhooks plugin** (`extensions/webhooks/`): per-route `sessionKey` + `secret` (SecretInput), default path `/plugins/webhooks/<routeId>`, 256 KB body cap, constant-time compare, drives TaskFlows (not cron).
-- **Memory:** `memory-core` (bundled) exposes agent tools `memory_search {query, maxResults?, minScore?, corpus?}` / `memory_get {path, from?, lines?, corpus?}` over `MEMORY.md` + `memory/*.md`; index = `node:sqlite` FTS5 + optional sqlite-vec (`MemoryIndexManager`, `src/memory/manager.ts:299`), embeddings via configurable provider (default openai; `local` = node-llama-cpp GGUF). Trust note (`tools.ts:485`): *"The trusted runtime chooses the recall corpus; model-authored arguments cannot broaden it."* `memory-lancedb` (separate package): `memory_recall/memory_store/memory_forget` over LanceDB with per-agent scoping. `active-memory`: blocking memory sub-agent on `before_prompt_build`. "Dreaming" consolidation promotes snippets into `MEMORY.md`.
+- **Memory:** `memory-core` (bundled) exposes agent tools `memory_search {query, maxResults?, minScore?, corpus?}` / `memory_get {path, from?, lines?, corpus?}` over `MEMORY.md` + `memory/*.md`; index = `node:sqlite` FTS5 + optional sqlite-vec (`MemoryIndexManager`, `src/memory/manager.ts:299`), embeddings via configurable provider (default openai; `local` = node-llama-cpp GGUF). Trust note (`tools.ts:485`): _"The trusted runtime chooses the recall corpus; model-authored arguments cannot broaden it."_ `memory-lancedb` (separate package): `memory_recall/memory_store/memory_forget` over LanceDB with per-agent scoping. `active-memory`: blocking memory sub-agent on `before_prompt_build`. "Dreaming" consolidation promotes snippets into `MEMORY.md`.
 
 ### Install / upgrade / packaging (`openclaw.mjs`, `src/daemon/`, `src/infra/update-*.ts`)
 
@@ -157,22 +163,26 @@ Ordered by how much of OpenClaw each reuses. The guiding fact: OpenClaw's plugin
 ### 3.1 Agent seam (where the OmniHarness daemon plugs in) — `AcpRuntime`
 
 Implement `AcpRuntime` (`packages/acp-core/src/runtime/types.ts`) and register with `registerAcpRuntimeBackend({id:"omniharness", runtime})` (`src/acp/runtime/registry.ts:53`). Minimum viable: `ensureSession` + `runTurn` streaming `text_delta` events and terminating with `done`. The daemon receives `{sessionKey, agent, mode, model?, cwd?}` at session setup and `{text, attachments?: {mediaType, data}[], mode:"prompt"|"steer", requestId, signal}` per turn. Route conversations to it via `agents.bindings[]` entries `{type:"acp", agentId, match, acp:{backend:"omniharness", ...}}` and `acp.allowedAgents`. This is exactly how `extensions/acpx` wraps claude/codex ACP subprocesses — copy its shape (`extensions/acpx/src/runtime.ts:748`, process leasing in `src/process-lease.ts`).
+
 - If ACP-over-stdio is a better transport for the daemon, mirror `extensions/acpx`'s use of `acpx@0.11.2` and let the daemon speak the Agent Client Protocol; OpenClaw already ships the client side.
 - **Consequence:** tool policy, sandboxing, and approvals must live inside the OmniHarness daemon — OpenClaw explicitly refuses restrictive `toolsAllow` on ACP sessions (`dispatch-acp.ts:637`).
 
 ### 3.2 Gateway connection seam (OmniHarness as an operator client)
 
 Use `packages/gateway-client` (`src/client.ts` — reference implementation) as the protocol contract:
+
 1. WS connect to `ws://<host>:18789`, await `connect.challenge` event.
 2. Send `req "connect"` with `ConnectParams`: closed-enum `client.id`/`client.mode` (see `packages/gateway-protocol/src/client-info.ts`), `minProtocol:4, maxProtocol:4`, `auth:{token}` and ideally `device:{id, publicKey, signature, signedAt, nonce}` (Ed25519; sign `buildDeviceAuthPayloadV3` including the token and challenge nonce).
 3. On `hello-ok`, persist `auth.deviceToken` and reconnect with it thereafter.
 4. Subscribe: `sessions.subscribe` / `sessions.messages.subscribe`; consume scoped `EventFrame`s (`chat`, `agent`, `session.message`, `exec.approval.requested`, …) with per-client `seq` gap handling.
+
 - Frame schemas to vendor: `packages/gateway-protocol/src/schema/frames.ts`, `schema/nodes.ts`, `schema/error-codes.ts`, `version.ts`. Pin to `PROTOCOL_VERSION = 4`.
 - For a co-located (loopback) adapter, the documented "trusted same-process backend client" path (`client.id:"gateway-client"`, `mode:"backend"`) may omit the device proof on loopback+shared-secret — convenient but inherits full local trust; prefer real device identity for anything off-loopback.
 
 ### 3.3 Channel message seam
 
 Two options:
+
 - **Reuse OpenClaw channels as-is (wrap):** run the OpenClaw gateway, let `extensions/telegram|slack|discord|whatsapp|…` normalize inbound into `MsgContext`, and take over only below `runPreparedReply` — i.e. bind the target sessions to the ACP backend (3.1). You inherit dmPolicy/pairing, media staging (`saveMediaBuffer`, `src/media/store.ts:482`), chunking, typing, and durable delivery for free.
 - **Implement a new channel (wrap the interface):** implement `ChannelPlugin` (`src/channels/plugins/types.plugin.ts:60`) — realistically via `createChatChannelPlugin` (`src/plugin-sdk/core.ts:822`) — providing: `config: ChannelConfigAdapter` (account listing/resolution, `resolveAllowFrom`), `gateway: ChannelGatewayAdapter.startAccount` (your receive loop; build `MsgContext`, call the host-injected `channelRuntime.reply.dispatchReplyWithBufferedBlockDispatcher` with a `deliver` callback), `outbound: ChannelOutboundAdapter` (`sendText/sendMedia/sendPayload` → `OutboundDeliveryResult`), `security.resolveDmPolicy`, `pairing` (via `createChannelPairingChallengeIssuer`, `src/plugin-sdk/channel-pairing.ts:30`). Declare `openclaw.channel` + `openclaw.plugin.json` in the package. Package as an external plugin (`defineChannelPluginEntry`).
 - Outbound contract to honor: `ReplyPayload` (`src/auto-reply/reply-payload.ts`) in, `OutboundDeliveryResult` / `MessageReceipt` out; text chunk limits per channel; media must go through `loadOutboundMediaFromUrl` policy (`src/plugin-sdk/outbound-media.ts:32`: maxBytes, local roots, SSRF guard).
@@ -180,6 +190,7 @@ Two options:
 ### 3.4 Node pairing seam (phones/remote devices as OmniHarness peripherals)
 
 Two sub-options:
+
 - **Node client side (make OmniHarness-controlled devices pair as nodes):** implement the node half of the protocol — connect with `role:"node"`, declare `caps`/`commands`, answer `node.invoke.request` events with `node.invoke.result` reqs. Reference: `src/node-host/runner.ts` (`runNodeHost`), `src/node-host/invoke.ts` (`handleInvoke`, `sendInvokeResult` :1029), mobile impls `apps/ios/Sources/Gateway/GatewayConnectionController+Capabilities.swift`, `apps/android/.../GatewayProtocol.kt`. Expect operator approval (`openclaw devices approve` + `openclaw nodes approve`) unless bootstrap-token onboarding (`device.pair.setupCode`) is used.
 - **Gateway side (reuse pairing UX):** the `/pair` command + QR/setup-code flow in `extensions/device-pair/` and the approval stores in `src/infra/device-pairing.ts` / `node-pairing.ts` are all reachable via RPCs (`device.pair.*`, `node.pair.*`, scope `operator.pairing`) — an adapter can drive pairing entirely through the gateway client without touching the DB.
 
@@ -197,7 +208,7 @@ Inbound: channels download → `saveMediaBuffer(buffer, contentType, "inbound", 
 - **Normative trust statements** (SECURITY.md): "anyone with Gateway auth = trusted operator"; "the model/agent is **not** a trusted principal"; "Session identifiers (`sessionKey`, session IDs, labels) are routing controls, **not** per-user authorization boundaries"; anyone who can write `~/.openclaw` or the process env is trusted; plugins run in-process at full privilege; sandbox is **off by default**.
 - **What must NOT be trusted:**
   - **Session keys / sessionIds as auth.** They are parseable, forgeable routing strings. Worse, `hooks.allowRequestSessionKey` + `hooks.allowedSessionKeyPrefixes` let any holder of the hooks Bearer token choose which session a message lands in (`src/gateway/server/hooks-request-handler.ts:280-301`).
-  - **Sender IDs beyond the allowlist gate.** allowFrom matching is the *only* channel authz, and it keys off platform sender IDs; mutable identifiers (usernames/emails/nicks) are explicitly flagged `dangerous` and disabled unless `mutableIdentifierMatching === "enabled"` (`src/channels/message-access/allowlist.ts`). Owner status is likewise sender-ID-derived (`commands.ownerAllowFrom`, `tools.elevated.allowFrom`, `tools.toolsBySender`).
+  - **Sender IDs beyond the allowlist gate.** allowFrom matching is the _only_ channel authz, and it keys off platform sender IDs; mutable identifiers (usernames/emails/nicks) are explicitly flagged `dangerous` and disabled unless `mutableIdentifierMatching === "enabled"` (`src/channels/message-access/allowlist.ts`). Owner status is likewise sender-ID-derived (`commands.ownerAllowFrom`, `tools.elevated.allowFrom`, `tools.toolsBySender`).
   - **Channel-provided metadata in prompts.** Group subjects, sender names etc. are fenced as untrusted (`buildUntrustedChannelMetadata`, `src/security/channel-metadata.ts`; `wrapExternalContent`, `src/security/external-content.ts` with homoglyph/zero-width marker sanitization and ChatML special-token stripping). Our adapter must preserve this fencing when constructing prompts.
   - **Trusted-context fields must be server-set, never sender-set:** `CommandAuthorized`, `InboundAccessAuthorized`, `OwnerAllowFrom`, `GatewayClientScopes` on `MsgContext`; `requesterSenderId`/`senderIsOwner` on `ChannelMessageActionContext` ("must never be sourced from tool/model-controlled params", `types.core.ts:664`).
   - **The loopback "backend" client path** skips device proof — full trust by design; never expose it off-loopback.
@@ -210,16 +221,19 @@ Inbound: channels download → `saveMediaBuffer(buffer, contentType, "inbound", 
 ## 5. Reimplement vs. wrap; protocol compatibility
 
 **Wrap (depend on OpenClaw packages / run its gateway):**
+
 - Gateway server + protocol (`src/gateway/*`, `packages/gateway-protocol`, `packages/gateway-client`) — the handshake/device-proof/pairing machinery is deep and security-critical; reimplementing invites subtle auth bugs. Client side can be a thin vendored implementation of the four frame types + `connect` handshake (all TypeBox schemas in `packages/gateway-protocol/src/schema/`).
 - Channel plugins we want to support (telegram/slack/discord/whatsapp/signal) — running them as plugins inside an OpenClaw gateway is dramatically cheaper than porting grammy/bolt/baileys integrations.
 - DM pairing + allowlist store (`src/pairing/`), ingress resolver, media staging/policy, reply dispatcher lanes, typing, cron delivery to channels.
 
 **Reimplement (own code, OpenClaw-compatible):**
+
 - The agent runtime — that is OmniHarness itself, behind the `AcpRuntime` interface (§3.1).
 - Any adapter process supervising the gateway (health, restart, config templating) — set `OPENCLAW_SUPERVISOR_MODE=external` so OpenClaw's daemon/update machinery stays out of the way.
 - Config generation: write `openclaw.json` ourselves (JSON5, 0o600), using SecretRefs for all tokens from day one.
 
 **Compatibility notes:**
+
 - **Version pinning is mandatory.** Protocol is at `PROTOCOL_VERSION = 4` (`MIN_NODE_PROTOCOL_VERSION = 3`); schemas are TypeBox and evolve per release; the plugin SDK has no independent semver. Pin an exact OpenClaw version per OmniHarness release and vendor `packages/gateway-protocol` schemas for any reimplemented client.
 - **String formats are load-bearing.** Session keys (`agent:<id>:<channel>:<accountId>:direct:<peerId>`, `:thread:` suffixes, `acp:`/`cron:`/`subagent:` prefixes), case-preservation spans (Signal/Matrix), `dmScope` variants — sandbox scoping, reset, routing, and cross-channel delivery all parse these. Reproduce exactly or delegate to `src/routing/session-key.ts` helpers.
 - `MsgContext` is a ~200-field grab bag; the fields that matter for an agent seam are the Body/From/To/SessionKey/sender/media/trust-marker subset — but `finalizeInboundContext` must remain the only place `CommandAuthorized` becomes true.
@@ -231,10 +245,10 @@ Inbound: channels download → `saveMediaBuffer(buffer, contentType, "inbound", 
 
 1. **Moving-target coupling (high).** Calendar-versioned releases (`2026.7.2` at audit time), protocol v4, version-locked plugin SDK, ~28k-file monorepo with extremely active development (commit #112939). Any wrap strategy needs a pinned version + a repeatable upgrade/audit loop.
 2. **Security posture mismatch (high).** OpenClaw is a single-user, host-first personal assistant: sandbox off by default, plaintext secrets by default, operator = owner. OmniHarness must impose its own multi-tenant/tool-policy story at the ACP seam and never inherit OpenClaw's ambient trust (loopback backend clients, `mode:"none"`, `dmPolicy:"open"`).
-3. **ACP trust gap (medium-high).** No tool-policy enforcement across the ACP boundary is *by design*; if our threat model needs mediated tools, we must mediate inside the daemon or fall back to the in-process `AgentHarness` seam (much larger contract: `AgentHarnessAttemptParams` ≈ full `EmbeddedRunAttemptParams`).
+3. **ACP trust gap (medium-high).** No tool-policy enforcement across the ACP boundary is _by design_; if our threat model needs mediated tools, we must mediate inside the daemon or fall back to the in-process `AgentHarness` seam (much larger contract: `AgentHarnessAttemptParams` ≈ full `EmbeddedRunAttemptParams`).
 4. **In-process plugin model (medium).** Channel plugins run in the gateway process at full privilege; a buggy baileys/grammy dependency is inside our trust boundary. Mitigate by running the OpenClaw gateway as its own supervised process with least OS privilege.
 5. **SQLite state coupling (medium).** Pairing/allowlist/cron/device state lives in `~/.openclaw/state/openclaw.sqlite` with schema version `state: 5`. Touch it only through RPCs; direct DB access will break on migrations.
 6. **Supply chain (medium).** `npm i -g openclaw` runs pre/postinstall scripts (which patch `node_modules` by string matching); Matrix crypto downloads prebuilt binaries; self-update executes freshly installed code. Pin and verify tarballs; disable auto-update (default off — keep it off).
 7. **Session-key spoof surface (medium-low).** Anything in our stack that treats session keys or hook-chosen session targets as security boundaries re-introduces a bug class OpenClaw explicitly disclaims.
 8. **Notice/attribution gap (low).** Bundling OpenClaw dist inherits its minimal third-party notices; run our own license scan if we redistribute.
-9. **Feature gravity (low).** Cron jobs default to `toolsAllow:["*"]` and delivery falls back to a session's *last* route (`source:"last"`) — convenient but leaky defaults to override in generated configs.
+9. **Feature gravity (low).** Cron jobs default to `toolsAllow:["*"]` and delivery falls back to a session's _last_ route (`source:"last"`) — convenient but leaky defaults to override in generated configs.

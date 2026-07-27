@@ -25,21 +25,21 @@ omni provider add --kind <kind> --name <display> [--base-url <url>] [--api-key <
 omni provider test --provider <id>
 ```
 
-| Kind | Notes |
-| --- | --- |
-| `openai` | api.openai.com |
-| `anthropic` | api.anthropic.com, native Messages API |
-| `google` | Gemini |
-| `openrouter` | One key, many models |
-| `azure-openai` | Deployment-scoped URLs via options |
-| `aws-bedrock` | Requires SigV4 — see KNOWN_ISSUES |
-| `mistral` / `groq` / `xai` / `kimi` / `minimax` / `deepseek` / `zhipu` / `aliyun` / `volcano` | OpenAI-compatible presets |
-| `ollama` / `lmstudio` | Local models, no key |
-| `openai-compatible` | Any endpoint with a base URL |
-| `custom-plugin` | Registered by a plugin |
+| Kind                                                                                          | Notes                                  |
+| --------------------------------------------------------------------------------------------- | -------------------------------------- |
+| `openai`                                                                                      | api.openai.com                         |
+| `anthropic`                                                                                   | api.anthropic.com, native Messages API |
+| `google`                                                                                      | Gemini                                 |
+| `openrouter`                                                                                  | One key, many models                   |
+| `azure-openai`                                                                                | Deployment-scoped URLs via options     |
+| `aws-bedrock`                                                                                 | Requires SigV4 — see KNOWN_ISSUES      |
+| `mistral` / `groq` / `xai` / `kimi` / `minimax` / `deepseek` / `zhipu` / `aliyun` / `volcano` | OpenAI-compatible presets              |
+| `ollama` / `lmstudio`                                                                         | Local models, no key                   |
+| `openai-compatible`                                                                           | Any endpoint with a base URL           |
+| `custom-plugin`                                                                               | Registered by a plugin                 |
 
 Keys are stored via `secret-store` (macOS Keychain / Windows Credential Manager
-/ libsecret / encrypted-file fallback). The database only stores a *reference*
+/ libsecret / encrypted-file fallback). The database only stores a _reference_
 like `provider:prov_xxx:apiKey`.
 
 ## Capability declarations

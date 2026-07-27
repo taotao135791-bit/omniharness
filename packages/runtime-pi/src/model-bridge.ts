@@ -14,7 +14,12 @@ import type {
 import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import type { ChatMessage, MessagePart, ModelRouter } from "@omniharness/model-gateway";
 import { textMessage } from "@omniharness/model-gateway";
-import type { ModelDefinition, ModelRole, ModelStreamChunk, TokenUsage } from "@omniharness/shared-types";
+import type {
+  ModelDefinition,
+  ModelRole,
+  ModelStreamChunk,
+  TokenUsage,
+} from "@omniharness/shared-types";
 
 /**
  * Synthetic pi-ai model descriptor. Pi never talks to a provider directly —
@@ -90,7 +95,11 @@ export function piContextToChatMessages(context: Context): ChatMessage[] {
         } else if (part.type === "toolCall") {
           parts.push({
             type: "tool_call",
-            toolCall: { id: part.id, name: part.name, argumentsJson: JSON.stringify(part.arguments) },
+            toolCall: {
+              id: part.id,
+              name: part.name,
+              argumentsJson: JSON.stringify(part.arguments),
+            },
           });
         }
         // thinking/reasoning blocks are not replayed through the gateway.
@@ -148,7 +157,11 @@ export function createRouterStreamFn(router: ModelRouter, role: ModelRole): Stre
       timestamp: Date.now(),
     });
 
-    const fail = (message: AssistantMessage, stopReason: "error" | "aborted", errorMessage: string): void => {
+    const fail = (
+      message: AssistantMessage,
+      stopReason: "error" | "aborted",
+      errorMessage: string,
+    ): void => {
       message.stopReason = stopReason;
       message.errorMessage = errorMessage;
       stream.push({ type: "error", reason: stopReason, error: message });
@@ -248,7 +261,9 @@ export function createRouterStreamFn(router: ModelRouter, role: ModelRole): Stre
             const id = chunk.toolCall.id;
             const pending = pendingToolCalls.get(id);
             const argumentsJson =
-              chunk.toolCall.argumentsJson !== "" ? chunk.toolCall.argumentsJson : (pending?.argumentsJson ?? "");
+              chunk.toolCall.argumentsJson !== ""
+                ? chunk.toolCall.argumentsJson
+                : (pending?.argumentsJson ?? "");
             let args: Record<string, unknown>;
             try {
               const parsed: unknown = JSON.parse(argumentsJson === "" ? "{}" : argumentsJson);
@@ -257,9 +272,16 @@ export function createRouterStreamFn(router: ModelRouter, role: ModelRole): Stre
                   ? (parsed as Record<string, unknown>)
                   : {};
             } catch {
-              throw new Error(`Model emitted invalid JSON arguments for tool "${chunk.toolCall.name}"`);
+              throw new Error(
+                `Model emitted invalid JSON arguments for tool "${chunk.toolCall.name}"`,
+              );
             }
-            const toolCall: ToolCall = { type: "toolCall", id, name: chunk.toolCall.name, arguments: args };
+            const toolCall: ToolCall = {
+              type: "toolCall",
+              id,
+              name: chunk.toolCall.name,
+              arguments: args,
+            };
             const index = pending?.contentIndex ?? content.length;
             if (pending !== undefined) {
               content[pending.contentIndex] = toolCall;

@@ -53,7 +53,10 @@ export function parseUnifiedDiff(text: string): DiffFile[] {
 
   const flush = (): void => {
     if (currentHunk) {
-      while (currentHunk.lines.length > 0 && currentHunk.lines[currentHunk.lines.length - 1] === "") {
+      while (
+        currentHunk.lines.length > 0 &&
+        currentHunk.lines[currentHunk.lines.length - 1] === ""
+      ) {
         currentHunk.lines.pop();
       }
     }
@@ -225,13 +228,17 @@ export async function applyHunks(
   if (hunkIndexes.length === 0) {
     throw new Error("No hunks selected");
   }
-  const selected = [...hunkIndexes].sort((a, b) => a - b).map((i) => {
-    const hunk = file.hunks[i];
-    if (!hunk) {
-      throw new Error(`Hunk index ${i} out of range for ${file.path} (${file.hunks.length} hunks)`);
-    }
-    return hunk;
-  });
+  const selected = [...hunkIndexes]
+    .sort((a, b) => a - b)
+    .map((i) => {
+      const hunk = file.hunks[i];
+      if (!hunk) {
+        throw new Error(
+          `Hunk index ${i} out of range for ${file.path} (${file.hunks.length} hunks)`,
+        );
+      }
+      return hunk;
+    });
 
   const patchLines: string[] = [...file.headerLines];
   for (const hunk of selected) {

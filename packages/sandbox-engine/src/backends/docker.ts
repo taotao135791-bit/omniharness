@@ -16,10 +16,16 @@ export interface DockerBackendOptions {
  */
 export function buildDockerArgv(req: SandboxRequest, image: string): string[] {
   const argv: string[] = [
-    "docker", "run", "--rm", "-i",
-    "--network", req.network === "off" ? "none" : "bridge",
-    "--cap-drop", "ALL",
-    "--security-opt", "no-new-privileges",
+    "docker",
+    "run",
+    "--rm",
+    "-i",
+    "--network",
+    req.network === "off" ? "none" : "bridge",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
   ];
   for (const path of req.readOnlyPaths ?? []) {
     argv.push("-v", `${path}:${path}:ro`);

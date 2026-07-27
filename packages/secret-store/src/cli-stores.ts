@@ -10,10 +10,15 @@ export interface CommandResult {
 /** Runs a CLI without a shell; resolves even on non-zero exit, rejects only when the binary cannot be spawned. */
 export function runCommand(cmd: string, args: string[], input?: string): Promise<CommandResult> {
   return new Promise((resolve, reject) => {
-    const child = execFile(cmd, args, { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 }, (error, stdout, stderr) => {
-      const code = typeof error?.code === "number" ? error.code : error ? 1 : 0;
-      resolve({ code, stdout, stderr });
-    });
+    const child = execFile(
+      cmd,
+      args,
+      { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 },
+      (error, stdout, stderr) => {
+        const code = typeof error?.code === "number" ? error.code : error ? 1 : 0;
+        resolve({ code, stdout, stderr });
+      },
+    );
     child.on("error", reject);
     if (input !== undefined && child.stdin !== null) {
       child.stdin.write(input);
@@ -28,10 +33,19 @@ const MACOS_NOT_FOUND = 44;
 
 export class MacosKeychainStore implements SecretStore {
   async get(ref: SecretRef): Promise<string | null> {
-    const res = await runCommand("security", ["find-generic-password", "-s", KEYCHAIN_SERVICE, "-a", ref, "-w"]);
+    const res = await runCommand("security", [
+      "find-generic-password",
+      "-s",
+      KEYCHAIN_SERVICE,
+      "-a",
+      ref,
+      "-w",
+    ]);
     if (res.code === MACOS_NOT_FOUND) return null;
     if (res.code !== 0) {
-      throw new SecretStoreError(`security find-generic-password failed: ${res.stderr.trim()}`, { ref });
+      throw new SecretStoreError(`security find-generic-password failed: ${res.stderr.trim()}`, {
+        ref,
+      });
     }
     // `security -w` appends a trailing newline to the printed password.
     return res.stdout.replace(/\r?\n$/, "");
@@ -39,16 +53,35 @@ export class MacosKeychainStore implements SecretStore {
 
   async set(ref: SecretRef, value: string): Promise<void> {
     // -U updates in place when the item already exists.
-    const res = await runCommand("security", ["add-generic-password", "-U", "-s", KEYCHAIN_SERVICE, "-a", ref, "-w", value]);
+    const res = await runCommand("security", [
+      "add-generic-password",
+      "-U",
+      "-s",
+      KEYCHAIN_SERVICE,
+      "-a",
+      ref,
+      "-w",
+      value,
+    ]);
     if (res.code !== 0) {
-      throw new SecretStoreError(`security add-generic-password failed: ${res.stderr.trim()}`, { ref });
+      throw new SecretStoreError(`security add-generic-password failed: ${res.stderr.trim()}`, {
+        ref,
+      });
     }
   }
 
   async delete(ref: SecretRef): Promise<void> {
-    const res = await runCommand("security", ["delete-generic-password", "-s", KEYCHAIN_SERVICE, "-a", ref]);
+    const res = await runCommand("security", [
+      "delete-generic-password",
+      "-s",
+      KEYCHAIN_SERVICE,
+      "-a",
+      ref,
+    ]);
     if (res.code !== 0 && res.code !== MACOS_NOT_FOUND) {
-      throw new SecretStoreError(`security delete-generic-password failed: ${res.stderr.trim()}`, { ref });
+      throw new SecretStoreError(`security delete-generic-password failed: ${res.stderr.trim()}`, {
+        ref,
+      });
     }
   }
 
@@ -89,7 +122,12 @@ export class WindowsCredentialStore implements SecretStore {
       "[void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime];" +
       "$vault = New-Object Windows.Security.Credentials.PasswordVault;" +
       `try { ($vault.Retrieve('${target}','${WINDOWS_USER}')).Password } catch { exit 44 }`;
-    const res = await runCommand("powershell", ["-NoProfile", "-NonInteractive", "-Command", script]);
+    const res = await runCommand("powershell", [
+      "-NoProfile",
+      "-NonInteractive",
+      "-Command",
+      script,
+    ]);
     if (res.code === 44) return null;
     if (res.code !== 0) {
       throw new SecretStoreError(`PasswordVault retrieve failed: ${res.stderr.trim()}`, { ref });
@@ -98,16 +136,25 @@ export class WindowsCredentialStore implements SecretStore {
   }
 
   async set(ref: SecretRef, value: string): Promise<void> {
-    const res = await runCommand("cmdkey", [`/add:${this.target(ref)}`, `/user:${WINDOWS_USER}`, `/pass:${value}`]);
+    const res = await runCommand("cmdkey", [
+      `/add:${this.target(ref)}`,
+      `/user:${WINDOWS_USER}`,
+      `/pass:${value}`,
+    ]);
     if (res.code !== 0) {
-      throw new SecretStoreError(`cmdkey /add failed: ${res.stderr.trim() || res.stdout.trim()}`, { ref });
+      throw new SecretStoreError(`cmdkey /add failed: ${res.stderr.trim() || res.stdout.trim()}`, {
+        ref,
+      });
     }
   }
 
   async delete(ref: SecretRef): Promise<void> {
     const res = await runCommand("cmdkey", [`/delete:${this.target(ref)}`]);
     if (res.code !== 0 && !res.stdout.includes("not found") && !res.stderr.includes("not found")) {
-      throw new SecretStoreError(`cmdkey /delete failed: ${res.stderr.trim() || res.stdout.trim()}`, { ref });
+      throw new SecretStoreError(
+        `cmdkey /delete failed: ${res.stderr.trim() || res.stdout.trim()}`,
+        { ref },
+      );
     }
   }
 
@@ -132,7 +179,13 @@ const SECRET_TOOL_SERVICE = "omniharness";
 
 export class LinuxSecretToolStore implements SecretStore {
   async get(ref: SecretRef): Promise<string | null> {
-    const res = await runCommand("secret-tool", ["lookup", "service", SECRET_TOOL_SERVICE, "ref", ref]);
+    const res = await runCommand("secret-tool", [
+      "lookup",
+      "service",
+      SECRET_TOOL_SERVICE,
+      "ref",
+      ref,
+    ]);
     if (res.code !== 0) return null; // not found or collection locked
     return res.stdout.replace(/\r?\n$/, "");
   }
@@ -149,14 +202,25 @@ export class LinuxSecretToolStore implements SecretStore {
   }
 
   async delete(ref: SecretRef): Promise<void> {
-    const res = await runCommand("secret-tool", ["clear", "service", SECRET_TOOL_SERVICE, "ref", ref]);
+    const res = await runCommand("secret-tool", [
+      "clear",
+      "service",
+      SECRET_TOOL_SERVICE,
+      "ref",
+      ref,
+    ]);
     if (res.code !== 0) {
       throw new SecretStoreError(`secret-tool clear failed: ${res.stderr.trim()}`, { ref });
     }
   }
 
   async list(): Promise<SecretRef[]> {
-    const res = await runCommand("secret-tool", ["search", "--all", "service", SECRET_TOOL_SERVICE]);
+    const res = await runCommand("secret-tool", [
+      "search",
+      "--all",
+      "service",
+      SECRET_TOOL_SERVICE,
+    ]);
     if (res.code !== 0) return []; // no matches or collection locked
     const refs = new Set<string>();
     for (const line of res.stdout.split(/\r?\n/)) {

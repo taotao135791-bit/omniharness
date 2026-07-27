@@ -118,7 +118,10 @@ export class AnthropicProvider implements ModelProvider {
     const res = await this.fetchImpl(`${this.baseUrl}/v1/models`, { headers: this.authHeaders() });
     if (!res.ok) {
       const text = await res.text().catch(() => "");
-      throw new ProviderHttpError(res.status, `listModels failed with HTTP ${res.status}: ${text.slice(0, 300)}`);
+      throw new ProviderHttpError(
+        res.status,
+        `listModels failed with HTTP ${res.status}: ${text.slice(0, 300)}`,
+      );
     }
     const json = (await res.json()) as { data?: Array<{ id?: string }> };
     return (json.data ?? []).flatMap((m) => (typeof m.id === "string" ? [m.id] : []));
@@ -133,7 +136,8 @@ export class AnthropicProvider implements ModelProvider {
       stream: true,
     };
     if (system !== undefined) body.system = system;
-    if (request.tools !== undefined && request.tools.length > 0) body.tools = toAnthropicTools(request.tools);
+    if (request.tools !== undefined && request.tools.length > 0)
+      body.tools = toAnthropicTools(request.tools);
     if (request.temperature !== undefined) body.temperature = request.temperature;
 
     const mapper = new AnthropicSseMapper();

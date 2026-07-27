@@ -1,8 +1,4 @@
-import type {
-  Capability,
-  PolicyDecisionKind,
-  PolicyRule,
-} from "@omniharness/shared-types";
+import type { Capability, PolicyDecisionKind, PolicyRule } from "@omniharness/shared-types";
 import { ALL_CAPABILITIES } from "@omniharness/shared-types";
 import type { RuleScopeKind, StoredPolicyRule } from "./engine.js";
 

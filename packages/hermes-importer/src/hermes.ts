@@ -1,12 +1,6 @@
 import type { OmniDatabase } from "@omniharness/session-store";
-import {
-  importHermesMemories,
-  type HermesMemoriesImportOptions,
-} from "./hermes-memories.js";
-import {
-  importHermesSessions,
-  type HermesSessionsImportOptions,
-} from "./hermes-sessions.js";
+import { importHermesMemories, type HermesMemoriesImportOptions } from "./hermes-memories.js";
+import { importHermesSessions, type HermesSessionsImportOptions } from "./hermes-sessions.js";
 import { importHermesSkills, type HermesSkillsImportOptions } from "./hermes-skills.js";
 import type { ImportReport } from "./report.js";
 

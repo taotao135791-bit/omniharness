@@ -22,7 +22,14 @@ const schema = {
 
 describe("validateArgs", () => {
   it("accepts valid input", () => {
-    const r = validateArgs(schema, { path: "p", count: 1, ratio: 0.5, mode: "a", tags: ["x"], nested: { x: "y" } });
+    const r = validateArgs(schema, {
+      path: "p",
+      count: 1,
+      ratio: 0.5,
+      mode: "a",
+      tags: ["x"],
+      nested: { x: "y" },
+    });
     expect(r.ok).toBe(true);
     expect(r.errors).toEqual([]);
   });

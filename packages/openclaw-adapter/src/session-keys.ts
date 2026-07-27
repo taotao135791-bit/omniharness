@@ -63,7 +63,11 @@ function normalizeAccountId(value: string | null | undefined): string {
 }
 
 /** Peer ids keep case for channels with opaque case-sensitive ids; else lowercase. */
-export function normalizeSessionPeerId(params: { channel: string; peerKind: PeerKind; peerId: string }): string {
+export function normalizeSessionPeerId(params: {
+  channel: string;
+  peerKind: PeerKind;
+  peerId: string;
+}): string {
   const peerId = params.peerId.trim();
   if (!peerId) return "";
   if (isCasePreservingPeer(params.channel, params.peerKind)) return peerId;
@@ -197,7 +201,11 @@ export function parseSessionDeliveryRoute(sessionKey: string): SessionDeliveryRo
   if (parts[0] === "direct" || parts[0] === "dm") {
     const peerId = parts.slice(1).join(":").trim();
     if (!peerId || parts.length < 2) return null;
-    const route: SessionDeliveryRoute = { channel: "", peerKind: parts[0] as PeerKind | "dm", peerId };
+    const route: SessionDeliveryRoute = {
+      channel: "",
+      peerKind: parts[0] as PeerKind | "dm",
+      peerId,
+    };
     if (parsedThread.threadId) route.threadId = parsedThread.threadId;
     return route;
   }

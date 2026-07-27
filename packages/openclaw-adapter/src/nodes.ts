@@ -117,7 +117,8 @@ export interface NodeTransport {
 export class NodeInvokeError extends Error {
   constructor(
     message: string,
-    public readonly code: "not_paired" | "capability_missing" | "not_armed" | "timeout" | "invoke_failed",
+    public readonly code:
+      "not_paired" | "capability_missing" | "not_armed" | "timeout" | "invoke_failed",
   ) {
     super(message);
     this.name = "NodeInvokeError";
@@ -188,7 +189,10 @@ export class NodeBridge {
     if (!node.capabilities.includes(capability)) {
       auditInvoke(false, "capability_missing");
       return Promise.reject(
-        new NodeInvokeError(`node ${nodeId} does not declare capability "${capability}"`, "capability_missing"),
+        new NodeInvokeError(
+          `node ${nodeId} does not declare capability "${capability}"`,
+          "capability_missing",
+        ),
       );
     }
     if (isDangerousNodeCommand(command) && !this.armed.has(command)) {
@@ -253,7 +257,9 @@ export class NodeBridge {
     } else {
       const err = result["error"];
       const message =
-        typeof err === "object" && err !== null && typeof (err as Record<string, unknown>)["message"] === "string"
+        typeof err === "object" &&
+        err !== null &&
+        typeof (err as Record<string, unknown>)["message"] === "string"
           ? ((err as Record<string, unknown>)["message"] as string)
           : "node invoke failed";
       pendingInvoke.resolve({ ok: false, error: message });

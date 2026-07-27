@@ -12,11 +12,7 @@ export type { ValidationResult } from "./schema.js";
 export { LocalArtifactStore } from "./artifacts.js";
 export type { ArtifactInput, ArtifactStore } from "./artifacts.js";
 export { LocalShellExecutor } from "./shell.js";
-export type {
-  SandboxExecutor,
-  ShellExecRequest,
-  ShellExecResult,
-} from "./shell.js";
+export type { SandboxExecutor, ShellExecRequest, ShellExecResult } from "./shell.js";
 export { ToolRegistry, DuplicateToolError } from "./registry.js";
 export type { ToolSummary } from "./registry.js";
 export { ToolRuntime } from "./runtime.js";

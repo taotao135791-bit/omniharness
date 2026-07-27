@@ -73,11 +73,7 @@ interface BudgetViolation {
   readonly consumed: number;
 }
 
-const TERMINAL: ReadonlySet<AgentTask["status"]> = new Set([
-  "completed",
-  "failed",
-  "cancelled",
-]);
+const TERMINAL: ReadonlySet<AgentTask["status"]> = new Set(["completed", "failed", "cancelled"]);
 
 /**
  * Multi-agent task orchestrator. Owns task lifecycle, dependency scheduling,
@@ -208,9 +204,7 @@ export class TaskOrchestrator {
 
   /** Kahn topological order over all non-terminal tasks of the workspace. */
   scheduleOrder(workspaceId: WorkspaceId = this.workspaceId): TaskId[] {
-    const tasks = this.store
-      .listByWorkspace(workspaceId)
-      .filter((t) => !TERMINAL.has(t.status));
+    const tasks = this.store.listByWorkspace(workspaceId).filter((t) => !TERMINAL.has(t.status));
     const ids = new Set(tasks.map((t) => t.id));
     const indegree = new Map<TaskId, number>();
     const dependents = new Map<TaskId, TaskId[]>();
@@ -717,8 +711,5 @@ export class TaskOrchestrator {
 }
 
 function budgetMessage(violation: BudgetViolation): string {
-  return (
-    `budget exceeded: ${violation.dimension} ` +
-    `${violation.consumed} > ${violation.limit}`
-  );
+  return `budget exceeded: ${violation.dimension} ` + `${violation.consumed} > ${violation.limit}`;
 }

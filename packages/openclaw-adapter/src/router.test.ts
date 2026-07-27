@@ -66,7 +66,10 @@ describe("ChannelRouter", () => {
 
   it("denies unknown channel accounts", () => {
     const router = new ChannelRouter(config());
-    expect(router.route(msg({ Provider: "discord" }))).toMatchObject({ ok: false, reason: "unknown_account" });
+    expect(router.route(msg({ Provider: "discord" }))).toMatchObject({
+      ok: false,
+      reason: "unknown_account",
+    });
     expect(router.route(msg({ Provider: "slack", AccountId: "other" }))).toMatchObject({
       ok: false,
       reason: "unknown_account",
@@ -75,12 +78,16 @@ describe("ChannelRouter", () => {
 
   it("pairing policy: allows paired senders, denies unpaired", () => {
     const router = new ChannelRouter(config());
-    const paired = router.route(msg({ Provider: "slack", AccountId: "team1", From: "carol", SenderId: "carol" }));
+    const paired = router.route(
+      msg({ Provider: "slack", AccountId: "team1", From: "carol", SenderId: "carol" }),
+    );
     expect(paired.ok).toBe(true);
     if (paired.ok) {
       expect(paired.message.sessionKey).toBe("agent:work:slack:team1:direct:carol");
     }
-    const unpaired = router.route(msg({ Provider: "slack", AccountId: "team1", From: "dave", SenderId: "dave" }));
+    const unpaired = router.route(
+      msg({ Provider: "slack", AccountId: "team1", From: "dave", SenderId: "dave" }),
+    );
     expect(unpaired).toMatchObject({ ok: false, reason: "not_paired" });
   });
 
@@ -94,7 +101,11 @@ describe("ChannelRouter", () => {
     expect(forged).toMatchObject({ ok: false, reason: "not_allowlisted" });
     const decisions = events.filter((e) => e.kind === "authz.decision");
     expect(decisions).toHaveLength(1);
-    expect(decisions[0]).toMatchObject({ allowed: false, reason: "not_allowlisted", senderId: "mallory" });
+    expect(decisions[0]).toMatchObject({
+      allowed: false,
+      reason: "not_allowlisted",
+      senderId: "mallory",
+    });
   });
 
   it("ignores a forged SessionKey even for allowed senders (key is recomputed)", () => {
@@ -108,15 +119,16 @@ describe("ChannelRouter", () => {
 
   it("rate limits per sender with a token bucket", () => {
     let nowMs = 1_000_000;
-    const router = new ChannelRouter(
-      config({ rateLimit: { capacity: 2, refillPerSecond: 1 } }),
-      { now: () => nowMs },
-    );
+    const router = new ChannelRouter(config({ rateLimit: { capacity: 2, refillPerSecond: 1 } }), {
+      now: () => nowMs,
+    });
     expect(router.route(msg()).ok).toBe(true);
     expect(router.route(msg()).ok).toBe(true);
     expect(router.route(msg())).toMatchObject({ ok: false, reason: "rate_limited" });
     // A different sender has an independent bucket.
-    expect(router.route(msg({ From: "999", SenderId: "999", SenderUsername: "bob" })).ok).toBe(true);
+    expect(router.route(msg({ From: "999", SenderId: "999", SenderUsername: "bob" })).ok).toBe(
+      true,
+    );
     // After 1.5s, ~1.5 tokens refilled (capped at capacity).
     nowMs += 1500;
     expect(router.route(msg()).ok).toBe(true);
@@ -125,7 +137,9 @@ describe("ChannelRouter", () => {
   it("rejects oversized media", () => {
     const { sink, events } = collectingAudit();
     const router = new ChannelRouter(config({ maxMediaBytes: 1024 }), { audit: sink });
-    const result = router.route(msg({ media: [{ mediaType: "image/png", sizeBytes: 2048, url: "file://x" }] }));
+    const result = router.route(
+      msg({ media: [{ mediaType: "image/png", sizeBytes: 2048, url: "file://x" }] }),
+    );
     expect(result).toMatchObject({ ok: false, reason: "media_too_large" });
     expect(events.some((e) => e.kind === "media_rejected" && e.sizeBytes === 2048)).toBe(true);
   });
@@ -142,7 +156,12 @@ describe("ChannelRouter", () => {
     const router = new ChannelRouter(
       config({
         accounts: [
-          { channel: "telegram", dmPolicy: "disabled", allowFrom: ["*"], route: { profileId: PROF, workspaceId: WS } },
+          {
+            channel: "telegram",
+            dmPolicy: "disabled",
+            allowFrom: ["*"],
+            route: { profileId: PROF, workspaceId: WS },
+          },
         ],
       }),
     );
@@ -173,6 +192,9 @@ describe("ChannelRouter", () => {
 
   it("rejects structurally invalid messages", () => {
     const router = new ChannelRouter(config());
-    expect(router.route(msg({ SenderId: "" }))).toMatchObject({ ok: false, reason: "invalid_message" });
+    expect(router.route(msg({ SenderId: "" }))).toMatchObject({
+      ok: false,
+      reason: "invalid_message",
+    });
   });
 });

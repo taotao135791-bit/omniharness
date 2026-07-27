@@ -8,10 +8,7 @@ import type { DaemonConnection } from "./daemon-connection.js";
  *  3. read daemon connection state
  * No filesystem, no shell, no node access crosses this bridge.
  */
-export function registerIpc(
-  daemon: DaemonConnection,
-  getWindow: () => BrowserWindow | null,
-): void {
+export function registerIpc(daemon: DaemonConnection, getWindow: () => BrowserWindow | null): void {
   ipcMain.handle("rpc:call", async (_event: IpcMainInvokeEvent, name: string, params: unknown) => {
     if (typeof name !== "string" || !/^[a-z]+\.[a-zA-Z]+$/.test(name)) {
       throw new Error(`invalid command name: ${String(name)}`);

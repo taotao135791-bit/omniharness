@@ -4,10 +4,7 @@ import { AnthropicSseMapper, OpenAiSseMapper, SseDecoder, parseSseText } from ".
 describe("parseSseText", () => {
   it("parses events with data and event fields", () => {
     const events = parseSseText("event: foo\ndata: hello\n\ndata: world\n\n");
-    expect(events).toEqual([
-      { event: "foo", data: "hello" },
-      { data: "world" },
-    ]);
+    expect(events).toEqual([{ event: "foo", data: "hello" }, { data: "world" }]);
   });
 
   it("joins multi-line data and ignores comments", () => {
@@ -100,7 +97,7 @@ const ANTHROPIC_SSE = [
   'event: content_block_delta\ndata: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"\\"Lyon\\"}"}}',
   'event: content_block_stop\ndata: {"type":"content_block_stop","index":1}',
   'event: message_delta\ndata: {"type":"message_delta","delta":{"stop_reason":"tool_use"},"usage":{"output_tokens":15}}',
-  "event: message_stop\ndata: {\"type\":\"message_stop\"}",
+  'event: message_stop\ndata: {"type":"message_stop"}',
   "",
 ].join("\n\n");
 
@@ -143,6 +140,8 @@ describe("AnthropicSseMapper", () => {
   it("ignores ping events and reports malformed payloads as error chunks", () => {
     const mapper = new AnthropicSseMapper();
     expect(mapper.pushEvent({ event: "ping", data: '{"type":"ping"}' })).toEqual([]);
-    expect(mapper.pushEvent({ event: "content_block_delta", data: "not json" })[0]?.type).toBe("error");
+    expect(mapper.pushEvent({ event: "content_block_delta", data: "not json" })[0]?.type).toBe(
+      "error",
+    );
   });
 });

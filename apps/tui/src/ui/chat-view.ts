@@ -78,11 +78,17 @@ export class ChatView implements Component, Focusable {
     const approval = this.controller.pendingApproval;
     if (approval) {
       lines.push("");
-      lines.push(bold(fg.yellow(truncate(`  ⚠ APPROVAL REQUIRED [${approval.risk}] ${approval.capability}`, width))));
-      lines.push(...wrapPlain(approval.summary, Math.max(10, width - 4)).map((l) => fg.yellow(`  ${l}`)));
       lines.push(
-        dim("  [a]pprove once  [s]ession  [w]orkspace  alwa[y]s  [d]eny"),
+        bold(
+          fg.yellow(
+            truncate(`  ⚠ APPROVAL REQUIRED [${approval.risk}] ${approval.capability}`, width),
+          ),
+        ),
       );
+      lines.push(
+        ...wrapPlain(approval.summary, Math.max(10, width - 4)).map((l) => fg.yellow(`  ${l}`)),
+      );
+      lines.push(dim("  [a]pprove once  [s]ession  [w]orkspace  alwa[y]s  [d]eny"));
     }
     lines.push(...this.editor.render(width));
     return lines;
@@ -140,11 +146,18 @@ export class ChatView implements Component, Focusable {
       }
       case "compaction": {
         if (!block.done) {
-          return [fg.magenta(truncate(`⟳ compacting context (${block.beforeTokens ?? "?"} tokens)…`, width))];
+          return [
+            fg.magenta(
+              truncate(`⟳ compacting context (${block.beforeTokens ?? "?"} tokens)…`, width),
+            ),
+          ];
         }
         return [
           fg.magenta(
-            truncate(`✓ context compacted ${block.beforeTokens ?? "?"} → ${block.afterTokens ?? "?"}`, width),
+            truncate(
+              `✓ context compacted ${block.beforeTokens ?? "?"} → ${block.afterTokens ?? "?"}`,
+              width,
+            ),
           ),
         ];
       }

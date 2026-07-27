@@ -14,10 +14,15 @@ export class BwrapBackend implements SandboxBackend {
   wrap(req: SandboxRequest): WrappedCommand {
     const argv: string[] = [
       "bwrap",
-      "--ro-bind", "/", "/",
-      "--dev", "/dev",
-      "--proc", "/proc",
-      "--tmpfs", "/tmp",
+      "--ro-bind",
+      "/",
+      "/",
+      "--dev",
+      "/dev",
+      "--proc",
+      "/proc",
+      "--tmpfs",
+      "/tmp",
     ];
     for (const path of req.writablePaths) {
       argv.push("--bind", path, path);

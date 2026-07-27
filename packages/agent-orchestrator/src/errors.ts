@@ -55,9 +55,7 @@ export class BudgetExceededError extends OrchestratorError {
   readonly limit: number;
   readonly consumed: number;
   constructor(taskId: TaskId, dimension: BudgetDimension, limit: number, consumed: number) {
-    super(
-      `task ${taskId} exceeded ${dimension} budget: ` + `${consumed} > ${limit}`,
-    );
+    super(`task ${taskId} exceeded ${dimension} budget: ` + `${consumed} > ${limit}`);
     this.taskId = taskId;
     this.dimension = dimension;
     this.limit = limit;

@@ -69,7 +69,16 @@ export function summarizeArgs(argumentsJson: string, maxLen = 60): string {
     if (typeof parsed !== "object" || parsed === null) return truncate(String(parsed), maxLen);
     const obj = parsed as Record<string, unknown>;
     // Common shapes: {command}, {path}, {file_path}, {pattern}, {query}, {url}
-    for (const key of ["command", "path", "file_path", "filePath", "pattern", "query", "url", "name"]) {
+    for (const key of [
+      "command",
+      "path",
+      "file_path",
+      "filePath",
+      "pattern",
+      "query",
+      "url",
+      "name",
+    ]) {
       const v = obj[key];
       if (typeof v === "string" && v) return truncate(v, maxLen);
     }

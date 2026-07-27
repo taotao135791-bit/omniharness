@@ -17,35 +17,63 @@ import {
 describe("session key codec", () => {
   it("builds main keys", () => {
     expect(buildAgentMainSessionKey({})).toBe("agent:main:main");
-    expect(buildAgentMainSessionKey({ agentId: "Work", mainKey: "primary" })).toBe("agent:work:primary");
+    expect(buildAgentMainSessionKey({ agentId: "Work", mainKey: "primary" })).toBe(
+      "agent:work:primary",
+    );
   });
 
   it("builds DM keys for every dmScope", () => {
-    const base = { agentId: "main", channel: "Telegram", accountId: "Biz", peerKind: "direct" as const, peerId: "Alice" };
+    const base = {
+      agentId: "main",
+      channel: "Telegram",
+      accountId: "Biz",
+      peerKind: "direct" as const,
+      peerId: "Alice",
+    };
     expect(buildAgentPeerSessionKey({ ...base, dmScope: "per-account-channel-peer" })).toBe(
       "agent:main:telegram:biz:direct:alice",
     );
     expect(buildAgentPeerSessionKey({ ...base, dmScope: "per-channel-peer" })).toBe(
       "agent:main:telegram:direct:alice",
     );
-    expect(buildAgentPeerSessionKey({ ...base, dmScope: "per-peer" })).toBe("agent:main:direct:alice");
+    expect(buildAgentPeerSessionKey({ ...base, dmScope: "per-peer" })).toBe(
+      "agent:main:direct:alice",
+    );
     expect(buildAgentPeerSessionKey({ ...base, dmScope: "main" })).toBe("agent:main:main");
   });
 
   it("builds group/channel keys", () => {
     expect(
-      buildAgentPeerSessionKey({ agentId: "main", channel: "telegram", peerKind: "group", peerId: "-100123" }),
+      buildAgentPeerSessionKey({
+        agentId: "main",
+        channel: "telegram",
+        peerKind: "group",
+        peerId: "-100123",
+      }),
     ).toBe("agent:main:telegram:group:-100123");
     expect(
-      buildAgentPeerSessionKey({ agentId: "main", channel: "discord", peerKind: "channel", peerId: "1234" }),
+      buildAgentPeerSessionKey({
+        agentId: "main",
+        channel: "discord",
+        peerKind: "channel",
+        peerId: "1234",
+      }),
     ).toBe("agent:main:discord:channel:1234");
   });
 
   it("lowercases by default but preserves case for opaque peers (signal/matrix)", () => {
-    expect(normalizeSessionPeerId({ channel: "telegram", peerKind: "direct", peerId: "AlIcE" })).toBe("alice");
-    expect(normalizeSessionPeerId({ channel: "signal", peerKind: "group", peerId: "AbCdEf==" })).toBe("AbCdEf==");
     expect(
-      normalizeSessionPeerId({ channel: "matrix", peerKind: "channel", peerId: "!RoomID:Matrix.Org" }),
+      normalizeSessionPeerId({ channel: "telegram", peerKind: "direct", peerId: "AlIcE" }),
+    ).toBe("alice");
+    expect(
+      normalizeSessionPeerId({ channel: "signal", peerKind: "group", peerId: "AbCdEf==" }),
+    ).toBe("AbCdEf==");
+    expect(
+      normalizeSessionPeerId({
+        channel: "matrix",
+        peerKind: "channel",
+        peerId: "!RoomID:Matrix.Org",
+      }),
     ).toBe("!RoomID:Matrix.Org");
   });
 
@@ -62,10 +90,12 @@ describe("session key codec", () => {
   });
 
   it("rejects structurally invalid inputs", () => {
-    expect(() => buildAgentPeerSessionKey({ channel: "", peerKind: "direct", peerId: "x" })).toThrow(SessionKeyError);
-    expect(() => buildAgentPeerSessionKey({ channel: "tg", peerKind: "group", peerId: "  " })).toThrow(
-      SessionKeyError,
-    );
+    expect(() =>
+      buildAgentPeerSessionKey({ channel: "", peerKind: "direct", peerId: "x" }),
+    ).toThrow(SessionKeyError);
+    expect(() =>
+      buildAgentPeerSessionKey({ channel: "tg", peerKind: "group", peerId: "  " }),
+    ).toThrow(SessionKeyError);
     expect(() => buildAgentMainSessionKey({ agentId: "a:b" })).toThrow(SessionKeyError);
   });
 
@@ -76,7 +106,9 @@ describe("session key codec", () => {
       baseSessionKey: "agent:main:telegram:direct:alice",
       threadId: "thread-9",
     });
-    expect(parseThreadSessionSuffix("agent:main:main")).toEqual({ baseSessionKey: "agent:main:main" });
+    expect(parseThreadSessionSuffix("agent:main:main")).toEqual({
+      baseSessionKey: "agent:main:main",
+    });
   });
 
   it("parses agent session keys", () => {

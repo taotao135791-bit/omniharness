@@ -133,9 +133,9 @@ export class OmniDatabase {
 
   /** Result rows of PRAGMA integrity_check; ["ok"] means healthy. */
   integrityCheck(): string[] {
-    return allRows<{ integrity_check: string }>(
-      this.raw.prepare("PRAGMA integrity_check"),
-    ).map((r) => txt(r.integrity_check));
+    return allRows<{ integrity_check: string }>(this.raw.prepare("PRAGMA integrity_check")).map(
+      (r) => txt(r.integrity_check),
+    );
   }
 
   /** Dump every user table (and the FTS index) to `<dir>/<table>.json`. */

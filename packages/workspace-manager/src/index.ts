@@ -1,16 +1,7 @@
 export { PathPolicyError, SnapshotError } from "./errors.js";
-export {
-  IgnoreMatcher,
-  parseGitignore,
-  matchesPattern,
-} from "./ignore.js";
+export { IgnoreMatcher, parseGitignore, matchesPattern } from "./ignore.js";
 export type { IgnoreRule } from "./ignore.js";
-export {
-  assertReadable,
-  assertWritable,
-  realpathLoose,
-  resolveInWorkspace,
-} from "./paths.js";
+export { assertReadable, assertWritable, realpathLoose, resolveInWorkspace } from "./paths.js";
 export type { ResolvedPath } from "./paths.js";
 export { WorkspaceManager, detectKind } from "./manager.js";
 export type { RegisterWorkspaceInput } from "./manager.js";

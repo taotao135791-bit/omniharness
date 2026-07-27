@@ -59,8 +59,11 @@ async function main(): Promise<number> {
         const report = await client.call("system.diagnostics", {});
         if (json) printJson(report);
         else {
-          for (const c of report.checks) console.log(`${c.ok ? "✅" : "❌"} ${c.name} — ${c.detail}`);
-          console.log(`data dir: ${report.dataDir}, db: ${(report.dbSizeBytes / 1024).toFixed(0)} KiB`);
+          for (const c of report.checks)
+            console.log(`${c.ok ? "✅" : "❌"} ${c.name} — ${c.detail}`);
+          console.log(
+            `data dir: ${report.dataDir}, db: ${(report.dbSizeBytes / 1024).toFixed(0)} KiB`,
+          );
         }
         return report.ok ? 0 : 1;
       }
@@ -74,10 +77,20 @@ async function main(): Promise<number> {
         if (action === "list") {
           const r = await client.call("session.list", {
             limit: 50,
-            ...(optString(options, "workspace") ? { workspaceId: optString(options, "workspace")! } : {}),
+            ...(optString(options, "workspace")
+              ? { workspaceId: optString(options, "workspace")! }
+              : {}),
           });
           if (json) printJson(r);
-          else printTable(r.sessions.map((s) => ({ id: s.id, title: s.title, status: s.status, updated: s.updatedAt })));
+          else
+            printTable(
+              r.sessions.map((s) => ({
+                id: s.id,
+                title: s.title,
+                status: s.status,
+                updated: s.updatedAt,
+              })),
+            );
           return 0;
         }
         if (action === "create") {
@@ -110,13 +123,16 @@ async function main(): Promise<number> {
         if (action === "start") {
           const sessionId = optString(options, "session");
           const input = rest.join(" ") || optString(options, "input");
-          if (!sessionId || !input) throw new Error("usage: omni run start --session <id> <prompt>");
+          if (!sessionId || !input)
+            throw new Error("usage: omni run start --session <id> <prompt>");
           const unsub = client.onEvent((e) => {
             if (e.type === "message.delta" && e.sessionId === sessionId && e.channel === "text") {
               process.stdout.write(e.delta);
             }
             if (e.type === "run.completed" && e.sessionId === sessionId) {
-              process.stdout.write(`\n[done: ${e.usage.inputTokens}in/${e.usage.outputTokens}out]\n`);
+              process.stdout.write(
+                `\n[done: ${e.usage.inputTokens}in/${e.usage.outputTokens}out]\n`,
+              );
             }
             if (e.type === "run.failed") console.error(`\n[failed: ${e.error}]`);
           });
@@ -124,7 +140,10 @@ async function main(): Promise<number> {
           // Wait until the run finishes.
           await new Promise<void>((resolve) => {
             const off = client.onEvent((e) => {
-              if ((e.type === "run.completed" || e.type === "run.failed") && e.sessionId === sessionId) {
+              if (
+                (e.type === "run.completed" || e.type === "run.failed") &&
+                e.sessionId === sessionId
+              ) {
                 off();
                 resolve();
               }
@@ -145,13 +164,24 @@ async function main(): Promise<number> {
         if (action === "list") {
           const r = await client.call("provider.list", {});
           if (json) printJson(r);
-          else printTable(r.providers.map((p) => ({ id: p.id, kind: p.kind, name: p.displayName, enabled: p.enabled })));
+          else
+            printTable(
+              r.providers.map((p) => ({
+                id: p.id,
+                kind: p.kind,
+                name: p.displayName,
+                enabled: p.enabled,
+              })),
+            );
           return 0;
         }
         if (action === "add") {
           const kind = optString(options, "kind");
           const name = optString(options, "name");
-          if (!kind || !name) throw new Error("usage: omni provider add --kind <kind> --name <name> [--base-url <url>] [--api-key <key>]");
+          if (!kind || !name)
+            throw new Error(
+              "usage: omni provider add --kind <kind> --name <name> [--base-url <url>] [--api-key <key>]",
+            );
           const r = await client.call("provider.add", {
             kind: kind as never,
             displayName: name,
@@ -195,13 +225,25 @@ async function main(): Promise<number> {
         if (action === "list") {
           const r = await client.call("approval.list", { limit: 50 });
           if (json) printJson(r);
-          else printTable(r.approvals.map((a) => ({ id: a.id, capability: a.capability, risk: a.risk, summary: a.summary.slice(0, 60), status: a.status })));
+          else
+            printTable(
+              r.approvals.map((a) => ({
+                id: a.id,
+                capability: a.capability,
+                risk: a.risk,
+                summary: a.summary.slice(0, 60),
+                status: a.status,
+              })),
+            );
           return 0;
         }
         if (action === "approve" || action === "deny") {
           const id = rest[0];
           if (!id) throw new Error("approval id required");
-          await client.call("approval.resolve", { approvalId: id, decision: action === "approve" ? "approve" : "deny" });
+          await client.call("approval.resolve", {
+            approvalId: id,
+            decision: action === "approve" ? "approve" : "deny",
+          });
           return 0;
         }
         throw new Error(`unknown approval action: ${action ?? "(none)"}`);
@@ -209,7 +251,14 @@ async function main(): Promise<number> {
       case "tool": {
         const r = await client.call("tool.list", {});
         if (json) printJson(r);
-        else printTable(r.tools.map((t) => ({ name: t.name, source: t.source, capabilities: t.capabilities.join(",") })));
+        else
+          printTable(
+            r.tools.map((t) => ({
+              name: t.name,
+              source: t.source,
+              capabilities: t.capabilities.join(","),
+            })),
+          );
         return 0;
       }
       case "memory": {
@@ -218,7 +267,15 @@ async function main(): Promise<number> {
           if (!text) throw new Error("usage: omni memory search <query>");
           const r = await client.call("memory.search", { text });
           if (json) printJson(r);
-          else printTable(r.results.map((m) => ({ id: m.entry.id, kind: m.entry.kind, score: m.score.toFixed(2), summary: m.entry.summary.slice(0, 60) })));
+          else
+            printTable(
+              r.results.map((m) => ({
+                id: m.entry.id,
+                kind: m.entry.kind,
+                score: m.score.toFixed(2),
+                summary: m.entry.summary.slice(0, 60),
+              })),
+            );
           return 0;
         }
         throw new Error(`unknown memory action: ${action ?? "(none)"}`);
@@ -227,7 +284,16 @@ async function main(): Promise<number> {
         if (action === "list") {
           const r = await client.call("skill.list", {});
           if (json) printJson(r);
-          else printTable(r.skills.map((s) => ({ name: s.name, version: s.version, scope: s.scope, enabled: s.enabled, source: s.source })));
+          else
+            printTable(
+              r.skills.map((s) => ({
+                name: s.name,
+                version: s.version,
+                scope: s.scope,
+                enabled: s.enabled,
+                source: s.source,
+              })),
+            );
           return 0;
         }
         throw new Error(`unknown skill action: ${action ?? "(none)"}`);
@@ -236,7 +302,15 @@ async function main(): Promise<number> {
         if (action === "list") {
           const r = await client.call("automation.list", {});
           if (json) printJson(r);
-          else printTable(r.automations.map((a) => ({ id: a.id, name: a.name, enabled: a.enabled, next: a.nextRunAt ?? "-" })));
+          else
+            printTable(
+              r.automations.map((a) => ({
+                id: a.id,
+                name: a.name,
+                enabled: a.enabled,
+                next: a.nextRunAt ?? "-",
+              })),
+            );
           return 0;
         }
         if (action === "run") {
@@ -249,9 +323,23 @@ async function main(): Promise<number> {
         throw new Error(`unknown automation action: ${action ?? "(none)"}`);
       }
       case "diff": {
-        const r = await client.call("diff.get", optString(options, "session") ? { sessionId: optString(options, "session")! as SessionId } : {});
+        const r = await client.call(
+          "diff.get",
+          optString(options, "session")
+            ? { sessionId: optString(options, "session")! as SessionId }
+            : {},
+        );
         if (json) printJson(r);
-        else printTable(r.files.map((f) => ({ path: f.path, status: f.status, "+": f.additions, "-": f.deletions, hunks: f.hunks.length })));
+        else
+          printTable(
+            r.files.map((f) => ({
+              path: f.path,
+              status: f.status,
+              "+": f.additions,
+              "-": f.deletions,
+              hunks: f.hunks.length,
+            })),
+          );
         return 0;
       }
       case "settings": {
@@ -263,7 +351,8 @@ async function main(): Promise<number> {
         if (action === "set") {
           const key = rest[0];
           const value = rest[1];
-          if (!key || value === undefined) throw new Error("usage: omni settings set <key> <value>");
+          if (!key || value === undefined)
+            throw new Error("usage: omni settings set <key> <value>");
           let parsed: unknown = value;
           try {
             parsed = JSON.parse(value);

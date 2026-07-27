@@ -5,11 +5,7 @@ import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { ToolContext, ToolResult } from "@omniharness/tool-runtime";
 import type { Capability, PluginId, ProjectId, WorkspaceId } from "@omniharness/shared-types";
-import {
-  ExtensionHost,
-  type CapabilityChecker,
-  type HostLogger,
-} from "./index.js";
+import { ExtensionHost, type CapabilityChecker, type HostLogger } from "./index.js";
 
 const HELLO_TOOL_DIR = join(
   dirname(fileURLToPath(import.meta.url)),
@@ -106,7 +102,11 @@ describe("ExtensionHost", () => {
     return pluginDir;
   }
 
-  async function executeTool(host: ExtensionHost, name: string, args: Record<string, unknown>): Promise<ToolResult> {
+  async function executeTool(
+    host: ExtensionHost,
+    name: string,
+    args: Record<string, unknown>,
+  ): Promise<ToolResult> {
     const tool = host.tools.get(name);
     if (tool === undefined) throw new Error(`tool ${name} not registered`);
     const result = tool.execute(args, fakeContext());
@@ -165,7 +165,10 @@ describe("ExtensionHost", () => {
         return capability !== "shell.exec";
       },
     };
-    const host = new ExtensionHost({ capabilityChecker: denyShell, logger: captureLogger().logger });
+    const host = new ExtensionHost({
+      capabilityChecker: denyShell,
+      logger: captureLogger().logger,
+    });
     const pluginDir = writePlugin(
       baseManifest("test.caps", {
         tools: ["test.shell"],
@@ -256,7 +259,10 @@ describe("ExtensionHost", () => {
   it("denies process/require/fs inside the vm sandbox by absence", async () => {
     const host = new ExtensionHost({ logger: captureLogger().logger });
     const cases: Array<[string, string]> = [
-      ["test.sandbox-process", `export function register(api) { api.log.info(String(process.pid)); }`],
+      [
+        "test.sandbox-process",
+        `export function register(api) { api.log.info(String(process.pid)); }`,
+      ],
       ["test.sandbox-require", `export function register(api) { require("node:fs"); }`],
       ["test.sandbox-fs", `export function register(api) { fs.readFileSync("/etc/passwd"); }`],
     ];

@@ -48,7 +48,9 @@ describe("importPiSettings — settings.json", () => {
     );
     const report = await importPiSettings(baseOptions());
     expect(report.errors).toEqual([]);
-    expect(db.settings.get("global", "global", "models.defaultModelId")).toBe("anthropic/claude-opus");
+    expect(db.settings.get("global", "global", "models.defaultModelId")).toBe(
+      "anthropic/claude-opus",
+    );
     expect(db.settings.get("global", "global", "tui.theme")).toBe("dark");
     expect(db.settings.get("global", "global", "tui.editorCommand")).toBe("vim");
     expect(db.settings.get("global", "global", "telemetry.anonymousUsage")).toBe(true);
@@ -68,7 +70,10 @@ describe("importPiSettings — settings.json", () => {
 
   it("reports mapped targets missing from an injected schemaKeys list", async () => {
     writeFileSync(join(agentDir, "settings.json"), JSON.stringify({ theme: "dark" }));
-    const report = await importPiSettings({ ...baseOptions(), schemaKeys: ["models.defaultModelId"] });
+    const report = await importPiSettings({
+      ...baseOptions(),
+      schemaKeys: ["models.defaultModelId"],
+    });
     expect(report.errors).toEqual([
       { id: "theme", message: 'mapped target "tui.theme" is not in the settings schema' },
     ]);
@@ -79,7 +84,10 @@ describe("importPiSettings — settings.json", () => {
 describe("importPiSettings — resources", () => {
   it("copies skills/prompts/themes with a provenance marker", async () => {
     mkdirSync(join(agentDir, "skills", "demo"), { recursive: true });
-    writeFileSync(join(agentDir, "skills", "demo", "SKILL.md"), "---\nname: demo\ndescription: d\n---\nbody\n");
+    writeFileSync(
+      join(agentDir, "skills", "demo", "SKILL.md"),
+      "---\nname: demo\ndescription: d\n---\nbody\n",
+    );
     mkdirSync(join(agentDir, "prompts"), { recursive: true });
     writeFileSync(join(agentDir, "prompts", "review.md"), "review this");
     mkdirSync(join(agentDir, "themes"), { recursive: true });
@@ -114,7 +122,15 @@ describe("importPiSettings — models.json + auth.json", () => {
             api: "openai-completions",
             apiKey: "sk-literal-secret",
             models: [
-              { id: "acme-1", name: "Acme One", reasoning: true, input: ["text", "image"], contextWindow: 100000, maxTokens: 8000, cost: { input: 2, output: 8, cacheRead: 0, cacheWrite: 0 } },
+              {
+                id: "acme-1",
+                name: "Acme One",
+                reasoning: true,
+                input: ["text", "image"],
+                contextWindow: 100000,
+                maxTokens: 8000,
+                cost: { input: 2, output: 8, cacheRead: 0, cacheWrite: 0 },
+              },
             ],
           },
         },
@@ -169,7 +185,10 @@ describe("importPiSettings — models.json + auth.json", () => {
   });
 
   it("skips auth.json credentials when no SecretStore is configured", async () => {
-    writeFileSync(join(agentDir, "auth.json"), JSON.stringify({ anthropic: { type: "api_key", key: "k" } }));
+    writeFileSync(
+      join(agentDir, "auth.json"),
+      JSON.stringify({ anthropic: { type: "api_key", key: "k" } }),
+    );
     const report = await importPiSettings({ agentDir, dataDir, db });
     expect(report.secretsStored).toBe(0);
     expect(report.skipped).toEqual([

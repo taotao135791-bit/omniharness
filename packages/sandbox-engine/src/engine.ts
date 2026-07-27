@@ -62,9 +62,7 @@ export class SandboxEngine {
       new SeatbeltBackend(),
       new BwrapBackend(),
       new DockerBackend(
-        options.probeTimeoutMs !== undefined
-          ? { probeTimeoutMs: options.probeTimeoutMs }
-          : {},
+        options.probeTimeoutMs !== undefined ? { probeTimeoutMs: options.probeTimeoutMs } : {},
       ),
       new NullBackend(),
     ];
@@ -89,8 +87,7 @@ export class SandboxEngine {
           return backend;
         }
       }
-      const nullBackend =
-        this.backends.find((b) => b.name === "null") ?? new NullBackend();
+      const nullBackend = this.backends.find((b) => b.name === "null") ?? new NullBackend();
       this.probes.push({
         backend: nullBackend.name,
         available: true,
@@ -105,9 +102,7 @@ export class SandboxEngine {
 
     const backend = this.resolveNamedBackend(this.backendName);
     if (!(await this.probe(backend))) {
-      throw new Error(
-        `sandbox backend "${this.backendName}" is not available on this host`,
-      );
+      throw new Error(`sandbox backend "${this.backendName}" is not available on this host`);
     }
     this.selected = backend;
     return backend;
@@ -119,8 +114,7 @@ export class SandboxEngine {
     const backend = await this.selectBackend();
 
     const filteredEnv = filterEnv(req.env, this.envAllowlist);
-    this.strippedEnvCount +=
-      Object.keys(req.env).length - Object.keys(filteredEnv).length;
+    this.strippedEnvCount += Object.keys(req.env).length - Object.keys(filteredEnv).length;
 
     const wrapped = backend.wrap({ ...req, env: filteredEnv });
     const warnings = [...wrapped.warnings];
@@ -171,9 +165,7 @@ export class SandboxEngine {
     });
 
     if (timedOut) {
-      warnings.push(
-        `command exceeded timeout of ${req.limits.timeoutMs}ms; killed with SIGKILL`,
-      );
+      warnings.push(`command exceeded timeout of ${req.limits.timeoutMs}ms; killed with SIGKILL`);
     }
     if (spawnError !== null) {
       warnings.push(`failed to spawn command: ${spawnError}`);

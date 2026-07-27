@@ -62,7 +62,11 @@ export function appliedMigrations(db: DatabaseSync): MigrationRow[] {
   const rows = allRows<{ version: number; name: string; applied_at: string }>(
     db.prepare("SELECT version, name, applied_at FROM schema_migrations ORDER BY version"),
   );
-  return rows.map((r) => ({ version: num(r.version), name: txt(r.name), applied_at: txt(r.applied_at) }));
+  return rows.map((r) => ({
+    version: num(r.version),
+    name: txt(r.name),
+    applied_at: txt(r.applied_at),
+  }));
 }
 
 function validateChain(migrations: readonly Migration[]): void {

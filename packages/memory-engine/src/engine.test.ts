@@ -1,9 +1,4 @@
-import type {
-  MemoryEntry,
-  MemoryId,
-  ProfileId,
-  ProjectId,
-} from "@omniharness/shared-types";
+import type { MemoryEntry, MemoryId, ProfileId, ProjectId } from "@omniharness/shared-types";
 import { openDatabase, type OmniDatabase } from "@omniharness/session-store";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { MemoryEngine, MAX_PROPOSED_CONFIDENCE } from "./index.js";
@@ -35,7 +30,9 @@ afterEach(() => {
 
 let counter = 0;
 /** Craft an entry directly in the repo (for backdated/canned fixtures). */
-function putEntry(partial: Partial<MemoryEntry> & { content: string; summary: string }): MemoryEntry {
+function putEntry(
+  partial: Partial<MemoryEntry> & { content: string; summary: string },
+): MemoryEntry {
   counter += 1;
   const entry: MemoryEntry = {
     id: `mem_test_${counter}` as MemoryId,

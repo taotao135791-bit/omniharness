@@ -45,7 +45,11 @@ describe("Hermes memories (MEMORY.md / USER.md)", () => {
     writeFileSync(memoryMd, "Project uses Axum + SQLx\n§\nMachine runs Ubuntu 22.04\x00\n");
     writeFileSync(userMd, "Prefers terse answers\n");
 
-    const report = importer.importMemories({ memoryMdPath: memoryMd, userMdPath: userMd, profileId });
+    const report = importer.importMemories({
+      memoryMdPath: memoryMd,
+      userMdPath: userMd,
+      profileId,
+    });
     expect(report.errors).toEqual([]);
     expect(report.imported).toBe(3);
 
@@ -59,7 +63,11 @@ describe("Hermes memories (MEMORY.md / USER.md)", () => {
     expect(prefs[0]!.content).toBe("Prefers terse answers");
 
     // Idempotent.
-    const again = importer.importMemories({ memoryMdPath: memoryMd, userMdPath: userMd, profileId });
+    const again = importer.importMemories({
+      memoryMdPath: memoryMd,
+      userMdPath: userMd,
+      profileId,
+    });
     expect(again.imported).toBe(0);
     expect(again.skipped).toHaveLength(3);
   });
@@ -81,7 +89,9 @@ function createStateDb(path: string): void {
   `);
   // Live session.
   source
-    .prepare("INSERT INTO sessions (id, source, title, started_at, archived) VALUES (?, ?, ?, ?, 0)")
+    .prepare(
+      "INSERT INTO sessions (id, source, title, started_at, archived) VALUES (?, ?, ?, ?, 0)",
+    )
     .run("20260701_100000_abcd1234", "cli", "Live chat", 1_751_000_000);
   const ins = source.prepare(
     "INSERT INTO messages (session_id, role, content, timestamp, active, compacted) VALUES (?, ?, ?, ?, ?, ?)",
@@ -92,11 +102,27 @@ function createStateDb(path: string): void {
 
   // Compacted session (ended via compression).
   source
-    .prepare("INSERT INTO sessions (id, source, title, started_at, ended_at, end_reason, archived) VALUES (?, ?, ?, ?, ?, ?, 0)")
-    .run("20260601_090000_deadbeef", "cli", "Old chat", 1_750_000_000, 1_750_100_000, "compression");
+    .prepare(
+      "INSERT INTO sessions (id, source, title, started_at, ended_at, end_reason, archived) VALUES (?, ?, ?, ?, ?, ?, 0)",
+    )
+    .run(
+      "20260601_090000_deadbeef",
+      "cli",
+      "Old chat",
+      1_750_000_000,
+      1_750_100_000,
+      "compression",
+    );
   ins.run("20260601_090000_deadbeef", "user", "old q1", 1_750_000_001, 0, 1);
   ins.run("20260601_090000_deadbeef", "assistant", "old a1", 1_750_000_002, 0, 1);
-  ins.run("20260601_090000_deadbeef", "assistant", "[CONTEXT COMPACTION — REFERENCE ONLY] summary of old chat", 1_750_000_003, 1, 0);
+  ins.run(
+    "20260601_090000_deadbeef",
+    "assistant",
+    "[CONTEXT COMPACTION — REFERENCE ONLY] summary of old chat",
+    1_750_000_003,
+    1,
+    0,
+  );
   ins.run("20260601_090000_deadbeef", "user", "fresh question", 1_750_000_004, 1, 0);
   source.close();
 }
@@ -173,7 +199,11 @@ describe("Hermes skills", () => {
         "Do the deploy.",
       ].join("\n"),
     );
-    expect(parsed.frontmatter).toEqual({ name: "deploy-api", description: "Deploy the API: safely", version: "1.2.3" });
+    expect(parsed.frontmatter).toEqual({
+      name: "deploy-api",
+      description: "Deploy the API: safely",
+      version: "1.2.3",
+    });
     expect(parsed.body).toBe("Do the deploy.");
     expect(() => parseHermesSkillMd("---\ndescription: x\n---\nbody")).toThrow(/name/);
     expect(() => parseHermesSkillMd("no frontmatter")).toThrow(/fence/);
@@ -188,7 +218,10 @@ describe("Hermes skills", () => {
     );
     writeFileSync(join(skillsDir, "ops", "deploy-api", "references", "runbook.md"), "runbook");
     mkdirSync(join(skillsDir, "old-skill"), { recursive: true });
-    writeFileSync(join(skillsDir, "old-skill", "SKILL.md"), "---\nname: old-skill\ndescription: Archived one\n---\n\nOld body.\n");
+    writeFileSync(
+      join(skillsDir, "old-skill", "SKILL.md"),
+      "---\nname: old-skill\ndescription: Archived one\n---\n\nOld body.\n",
+    );
     mkdirSync(join(skillsDir, "broken"), { recursive: true });
     writeFileSync(join(skillsDir, "broken", "SKILL.md"), "no frontmatter at all");
     writeFileSync(
@@ -197,7 +230,12 @@ describe("Hermes skills", () => {
     );
 
     const received: SkillDefinition[] = [];
-    const report = await importer.importSkills({ skillsDir, onSkill: (s) => { received.push(s); } });
+    const report = await importer.importSkills({
+      skillsDir,
+      onSkill: (s) => {
+        received.push(s);
+      },
+    });
     expect(report.imported).toBe(2);
     expect(report.errors).toHaveLength(1); // broken SKILL.md
     expect(received).toHaveLength(2);
@@ -215,7 +253,12 @@ describe("Hermes skills", () => {
     expect(report.warnings.some((w) => w.includes("old-skill"))).toBe(true);
 
     // Idempotent.
-    const again = await importer.importSkills({ skillsDir, onSkill: (s) => { received.push(s); } });
+    const again = await importer.importSkills({
+      skillsDir,
+      onSkill: (s) => {
+        received.push(s);
+      },
+    });
     expect(again.imported).toBe(0);
     expect(again.skipped).toHaveLength(2);
     expect(received).toHaveLength(2);
@@ -226,7 +269,13 @@ describe("Hermes skills", () => {
     mkdirSync(join(skillsDir, "a"), { recursive: true });
     writeFileSync(join(skillsDir, "a", "SKILL.md"), "---\nname: a\ndescription: A\n---\n\nbody\n");
     const received: SkillDefinition[] = [];
-    const report = await importer.importSkills({ skillsDir, dryRun: true, onSkill: (s) => { received.push(s); } });
+    const report = await importer.importSkills({
+      skillsDir,
+      dryRun: true,
+      onSkill: (s) => {
+        received.push(s);
+      },
+    });
     expect(report.imported).toBe(1);
     expect(received).toHaveLength(0);
   });

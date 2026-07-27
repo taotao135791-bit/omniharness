@@ -60,7 +60,9 @@ describe("fs.read", () => {
   });
 
   it("honors offset and limit", async () => {
-    const res = await asResult(createFsReadTool().execute({ path: "src/a.ts", offset: 2, limit: 2 }, ctx));
+    const res = await asResult(
+      createFsReadTool().execute({ path: "src/a.ts", offset: 2, limit: 2 }, ctx),
+    );
     expect(res.output).toBe("line2\nline3");
   });
 
@@ -72,7 +74,9 @@ describe("fs.read", () => {
   });
 
   it("errors on missing files and directories", async () => {
-    expect((await asResult(createFsReadTool().execute({ path: "nope.txt" }, ctx))).isError).toBe(true);
+    expect((await asResult(createFsReadTool().execute({ path: "nope.txt" }, ctx))).isError).toBe(
+      true,
+    );
     const res = await asResult(createFsReadTool().execute({ path: "src" }, ctx));
     expect(res.isError).toBe(true);
     expect(res.output).toContain("directory");
@@ -81,10 +85,9 @@ describe("fs.read", () => {
 
 describe("fs.write", () => {
   it("creates parent directories", async () => {
-    const res = await asResult(createFsWriteTool().execute(
-      { path: "deep/nested/new.txt", content: "fresh" },
-      ctx,
-    ));
+    const res = await asResult(
+      createFsWriteTool().execute({ path: "deep/nested/new.txt", content: "fresh" }, ctx),
+    );
     expect(res.ok).toBe(true);
     expect(await readFile(join(dir, "deep", "nested", "new.txt"), "utf8")).toBe("fresh");
   });
@@ -92,10 +95,9 @@ describe("fs.write", () => {
   it("blocks writes escaping the workspace through a symlink", async () => {
     const outside = await mkdtemp(join(tmpdir(), "omniharness-out-"));
     await symlink(outside, join(dir, "escape"), "dir");
-    const res = await asResult(createFsWriteTool().execute(
-      { path: "escape/pwned.txt", content: "x" },
-      ctx,
-    ));
+    const res = await asResult(
+      createFsWriteTool().execute({ path: "escape/pwned.txt", content: "x" }, ctx),
+    );
     expect(res.ok).toBe(false);
     expect(res.output).toContain("outside the workspace");
     await rm(outside, { recursive: true, force: true });
@@ -103,7 +105,9 @@ describe("fs.write", () => {
 
   it("blocks writes to read-only paths", async () => {
     workspace.readOnlyPaths = ["src/**"];
-    const res = await asResult(createFsWriteTool().execute({ path: "src/b.ts", content: "x" }, ctx));
+    const res = await asResult(
+      createFsWriteTool().execute({ path: "src/b.ts", content: "x" }, ctx),
+    );
     expect(res.ok).toBe(false);
     expect(res.output).toContain("read-only");
   });
@@ -111,38 +115,40 @@ describe("fs.write", () => {
 
 describe("fs.edit", () => {
   it("replaces a unique string", async () => {
-    const res = await asResult(createFsEditTool().execute(
-      { path: "src/a.ts", old_string: "line2", new_string: "LINE2" },
-      ctx,
-    ));
+    const res = await asResult(
+      createFsEditTool().execute(
+        { path: "src/a.ts", old_string: "line2", new_string: "LINE2" },
+        ctx,
+      ),
+    );
     expect(res.ok).toBe(true);
     expect(await readFile(join(dir, "src", "a.ts"), "utf8")).toContain("LINE2");
   });
 
   it("refuses ambiguous replacements without replace_all", async () => {
-    const res = await asResult(createFsEditTool().execute(
-      { path: "src/a.ts", old_string: "line", new_string: "row" },
-      ctx,
-    ));
+    const res = await asResult(
+      createFsEditTool().execute({ path: "src/a.ts", old_string: "line", new_string: "row" }, ctx),
+    );
     expect(res.ok).toBe(false);
     expect(res.output).toContain("4 times");
   });
 
   it("replace_all replaces every occurrence", async () => {
-    const res = await asResult(createFsEditTool().execute(
-      { path: "src/a.ts", old_string: "line", new_string: "row", replace_all: true },
-      ctx,
-    ));
+    const res = await asResult(
+      createFsEditTool().execute(
+        { path: "src/a.ts", old_string: "line", new_string: "row", replace_all: true },
+        ctx,
+      ),
+    );
     expect(res.ok).toBe(true);
     expect(res.output).toContain("4 occurrences");
     expect(await readFile(join(dir, "src", "a.ts"), "utf8")).toBe("row1\nrow2\nrow3\nrow4\n");
   });
 
   it("errors when old_string is not found", async () => {
-    const res = await asResult(createFsEditTool().execute(
-      { path: "src/a.ts", old_string: "zzz", new_string: "x" },
-      ctx,
-    ));
+    const res = await asResult(
+      createFsEditTool().execute({ path: "src/a.ts", old_string: "zzz", new_string: "x" }, ctx),
+    );
     expect(res.ok).toBe(false);
     expect(res.output).toContain("not found");
   });
@@ -185,10 +191,14 @@ describe("search.grep", () => {
     const byGlob = await asResult(createGrepTool().execute({ pattern: "line", glob: "*.ts" }, ctx));
     expect(byGlob.output).toContain("src/a.ts");
 
-    const restricted = await asResult(createGrepTool().execute({ pattern: "hello", path: "README.md" }, ctx));
+    const restricted = await asResult(
+      createGrepTool().execute({ pattern: "hello", path: "README.md" }, ctx),
+    );
     expect(restricted.output).not.toContain("a.ts");
 
-    const limited = await asResult(createGrepTool().execute({ pattern: "line", head_limit: 2 }, ctx));
+    const limited = await asResult(
+      createGrepTool().execute({ pattern: "line", head_limit: 2 }, ctx),
+    );
     expect(limited.output.split("\n").filter((l) => l.includes(": "))).toHaveLength(2);
     expect(limited.output).toContain("truncated");
   });
@@ -211,6 +221,8 @@ describe("search.glob", () => {
   });
 
   it("reports no matches", async () => {
-    expect((await asResult(createGlobTool().execute({ pattern: "*.py" }, ctx))).output).toBe("No matches.");
+    expect((await asResult(createGlobTool().execute({ pattern: "*.py" }, ctx))).output).toBe(
+      "No matches.",
+    );
   });
 });

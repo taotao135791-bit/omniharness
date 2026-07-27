@@ -30,7 +30,11 @@ describe("importMcpConfig", () => {
       path,
       JSON.stringify({
         mcpServers: {
-          filesystem: { command: "npx", args: ["-y", "@mcp/fs", "/data"], env: { LOG_LEVEL: "debug" } },
+          filesystem: {
+            command: "npx",
+            args: ["-y", "@mcp/fs", "/data"],
+            env: { LOG_LEVEL: "debug" },
+          },
           github: { command: "mcp-github", env: { GITHUB_TOKEN: "ghp_secret", REGION: "us" } },
           broken: { args: [] },
         },
@@ -67,7 +71,10 @@ describe("importMcpConfig", () => {
 
   it("keeps secret env inline (with a warning) when no SecretStore is configured", async () => {
     const path = join(dir, "mcp.json");
-    writeFileSync(path, JSON.stringify({ mcpServers: { a: { command: "x", env: { API_KEY: "k" } } } }));
+    writeFileSync(
+      path,
+      JSON.stringify({ mcpServers: { a: { command: "x", env: { API_KEY: "k" } } } }),
+    );
     const report = await importMcpConfig(path, { db });
     expect(report.servers[0]!.env).toEqual({ API_KEY: "k" });
     expect(report.warnings.some((w) => w.includes("API_KEY"))).toBe(true);
@@ -129,7 +136,12 @@ describe("importInstructionFiles", () => {
     mkdirSync(dryDir);
     writeFileSync(join(dryDir, "CLAUDE.md"), "x");
     const dryOut = join(dir, "dry-out.md");
-    const dry = importInstructionFiles({ workspaceRoot: dryDir, db, outputPath: dryOut, dryRun: true });
+    const dry = importInstructionFiles({
+      workspaceRoot: dryDir,
+      db,
+      outputPath: dryOut,
+      dryRun: true,
+    });
     expect(dry.imported).toBe(1);
     expect(existsSync(dryOut)).toBe(false);
   });

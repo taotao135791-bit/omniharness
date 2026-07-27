@@ -42,7 +42,13 @@ describe("slash commands", () => {
       usage: [
         {
           key: "gpt-test",
-          usage: { inputTokens: 1000, outputTokens: 200, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0.05 },
+          usage: {
+            inputTokens: 1000,
+            outputTokens: 200,
+            cacheReadTokens: 0,
+            cacheWriteTokens: 0,
+            costUsd: 0.05,
+          },
           requests: 3,
         },
       ],

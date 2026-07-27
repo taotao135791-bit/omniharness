@@ -238,7 +238,8 @@ export class MemoryEngine {
       for (const group of byContent.values()) {
         if (group.length < 2) continue;
         group.sort(
-          (a, b) => b.confidence - a.confidence || Date.parse(b.createdAt) - Date.parse(a.createdAt),
+          (a, b) =>
+            b.confidence - a.confidence || Date.parse(b.createdAt) - Date.parse(a.createdAt),
         );
         for (const duplicate of group.slice(1)) {
           this.db.memories.archive(duplicate.id);
@@ -265,7 +266,12 @@ export class MemoryEngine {
     let entries: MemoryEntry[];
     const ftsText = queryText === undefined ? "" : toFtsQuery(queryText);
     if (ftsText.length > 0) {
-      const query: MemoryQuery = { text: ftsText, profileId, approvedOnly: true, limit: maxEntries };
+      const query: MemoryQuery = {
+        text: ftsText,
+        profileId,
+        approvedOnly: true,
+        limit: maxEntries,
+      };
       if (projectId !== null) query.projectId = projectId;
       entries = this.search(query).map((r) => r.entry);
     } else {

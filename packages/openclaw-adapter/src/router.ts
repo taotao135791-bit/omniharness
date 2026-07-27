@@ -112,8 +112,7 @@ export interface InboundMessage {
 }
 
 export type RouteResult =
-  | { ok: true; message: InboundMessage }
-  | { ok: false; reason: DenyReason; detail: string };
+  { ok: true; message: InboundMessage } | { ok: false; reason: DenyReason; detail: string };
 
 class TokenBucket {
   private tokens: number;
@@ -138,7 +137,11 @@ class TokenBucket {
   }
 }
 
-function senderMatches(list: readonly string[], senderId: string, senderUsername?: string): boolean {
+function senderMatches(
+  list: readonly string[],
+  senderId: string,
+  senderUsername?: string,
+): boolean {
   const id = senderId.trim().toLowerCase();
   const user = senderUsername?.trim().toLowerCase();
   for (const entry of list) {
@@ -191,7 +194,8 @@ export class ChannelRouter {
 
   route(raw: MsgContextInput): RouteResult {
     const channel = (raw.Provider ?? "").trim().toLowerCase();
-    const accountId = (raw.AccountId ?? DEFAULT_ACCOUNT_ID).trim().toLowerCase() || DEFAULT_ACCOUNT_ID;
+    const accountId =
+      (raw.AccountId ?? DEFAULT_ACCOUNT_ID).trim().toLowerCase() || DEFAULT_ACCOUNT_ID;
     const senderId = (raw.SenderId ?? "").trim();
     const ctx = { channel, accountId, senderId };
 

@@ -2,7 +2,7 @@
 
 OmniHarness ships unsigned test builds by default; the signing pipeline is fully
 scripted and activates when certificates are present. Nothing in the release flow
-*requires* secrets to be committed anywhere.
+_requires_ secrets to be committed anywhere.
 
 ## macOS
 

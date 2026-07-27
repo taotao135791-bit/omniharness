@@ -1,7 +1,6 @@
 import type { SandboxBackend, SandboxRequest, WrappedCommand } from "../types.js";
 
-export const NULL_BACKEND_WARNING =
-  "null backend: command runs without sandbox isolation";
+export const NULL_BACKEND_WARNING = "null backend: command runs without sandbox isolation";
 
 /** Fallback backend: no isolation at all, always available. */
 export class NullBackend implements SandboxBackend {

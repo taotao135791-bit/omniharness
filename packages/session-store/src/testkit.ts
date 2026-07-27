@@ -1,9 +1,4 @@
-import type {
-  ProfileId,
-  ProjectId,
-  SessionId,
-  WorkspaceId,
-} from "@omniharness/shared-types";
+import type { ProfileId, ProjectId, SessionId, WorkspaceId } from "@omniharness/shared-types";
 import { DEFAULT_CAPABILITIES } from "@omniharness/shared-types";
 import type { OmniDatabase } from "../src/index.js";
 
@@ -24,7 +19,10 @@ export const ZERO_USAGE = {
 /**
  * Seed the FK chain profile → project → workspace → session and return the ids.
  */
-export function seedBase(db: OmniDatabase, suffix = ""): {
+export function seedBase(
+  db: OmniDatabase,
+  suffix = "",
+): {
   profileId: ProfileId;
   projectId: ProjectId;
   workspaceId: WorkspaceId;

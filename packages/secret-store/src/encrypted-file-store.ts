@@ -94,7 +94,10 @@ export class EncryptedFileStore implements SecretStore {
     try {
       const decipher = createDecipheriv("aes-256-gcm", key, Buffer.from(entry.iv, "base64"));
       decipher.setAuthTag(Buffer.from(entry.tag, "base64"));
-      return Buffer.concat([decipher.update(Buffer.from(entry.data, "base64")), decipher.final()]).toString("utf8");
+      return Buffer.concat([
+        decipher.update(Buffer.from(entry.data, "base64")),
+        decipher.final(),
+      ]).toString("utf8");
     } catch (err) {
       throw new SecretStoreError(
         `Failed to decrypt secret "${ref}" — the vault was tampered with or belongs to a different machine/user`,

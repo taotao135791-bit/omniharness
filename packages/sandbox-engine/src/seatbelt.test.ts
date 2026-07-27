@@ -25,9 +25,7 @@ describe("generateSeatbeltProfile", () => {
   });
 
   it("allows file-write only under writablePaths", () => {
-    const profile = generateSeatbeltProfile(
-      req({ writablePaths: ["/work/dir", "/tmp/build"] }),
-    );
+    const profile = generateSeatbeltProfile(req({ writablePaths: ["/work/dir", "/tmp/build"] }));
     expect(profile).toContain('(allow file-write* (subpath "/work/dir"))');
     expect(profile).toContain('(allow file-write* (subpath "/tmp/build"))');
     expect(profile.match(/\(allow file-write\*/g)).toHaveLength(2);
@@ -40,9 +38,7 @@ describe("generateSeatbeltProfile", () => {
   });
 
   it("scopes file-read to readOnlyPaths + cwd when provided", () => {
-    const profile = generateSeatbeltProfile(
-      req({ readOnlyPaths: ["/usr/lib", "/opt/data"] }),
-    );
+    const profile = generateSeatbeltProfile(req({ readOnlyPaths: ["/usr/lib", "/opt/data"] }));
     expect(profile).toContain('(allow file-read* (subpath "/usr/lib"))');
     expect(profile).toContain('(allow file-read* (subpath "/opt/data"))');
     expect(profile).toContain('(allow file-read* (subpath "/work/dir"))');

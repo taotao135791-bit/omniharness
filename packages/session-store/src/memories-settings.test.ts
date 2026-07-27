@@ -55,9 +55,7 @@ describe("memories with FTS5", () => {
         content: "Deploys go through a TypeScript wrapper script.",
       }),
     );
-    db.memories.put(
-      memory({ summary: "Coffee", content: "Team prefers light roast." }),
-    );
+    db.memories.put(memory({ summary: "Coffee", content: "Team prefers light roast." }));
 
     const results = db.memories.search({ text: "TypeScript", profileId });
     expect(results).toHaveLength(2);

@@ -15,19 +15,31 @@ describe("sensitive action classification", () => {
   });
 
   it("flags sending messages", () => {
-    const result = classifyAction({ kind: "click", point: { x: 0.5, y: 0.9 }, hint: "click Send to post the reply" });
+    const result = classifyAction({
+      kind: "click",
+      point: { x: 0.5, y: 0.9 },
+      hint: "click Send to post the reply",
+    });
     expect(result.sensitive).toBe(true);
     expect(result.kinds).toContain("message_send");
   });
 
   it("flags purchases", () => {
-    const result = classifyAction({ kind: "click", point: { x: 0.5, y: 0.5 }, hint: "confirm checkout and pay" });
+    const result = classifyAction({
+      kind: "click",
+      point: { x: 0.5, y: 0.5 },
+      hint: "confirm checkout and pay",
+    });
     expect(result.sensitive).toBe(true);
     expect(result.kinds).toContain("purchase");
   });
 
   it("flags deletions", () => {
-    const result = classifyAction({ kind: "click", point: { x: 0.1, y: 0.1 }, hint: "press Delete to remove the file" });
+    const result = classifyAction({
+      kind: "click",
+      point: { x: 0.1, y: 0.1 },
+      hint: "press Delete to remove the file",
+    });
     expect(result.sensitive).toBe(true);
     expect(result.kinds).toContain("deletion");
   });

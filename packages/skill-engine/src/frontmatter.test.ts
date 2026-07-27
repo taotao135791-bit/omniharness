@@ -6,9 +6,13 @@ import { parseSkillMd, serializeSkillMd } from "./parser.js";
 describe("parseFrontmatter", () => {
   it("parses strings, numbers, booleans", () => {
     const fm = parseFrontmatter(
-      ['name: my-skill', "version: 1.0.0", 'ratio: 1.5', "enabled: true", 'title: "Hello: World"'].join(
-        "\n",
-      ),
+      [
+        "name: my-skill",
+        "version: 1.0.0",
+        "ratio: 1.5",
+        "enabled: true",
+        'title: "Hello: World"',
+      ].join("\n"),
     );
     expect(fm["name"]).toBe("my-skill");
     expect(fm["version"]).toBe("1.0.0");

@@ -124,9 +124,7 @@ export class BrowserRuntime {
 
   /** Opens a new page/target and attaches a flat CDP session to it. */
   async openPage(url = "about:blank"): Promise<BrowserPage> {
-    const created = asRecord(
-      await this.client.send("Target.createTarget", { url }),
-    );
+    const created = asRecord(await this.client.send("Target.createTarget", { url }));
     const targetId = asString(created.targetId);
     if (targetId === null) {
       throw new Error("Target.createTarget returned no targetId");
@@ -205,10 +203,7 @@ export class BrowserRuntime {
 
   /** Visible page text, sanitized before it can enter model context. */
   async domText(page: BrowserPage): Promise<{ text: string; flagged: boolean }> {
-    const raw = await this.evaluate<string>(
-      page,
-      "document.body ? document.body.innerText : ''",
-    );
+    const raw = await this.evaluate<string>(page, "document.body ? document.body.innerText : ''");
     const sanitized = sanitizeObservation(typeof raw === "string" ? raw : "");
     return { text: sanitized.text, flagged: sanitized.flagged };
   }
@@ -261,9 +256,7 @@ export class BrowserRuntime {
     if (!approved) {
       throw new UploadDeniedError(paths);
     }
-    const doc = asRecord(
-      await this.client.send("DOM.getDocument", { depth: 1 }, page.sessionId),
-    );
+    const doc = asRecord(await this.client.send("DOM.getDocument", { depth: 1 }, page.sessionId));
     const rootId = asNumber(asRecord(doc.root).nodeId);
     if (rootId === null) {
       throw new Error("DOM.getDocument returned no root nodeId");
@@ -275,11 +268,7 @@ export class BrowserRuntime {
     if (nodeId === null || nodeId === 0) {
       throw new Error(`no element matches selector: ${selector}`);
     }
-    await this.client.send(
-      "DOM.setFileInputFiles",
-      { files: paths, nodeId },
-      page.sessionId,
-    );
+    await this.client.send("DOM.setFileInputFiles", { files: paths, nodeId }, page.sessionId);
   }
 
   /** Routes browser downloads into the given directory. */

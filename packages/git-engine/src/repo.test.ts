@@ -18,15 +18,7 @@ let dir: string;
 async function commitAll(repo: string, message: string): Promise<void> {
   await git(["add", "-A"], { cwd: repo });
   await git(
-    [
-      "-c",
-      "user.name=Test",
-      "-c",
-      "user.email=test@example.com",
-      "commit",
-      "-m",
-      message,
-    ],
+    ["-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-m", message],
     { cwd: repo },
   );
 }
@@ -102,10 +94,9 @@ describe("repo basics", () => {
     await git(["switch", "main"], { cwd: other });
     await writeFile(join(other, "b.txt"), "b\n");
     await git(["add", "-A"], { cwd: other });
-    await git(
-      ["-c", "user.name=T", "-c", "user.email=t@e.c", "commit", "-m", "remote"],
-      { cwd: other },
-    );
+    await git(["-c", "user.name=T", "-c", "user.email=t@e.c", "commit", "-m", "remote"], {
+      cwd: other,
+    });
     await git(["push", "origin", "main"], { cwd: other });
     await git(["fetch", "origin"], { cwd: repo });
 

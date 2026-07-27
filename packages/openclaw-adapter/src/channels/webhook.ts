@@ -77,12 +77,16 @@ export class WebhookConnector implements ChannelConnector {
       void (async () => {
         try {
           if (req.method !== "POST" || req.url !== this.inboundPath) {
-            res.writeHead(404, { "content-type": "application/json" }).end(JSON.stringify({ ok: false, error: "not found" }));
+            res
+              .writeHead(404, { "content-type": "application/json" })
+              .end(JSON.stringify({ ok: false, error: "not found" }));
             return;
           }
           const token = req.headers["x-hook-token"];
           if (typeof token !== "string" || !safeEqualSecret(token, this.options.secretToken)) {
-            res.writeHead(401, { "content-type": "application/json" }).end(JSON.stringify({ ok: false, error: "unauthorized" }));
+            res
+              .writeHead(401, { "content-type": "application/json" })
+              .end(JSON.stringify({ ok: false, error: "unauthorized" }));
             return;
           }
           const chunks: Buffer[] = [];
@@ -91,7 +95,9 @@ export class WebhookConnector implements ChannelConnector {
             const buf = chunk as Buffer;
             size += buf.length;
             if (size > maxBody) {
-              res.writeHead(413, { "content-type": "application/json" }).end(JSON.stringify({ ok: false, error: "body too large" }));
+              res
+                .writeHead(413, { "content-type": "application/json" })
+                .end(JSON.stringify({ ok: false, error: "body too large" }));
               return;
             }
             chunks.push(buf);
@@ -100,12 +106,16 @@ export class WebhookConnector implements ChannelConnector {
           try {
             parsed = JSON.parse(Buffer.concat(chunks).toString("utf8"));
           } catch {
-            res.writeHead(400, { "content-type": "application/json" }).end(JSON.stringify({ ok: false, error: "invalid json" }));
+            res
+              .writeHead(400, { "content-type": "application/json" })
+              .end(JSON.stringify({ ok: false, error: "invalid json" }));
             return;
           }
           const normalized = this.formatter.parseInbound(parsed);
           if (!normalized) {
-            res.writeHead(422, { "content-type": "application/json" }).end(JSON.stringify({ ok: false, error: "unrecognized payload" }));
+            res
+              .writeHead(422, { "content-type": "application/json" })
+              .end(JSON.stringify({ ok: false, error: "unrecognized payload" }));
             return;
           }
           const raw: MsgContextInput = {
@@ -121,11 +131,13 @@ export class WebhookConnector implements ChannelConnector {
           if (normalized.threadId) raw.MessageThreadId = normalized.threadId;
           if (normalized.media) raw.media = normalized.media;
           this.handler?.(raw);
-          res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify({ ok: true }));
+          res
+            .writeHead(200, { "content-type": "application/json" })
+            .end(JSON.stringify({ ok: true }));
         } catch (e) {
-          res.writeHead(500, { "content-type": "application/json" }).end(
-            JSON.stringify({ ok: false, error: e instanceof Error ? e.message : String(e) }),
-          );
+          res
+            .writeHead(500, { "content-type": "application/json" })
+            .end(JSON.stringify({ ok: false, error: e instanceof Error ? e.message : String(e) }));
         }
       })();
     });

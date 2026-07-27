@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 import { loadBrand } from "@omniharness/config-schema";
 import { createDaemonContext, type DaemonContext } from "./context.js";
-import { loadOrCreateAuthToken, removeRuntimeInfo, resolvePaths, writeRuntimeInfo } from "./paths.js";
+import {
+  loadOrCreateAuthToken,
+  removeRuntimeInfo,
+  resolvePaths,
+  writeRuntimeInfo,
+} from "./paths.js";
 import { registerSessionHandlers } from "./services/session-handlers.js";
 import { registerSystemHandlers } from "./services/system-handlers.js";
 import { registerMemoryHandlers } from "./services/memory-handlers.js";

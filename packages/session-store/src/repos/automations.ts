@@ -140,7 +140,9 @@ export class AutomationsRepo {
   markRun(id: AutomationId, lastRunAt: IsoTimestamp, nextRunAt: IsoTimestamp | null): boolean {
     return (
       this.db
-        .prepare("UPDATE automations SET last_run_at = ?, next_run_at = ?, updated_at = ? WHERE id = ?")
+        .prepare(
+          "UPDATE automations SET last_run_at = ?, next_run_at = ?, updated_at = ? WHERE id = ?",
+        )
         .run(lastRunAt, nextRunAt, nowIso(), id).changes > 0
     );
   }

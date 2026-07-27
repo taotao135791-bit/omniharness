@@ -6,10 +6,7 @@ import { computeAcceptKey, encodeFrame, OPCODES, WsFrameParser } from "./cdp/web
 import { allowlistGate, policyEngineGate } from "./policy.js";
 import { BrowserRuntime, PolicyDeniedError, UploadDeniedError } from "./runtime.js";
 
-type CommandHandler = (
-  params: Record<string, unknown>,
-  sessionId: string | undefined,
-) => unknown;
+type CommandHandler = (params: Record<string, unknown>, sessionId: string | undefined) => unknown;
 
 interface ReceivedCommand {
   method: string;
@@ -160,7 +157,9 @@ function installDefaultHandlers(server: FakeCdpServer): void {
     return { result: { type: "number", value: 42 } };
   });
   server.on("DOMSnapshot.captureSnapshot", () => ({ documents: [], strings: [] }));
-  server.on("Accessibility.getFullAXTree", () => ({ nodes: [{ nodeId: "1", role: { value: "RootWebArea" } }] }));
+  server.on("Accessibility.getFullAXTree", () => ({
+    nodes: [{ nodeId: "1", role: { value: "RootWebArea" } }],
+  }));
   server.on("DOM.getDocument", () => ({ root: { nodeId: 1 } }));
   server.on("DOM.querySelector", () => ({ nodeId: 42 }));
   server.on("DOM.setFileInputFiles", () => ({}));
@@ -171,10 +170,13 @@ describe("BrowserRuntime over fake CDP", () => {
   let server: FakeCdpServer | null = null;
   let runtime: BrowserRuntime | null = null;
 
-  async function boot(mode: "visual" | "dom" | "hybrid", extra: {
-    policyGate?: { check(domain: string): Promise<boolean> };
-    onUploadApproval?: (paths: string[]) => Promise<boolean>;
-  } = {}): Promise<{ runtime: BrowserRuntime; server: FakeCdpServer }> {
+  async function boot(
+    mode: "visual" | "dom" | "hybrid",
+    extra: {
+      policyGate?: { check(domain: string): Promise<boolean> };
+      onUploadApproval?: (paths: string[]) => Promise<boolean>;
+    } = {},
+  ): Promise<{ runtime: BrowserRuntime; server: FakeCdpServer }> {
     server = new FakeCdpServer();
     installDefaultHandlers(server);
     const url = await server.start();
@@ -306,7 +308,9 @@ describe("BrowserRuntime over fake CDP", () => {
     );
     await sleep(20);
     const network = rt.networkLog();
-    expect(network.some((r) => r.kind === "request" && r.url === "https://example.com/api")).toBe(true);
+    expect(network.some((r) => r.kind === "request" && r.url === "https://example.com/api")).toBe(
+      true,
+    );
     expect(network.some((r) => r.kind === "response" && r.status === 200)).toBe(true);
     expect(rt.consoleLog().some((r) => r.type === "warn" && r.text === "slow query")).toBe(true);
   });

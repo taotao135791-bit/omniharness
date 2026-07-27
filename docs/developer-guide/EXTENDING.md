@@ -2,12 +2,12 @@
 
 Four distinct extension concepts — don't conflate them:
 
-| Concept | What it is | Trust level |
-| --- | --- | --- |
-| **Tool** | One atomic executable capability | Runs inside tool-runtime with full policy pipeline |
-| **Plugin** | A code package registering tools/providers/UI/hooks | Sandboxed (node:vm), declared permissions only |
-| **Skill** | Procedural knowledge (SKILL.md + resources), loaded on demand | No code execution by itself |
-| **MCP server** | External tool protocol endpoint | Bridged as tools through the same policy pipeline |
+| Concept        | What it is                                                    | Trust level                                        |
+| -------------- | ------------------------------------------------------------- | -------------------------------------------------- |
+| **Tool**       | One atomic executable capability                              | Runs inside tool-runtime with full policy pipeline |
+| **Plugin**     | A code package registering tools/providers/UI/hooks           | Sandboxed (node:vm), declared permissions only     |
+| **Skill**      | Procedural knowledge (SKILL.md + resources), loaded on demand | No code execution by itself                        |
+| **MCP server** | External tool protocol endpoint                               | Bridged as tools through the same policy pipeline  |
 
 ## Writing a tool (core)
 
@@ -62,7 +62,7 @@ sandbox selection → execution → output sanitization → audit.
 
 ```js
 export function register(api) {
-  api.registerTool({ name: "me.tool", /* ... */ });
+  api.registerTool({ name: "me.tool" /* ... */ });
 }
 ```
 
@@ -93,7 +93,7 @@ Scopes: global / profile / workspace / project (project wins on name shadowing).
 
 ## Skill learning
 
-After a successful run the agent may produce a *skill proposal*. Proposals are
+After a successful run the agent may produce a _skill proposal_. Proposals are
 never auto-activated: they run through automated tests, show a diff, and wait
 for your approval (`omni skill proposals`, TUI Skills view).
 

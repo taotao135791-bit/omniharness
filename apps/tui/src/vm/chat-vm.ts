@@ -365,7 +365,10 @@ export class ChatViewModel {
         const a = block.approval;
         const head = truncate(`⚠ approval [${a.risk}] ${a.summary}`, width);
         if (a.status === "pending") {
-          return [head, truncate("  [a]pprove once  [s]ession  [w]orkspace  alwa[y]s  [d]eny", width)];
+          return [
+            head,
+            truncate("  [a]pprove once  [s]ession  [w]orkspace  alwa[y]s  [d]eny", width),
+          ];
         }
         return [truncate(`${head}  → ${a.status}`, width)];
       }

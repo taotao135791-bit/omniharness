@@ -28,7 +28,11 @@ function parseRetryAfterMs(value: string | null): number | undefined {
 export async function* postSse(options: PostSseOptions): AsyncGenerator<SseEvent> {
   const res = await options.fetchImpl(options.url, {
     method: "POST",
-    headers: { "content-type": "application/json", accept: "text/event-stream", ...options.headers },
+    headers: {
+      "content-type": "application/json",
+      accept: "text/event-stream",
+      ...options.headers,
+    },
     body: JSON.stringify(options.body),
     ...(options.signal !== undefined ? { signal: options.signal } : {}),
   });
@@ -41,7 +45,8 @@ export async function* postSse(options: PostSseOptions): AsyncGenerator<SseEvent
       { ...(retryAfterMs !== undefined ? { retryAfterMs } : {}), body: bodyText },
     );
   }
-  if (res.body === null) throw new Error("Provider returned no response body for a streaming request");
+  if (res.body === null)
+    throw new Error("Provider returned no response body for a streaming request");
 
   const decoder = new SseDecoder();
   const text = new TextDecoder();

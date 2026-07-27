@@ -19,7 +19,9 @@ afterEach(async () => {
   await rm(dataDir, { recursive: true, force: true });
 });
 
-function config(partial: Partial<ProviderConfig> & { kind: ProviderConfig["kind"] }): ProviderConfig {
+function config(
+  partial: Partial<ProviderConfig> & { kind: ProviderConfig["kind"] },
+): ProviderConfig {
   return {
     id: "test" as ProviderId,
     displayName: "Test",
@@ -36,14 +38,20 @@ describe("createProviderFromConfig", () => {
     await expect(createProviderFromConfig(config({ kind: "aws-bedrock" }))).rejects.toThrow(
       NotImplementedProviderError,
     );
-    await expect(createProviderFromConfig(config({ kind: "aws-bedrock" }))).rejects.toThrow(/SigV4/);
+    await expect(createProviderFromConfig(config({ kind: "aws-bedrock" }))).rejects.toThrow(
+      /SigV4/,
+    );
   });
 
   it("resolves the API key from the secret store via apiKeyRef", async () => {
     const secrets = new EncryptedFileStore(dataDir);
     await secrets.set("provider:test:apiKey", "sk-resolved");
     const provider = await createProviderFromConfig(
-      config({ kind: "openai", baseUrl: "https://api.openai.com/v1", apiKeyRef: "provider:test:apiKey" }),
+      config({
+        kind: "openai",
+        baseUrl: "https://api.openai.com/v1",
+        apiKeyRef: "provider:test:apiKey",
+      }),
       secrets,
     );
     expect(provider).toBeInstanceOf(OpenAICompatibleProvider);
@@ -54,7 +62,9 @@ describe("createProviderFromConfig", () => {
 
   it("refuses apiKeyRef without a secret store", async () => {
     await expect(
-      createProviderFromConfig(config({ kind: "openai", baseUrl: "https://x/v1", apiKeyRef: "provider:test:apiKey" })),
+      createProviderFromConfig(
+        config({ kind: "openai", baseUrl: "https://x/v1", apiKeyRef: "provider:test:apiKey" }),
+      ),
     ).rejects.toThrow(/no secret store/);
   });
 
@@ -66,7 +76,9 @@ describe("createProviderFromConfig", () => {
       secrets,
     );
     expect(provider).toBeInstanceOf(AnthropicProvider);
-    await expect(createProviderFromConfig(config({ kind: "anthropic" }), secrets)).rejects.toThrow(/no API key/);
+    await expect(createProviderFromConfig(config({ kind: "anthropic" }), secrets)).rejects.toThrow(
+      /no API key/,
+    );
   });
 
   it("constructs the Azure OpenAI URL from options", async () => {
@@ -74,7 +86,11 @@ describe("createProviderFromConfig", () => {
       config({ kind: "azure-openai", options: { resource: "acme", deployment: "gpt-4o-prod" } }),
     );
     expect(provider).toBeInstanceOf(OpenAICompatibleProvider);
-    const internals = provider as unknown as { baseUrl: string; queryParams: Record<string, string>; apiKeyHeader: string };
+    const internals = provider as unknown as {
+      baseUrl: string;
+      queryParams: Record<string, string>;
+      apiKeyHeader: string;
+    };
     expect(internals.baseUrl).toBe("https://acme.openai.azure.com/openai/deployments/gpt-4o-prod");
     expect(internals.queryParams).toEqual({ "api-version": "2024-10-21" });
     expect(internals.apiKeyHeader).toBe("api-key");

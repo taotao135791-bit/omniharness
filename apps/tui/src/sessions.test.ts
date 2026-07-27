@@ -13,9 +13,19 @@ describe("sessions view", () => {
   let harness: TestHarness;
 
   const sessions = [
-    makeSession({ id: "s1", title: "Refactor auth", tags: ["backend"], updatedAt: "2026-07-22T09:00:00.000Z" }),
+    makeSession({
+      id: "s1",
+      title: "Refactor auth",
+      tags: ["backend"],
+      updatedAt: "2026-07-22T09:00:00.000Z",
+    }),
     makeSession({ id: "s2", title: "Fix flaky test", updatedAt: "2026-07-21T15:00:00.000Z" }),
-    makeSession({ id: "s3", title: "Old stuff", status: "archived", updatedAt: "2026-07-01T10:00:00.000Z" }),
+    makeSession({
+      id: "s3",
+      title: "Old stuff",
+      status: "archived",
+      updatedAt: "2026-07-01T10:00:00.000Z",
+    }),
   ];
 
   beforeEach(async () => {
@@ -67,7 +77,10 @@ describe("sessions view", () => {
     daemon.on("session.archive", () => ({ ok: true }));
 
     await harness.controller.renameSession(sid("s1"), "Renamed");
-    expect(daemon.lastCommand("session.rename")?.params).toEqual({ sessionId: "s1", title: "Renamed" });
+    expect(daemon.lastCommand("session.rename")?.params).toEqual({
+      sessionId: "s1",
+      title: "Renamed",
+    });
 
     await harness.controller.archiveSession(sid("s2"));
     expect(daemon.lastCommand("session.archive")?.params).toEqual({ sessionId: "s2" });
