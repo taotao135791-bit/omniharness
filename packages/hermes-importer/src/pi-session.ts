@@ -10,6 +10,7 @@ import type {
   Session,
   SessionId,
   TokenUsage,
+  ToolCallId,
   WorkspaceId,
 } from "@omniharness/shared-types";
 import { nowIso } from "@omniharness/shared-types";
@@ -123,7 +124,7 @@ function contentToParts(content: unknown, report: ImportReportBuilder, entryId: 
           argumentsJson: JSON.stringify(rec["arguments"] ?? {}),
         };
         const callId = asString(rec["id"]);
-        if (callId !== undefined) part.toolCallId = callId as MessagePart["toolCallId"];
+        if (callId !== undefined) part.toolCallId = callId as ToolCallId;
         parts.push(part);
         break;
       }
@@ -236,7 +237,7 @@ function convertEntry(
           resultJson: toolResultJson(msg["content"]),
         };
         const callId = asString(msg["toolCallId"]);
-        if (callId !== undefined) part.toolCallId = callId as MessagePart["toolCallId"];
+        if (callId !== undefined) part.toolCallId = callId as ToolCallId;
         if (msg["isError"] === true) part.isError = true;
         parts = [part];
         usage = piUsageToTokenUsage(msg["usage"]);

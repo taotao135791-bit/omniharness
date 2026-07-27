@@ -1,0 +1,22 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`chat view-model layout snapshots > renders a mixed transcript 1`] = `
+[
+  "❯ please fix the tests",
+  "Looking at the failures now.",
+  "✓ bash(pnpm test) 900ms [+]",
+  "⚠ approval [high] Run shell command: rm -rf /tmp/x",
+  "  [a]pprove once  [s]ession  [w]orkspace  alwa[y]s  [d]eny",
+]
+`;
+
+exports[`chat view-model layout snapshots > renders a mixed transcript 2`] = `
+[
+  "❯ please fix the tests",
+  "Looking at the failures now.",
+  "✓ bash(pnpm test) 900ms",
+  "  │ 3 passed",
+  "⚠ approval [high] Run shell command: rm -rf /tmp/x",
+  "  [a]pprove once  [s]ession  [w]orkspace  alwa[y]s  [d]eny",
+]
+`;

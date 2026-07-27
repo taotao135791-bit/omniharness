@@ -115,6 +115,11 @@ export function collectingAudit(events: AuditEvent[] = []): { sink: AuditSink; e
   return { sink: (e) => events.push(e), events };
 }
 
-export function stamp(event: Omit<AuditEvent, "at"> & { at?: IsoTimestamp }): AuditEvent {
+/** Input shape for stamp(): any audit event with `at` optional. */
+export type AuditEventInput = {
+  [K in AuditEvent["kind"]]: Omit<Extract<AuditEvent, { kind: K }>, "at"> & { at?: IsoTimestamp };
+}[AuditEvent["kind"]];
+
+export function stamp(event: AuditEventInput): AuditEvent {
   return { ...event, at: event.at ?? nowIso() } as AuditEvent;
 }

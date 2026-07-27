@@ -168,6 +168,13 @@ export class AgentRunsRepo {
     ).map(rowToAgentRun);
   }
 
+  listByStatus(status: AgentRunStatus): AgentRun[] {
+    return allRows<AgentRunRow>(
+      this.db.prepare("SELECT * FROM agent_runs WHERE status = ? ORDER BY started_at, id"),
+      status,
+    ).map(rowToAgentRun);
+  }
+
   finish(id: AgentRunId, status: AgentRunStatus, endedAt: IsoTimestamp, error?: string): boolean {
     return (
       this.db

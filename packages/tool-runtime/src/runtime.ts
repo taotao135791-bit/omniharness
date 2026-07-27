@@ -23,6 +23,9 @@ export interface ApprovalRequestInfo {
   risk: RiskLevel;
   summary: string;
   detail: Record<string, string>;
+  /** Session the call belongs to (for approval persistence/attribution). */
+  sessionId?: string;
+  workspaceId?: string;
 }
 
 export interface ApprovalGateResult {
@@ -215,7 +218,7 @@ export class ToolRuntime {
           evaluation.decision === "ask_once_per_session" && (grants?.has(grantKey) ?? false);
 
         if (!alreadyGranted) {
-          const approved = await this.requestApproval(tool, capability, evaluation, target);
+          const approved = await this.requestApproval(tool, capability, evaluation, target, runCtx);
           if (!approved.ok) {
             const result = err(
               `Approval denied for ${toolName}: ${approved.reason ?? "denied by user"}`,
@@ -298,6 +301,7 @@ export class ToolRuntime {
     capability: PolicyEvaluationContext["capability"],
     evaluation: PolicyEvaluation,
     target: string | undefined,
+    runCtx: ToolRunContext,
   ): Promise<{ ok: boolean; reason?: string }> {
     if (!this.approval) {
       return { ok: false, reason: "no approval gate configured" };
@@ -310,6 +314,8 @@ export class ToolRuntime {
       risk: evaluation.risk,
       summary: `${tool.name} requests ${capability}${target ? ` on ${target}` : ""} (${evaluation.reason})`,
       detail,
+      sessionId: runCtx.sessionId,
+      workspaceId: runCtx.workspace.id,
     });
     return answer.approved ? { ok: true } : { ok: false, ...(answer.reason !== undefined ? { reason: answer.reason } : {}) };
   }

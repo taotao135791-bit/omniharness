@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`sessions view > list snapshot 1`] = `
+[
+  "❯ Refactor auth  #backend  2026-07-22",
+  "  Fix flaky test  2026-07-21",
+  "  Old stuff [archived]  2026-07-01",
+]
+`;

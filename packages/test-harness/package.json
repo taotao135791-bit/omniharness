@@ -30,7 +30,8 @@
     "@omniharness/sandbox-engine": "workspace:*",
     "@omniharness/workspace-manager": "workspace:*",
     "@omniharness/observability": "workspace:*",
-    "@omniharness/session-store": "workspace:*"
+    "@omniharness/session-store": "workspace:*",
+    "@omniharness/daemon": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

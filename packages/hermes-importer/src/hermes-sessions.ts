@@ -9,6 +9,7 @@ import type {
   Session,
   SessionId,
   SessionStatus,
+  ToolCallId,
   WorkspaceId,
 } from "@omniharness/shared-types";
 import { nowIso } from "@omniharness/shared-types";
@@ -119,7 +120,7 @@ function hermesContentToParts(content: string | null, report: ImportReportBuilde
               argumentsJson: JSON.stringify(rec["input"] ?? rec["arguments"] ?? {}),
             };
             const callId = asString(rec["id"]);
-            if (callId !== undefined) part.toolCallId = callId as MessagePart["toolCallId"];
+            if (callId !== undefined) part.toolCallId = callId as ToolCallId;
             parts.push(part);
           } else {
             parts.push({ type: "text", text: JSON.stringify(rec) });
@@ -157,7 +158,7 @@ function hermesToolCallsToParts(toolCallsJson: string | null): MessagePart[] {
             : JSON.stringify(rec["arguments"] ?? (fn === undefined ? {} : fn["arguments"] ?? {})),
       };
       const callId = asString(rec["id"]);
-      if (callId !== undefined) part.toolCallId = callId as MessagePart["toolCallId"];
+      if (callId !== undefined) part.toolCallId = callId as ToolCallId;
       parts.push(part);
     }
     return parts;
@@ -282,7 +283,7 @@ export function importHermesSessions(options: HermesSessionsImportOptions): Impo
             resultJson: JSON.stringify(m.content ?? null),
           };
           if (m.tool_call_id !== null) {
-            part.toolCallId = m.tool_call_id as MessagePart["toolCallId"];
+            part.toolCallId = m.tool_call_id as ToolCallId;
           }
           parts = [part];
         } else {

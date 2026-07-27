@@ -20,12 +20,14 @@ import { createAgentTools } from "./tool-bridge.js";
 import type { BridgedToolCallRecord, BridgedToolCallStatus, ToolBridgeRunContext } from "./tool-bridge.js";
 
 export interface RecordedMessage {
+  sessionId: SessionId;
   messageId: string;
   role: "user" | "assistant";
   text: string;
 }
 
 export interface RecordedToolCall {
+  sessionId: SessionId;
   toolCallId: string;
   toolName: string;
   argumentsJson: string;
@@ -433,7 +435,7 @@ export class PiAgentRuntime {
     }
     this.push(run, { type: "message.completed", sessionId, runId, messageId: userMessageId });
     this.record(run, (recorder) =>
-      recorder.recordMessage?.(runId, { messageId: userMessageId, role: "user", text: input.input }),
+      recorder.recordMessage?.(runId, { sessionId: run.sessionId, messageId: userMessageId, role: "user", text: input.input }),
     );
 
     let text = input.input;
@@ -517,6 +519,7 @@ export class PiAgentRuntime {
         }
         this.record(run, (recorder) =>
           recorder.recordMessage?.(run.runId, {
+            sessionId: run.sessionId,
             messageId,
             role: "assistant",
             text: assistantText(message),
@@ -554,6 +557,7 @@ export class PiAgentRuntime {
           }
           this.record(run, (recorder) =>
             recorder.recordToolCall?.(run.runId, {
+              sessionId: run.sessionId,
               toolCallId: event.toolCallId,
               toolName: event.toolName,
               argumentsJson: "{}",

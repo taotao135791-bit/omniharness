@@ -80,7 +80,7 @@ export function encodeFrame(frame: WsFrame, options: { mask: boolean }): Buffer 
  * send unmasked; fake servers in tests use it to decode client frames).
  */
 export class WsFrameParser {
-  private buffer = Buffer.alloc(0);
+  private buffer: Buffer = Buffer.alloc(0);
 
   push(data: Buffer): WsFrame[] {
     this.buffer = this.buffer.length === 0 ? data : Buffer.concat([this.buffer, data]);
@@ -177,17 +177,21 @@ export class WebSocketConnection {
 
   private constructor(socket: Socket) {
     this.socket = socket;
-    socket.on("data", (chunk: Buffer) => {
+  }
+
+  /** Attaches the data/error/close handlers once the handshake has completed. */
+  private attach(): void {
+    this.socket.on("data", (chunk: Buffer) => {
       try {
         this.handleData(chunk);
       } catch (error) {
         this.fail(error instanceof Error ? error : new Error(String(error)));
       }
     });
-    socket.on("error", (error: Error) => {
+    this.socket.on("error", (error: Error) => {
       this.onError?.(error);
     });
-    socket.on("close", () => {
+    this.socket.on("close", () => {
       this.finishClose({ code: null, reason: "socket closed" });
     });
   }
@@ -210,7 +214,7 @@ export class WebSocketConnection {
       const socket = netConnect({ host, port });
       const connection = new WebSocketConnection(socket);
       let settled = false;
-      let head = Buffer.alloc(0);
+      let head: Buffer = Buffer.alloc(0);
 
       const timer = setTimeout(() => {
         if (!settled) {
@@ -245,19 +249,23 @@ export class WebSocketConnection {
           return;
         }
         settled = true;
+        socket.off("error", onHandshakeError);
+        connection.attach();
         resolve(connection);
         if (rest.length > 0) {
           connection.handleData(rest);
         }
       };
 
-      socket.once("error", (error: Error) => {
+      const onHandshakeError = (error: Error): void => {
         if (!settled) {
           settled = true;
           clearTimeout(timer);
           reject(error);
         }
-      });
+      };
+
+      socket.once("error", onHandshakeError);
       socket.on("data", onHandshakeData);
       socket.write(
         `GET ${path} HTTP/1.1\r\n` +

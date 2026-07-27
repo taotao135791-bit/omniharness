@@ -66,7 +66,7 @@ export class SelectableList {
     for (let i = start; i < end; i++) {
       const r = this.rows[i]!;
       if (r.header) {
-        lines.push(truncate(`  ${r.label}`, width));
+        lines.push(truncate(`─ ${r.label}`, width));
         continue;
       }
       const cursor = i === this.selected ? "❯ " : "  ";

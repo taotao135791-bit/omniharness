@@ -15,7 +15,7 @@ import type {
   CommandResult,
   DomainEvent,
 } from "@omniharness/agent-protocol";
-import type { ApprovalRequest, SessionId, TokenUsage } from "@omniharness/shared-types";
+import type { ApprovalRequest, SessionId } from "@omniharness/shared-types";
 import { noopAudit, stamp } from "./audit.js";
 import type { AuditSink } from "./audit.js";
 import { formatApprovalPrompt, parseApprovalReply } from "./channels/formatters.js";
@@ -31,11 +31,18 @@ export interface DaemonLike {
 
 // ── ACP seam types (upstream packages/acp-core/src/runtime/types.ts) ────────
 
+/** Usage reported by the daemon on run.completed. */
+export interface TurnUsage {
+  inputTokens: number;
+  outputTokens: number;
+  costUsd?: number;
+}
+
 export type AcpRuntimeEvent =
   | { type: "text_delta"; text: string; stream?: "output" | "thought" }
   | { type: "status"; status: string }
   | { type: "tool_call"; text: string; toolCallId?: string; status?: string; kind?: string }
-  | { type: "done"; status?: "ok" | "error" | "cancelled"; stopReason?: string; usage?: TokenUsage }
+  | { type: "done"; status?: "ok" | "error" | "cancelled"; stopReason?: string; usage?: TurnUsage }
   | { type: "error"; message: string; code?: string; retryable?: boolean };
 
 export interface AcpRuntimeHandle {

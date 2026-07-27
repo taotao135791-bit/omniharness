@@ -218,6 +218,9 @@ importers:
       '@omniharness/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
+      '@omniharness/ui-command-registry':
+        specifier: workspace:*
+        version: link:../../packages/ui-command-registry
     devDependencies:
       '@types/node':
         specifier: ^24.0.0
@@ -688,6 +691,9 @@ importers:
       '@omniharness/client-sdk':
         specifier: workspace:*
         version: link:../client-sdk
+      '@omniharness/daemon':
+        specifier: workspace:*
+        version: link:../../apps/daemon
       '@omniharness/observability':
         specifier: workspace:*
         version: link:../observability

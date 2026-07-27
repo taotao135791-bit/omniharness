@@ -6,8 +6,6 @@ import { formatterFor } from "./formatters.js";
 import type { MsgContextInput } from "../router.js";
 
 export interface WebhookConnectorOptions {
-  /** Channel kind, e.g. "telegram". Selects the default formatter. */
-  kind: string;
   accountId?: string;
   /** Bind host. Default 127.0.0.1 (loopback only). */
   host?: string;

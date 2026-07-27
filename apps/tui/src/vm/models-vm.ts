@@ -1,5 +1,5 @@
-import type { ModelDefinition, ModelRole, ProviderConfig } from "@omniharness/agent-protocol";
-import { MODEL_ROLES } from "@omniharness/shared-types";
+import type { ModelDefinition, ProviderConfig } from "@omniharness/agent-protocol";
+import { MODEL_ROLES, type ModelRole } from "@omniharness/shared-types";
 import { fmtTokens, truncate } from "./layout.js";
 import { SelectableList, type ListRow } from "./selectable-list.js";
 
