@@ -36,6 +36,8 @@ import path from "node:path";
 export class RunService {
   private router: ModelRouter | null = null;
   private readonly runtimes = new Map<WorkspaceId, PiAgentRuntime>();
+  /** Fixture providers persist across router rebuilds so scripts are consumed once. */
+  private readonly fixtureProviders = new Map<string, FixtureProvider>();
   private readonly activeRuns = new Map<
     string,
     { sessionId: SessionId; runtime: PiAgentRuntime }
@@ -96,10 +98,15 @@ export class RunService {
     for (const config of db.providers.list(true)) {
       try {
         if (config.kind === "fixture") {
-          const script = this.fixtureScripts?.get(config.id);
-          if (!script)
-            throw new Error(`fixture provider ${config.id} has no script (test-only kind)`);
-          providers.set(config.id, new FixtureProvider(script));
+          let fp = this.fixtureProviders.get(config.id);
+          if (!fp) {
+            const script = this.fixtureScripts?.get(config.id);
+            if (!script)
+              throw new Error(`fixture provider ${config.id} has no script (test-only kind)`);
+            fp = new FixtureProvider(script);
+            this.fixtureProviders.set(config.id, fp);
+          }
+          providers.set(config.id, fp);
           continue;
         }
         providers.set(config.id, await createProviderFromConfig(config, secrets));
@@ -116,6 +123,7 @@ export class RunService {
       }
     }
     const bindings: Record<string, string> = {};
+    const fallbacks: Record<string, string[]> = {};
     for (const entry of db.settings.list("profile" as never, "")) {
       if (
         entry.key.startsWith("models.bindings.") &&
@@ -124,11 +132,24 @@ export class RunService {
       ) {
         bindings[entry.key.slice("models.bindings.".length)] = entry.value;
       }
+      if (entry.key.startsWith("models.fallbacks.") && Array.isArray(entry.value)) {
+        fallbacks[entry.key.slice("models.fallbacks.".length)] = entry.value as string[];
+      }
     }
     this.router = new ModelRouter({
       registry,
       providers,
       bindings: bindings as never,
+      fallbacks: fallbacks as never,
+      onModelFallback: (role, fromModelId, toModelId, reason) => {
+        this.ctx.bus.emit({
+          type: "model.fallback",
+          sessionId: "" as never,
+          fromModelId,
+          toModelId,
+          reason: `[${role}] ${reason}`,
+        });
+      },
       recordUsage: (rec) => {
         db.modelUsage.record({
           at: rec.at,
@@ -154,6 +175,10 @@ export class RunService {
   /** Invalidate the cached router (after provider add/remove). */
   invalidateRouter(): void {
     this.router = null;
+    // Runtimes capture the router at construction — they must be rebuilt too
+    // (drops in-flight Pi agent state for this workspace; acceptable on
+    // provider/model changes).
+    this.runtimes.clear();
   }
 
   private async getRuntime(workspace: Workspace): Promise<PiAgentRuntime> {

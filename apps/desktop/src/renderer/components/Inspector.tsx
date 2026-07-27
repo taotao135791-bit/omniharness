@@ -5,6 +5,7 @@ import { fileDecision, hunksOf, statusBadge, summarizeDiff } from "../vm/diff.js
 import { toUsageBars } from "../vm/usage.js";
 import { formatTokens } from "../vm/chat.js";
 import type { DiffFile } from "@omniharness/agent-protocol";
+import type { ModelRole } from "@omniharness/shared-types";
 
 const TABS: Array<{ id: InspectorTab; label: string }> = [
   { id: "diff", label: "Diff" },
@@ -209,7 +210,7 @@ function ContextTab({ store }: { store: AppStore }): React.JSX.Element {
     () =>
       s.activeSessionId
         ? store.rpc.call("model.getRoleBindings", { sessionId: s.activeSessionId })
-        : Promise.resolve({ bindings: {} }),
+        : Promise.resolve<{ bindings: Partial<Record<ModelRole, string>> }>({ bindings: {} }),
     [s.activeSessionId],
     true,
   );

@@ -3,6 +3,9 @@ import type { AppStore } from "../store.js";
 import { useAppState, useQuery } from "../hooks.js";
 import { formatCost, formatTokens, type ToolCallState } from "../vm/chat.js";
 import { RunTimeline } from "./RunTimeline.js";
+import type { ModelRole } from "@omniharness/shared-types";
+
+type RoleBindings = { bindings: Partial<Record<ModelRole, string>> };
 
 function ToolCallBlock({ call }: { call: ToolCallState }): React.JSX.Element {
   const [open, setOpen] = useState(false);
@@ -119,7 +122,7 @@ export function ChatView({ store }: { store: AppStore }): React.JSX.Element {
     () =>
       s.activeSessionId
         ? store.rpc.call("model.getRoleBindings", { sessionId: s.activeSessionId })
-        : Promise.resolve({ bindings: {} }),
+        : Promise.resolve<RoleBindings>({ bindings: {} }),
     [s.activeSessionId],
     true,
   );

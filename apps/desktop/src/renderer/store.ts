@@ -12,6 +12,7 @@ import type {
   Session,
   Workspace,
 } from "@omniharness/agent-protocol";
+import type { SessionId } from "@omniharness/shared-types";
 import type { DomainEvent, OmniBridge } from "./bridge.js";
 import { normalizeDaemonState, type DaemonState } from "./bridge.js";
 import {
@@ -62,7 +63,7 @@ export interface AppState {
   activeProjectId: string | null;
   workspaces: Workspace[];
   sessions: Session[];
-  activeSessionId: string | null;
+  activeSessionId: SessionId | null;
   agents: Agent[];
   runs: AgentRun[];
   chat: ChatState;
@@ -326,7 +327,7 @@ export class AppStore {
 
   async refreshAgents(): Promise<void> {
     try {
-      const params: { sessionId?: string } = {};
+      const params: { sessionId?: SessionId } = {};
       if (this.state.activeSessionId) params.sessionId = this.state.activeSessionId;
       const r = await this.bridge.call("agent.list", params);
       this.set({ agents: r.agents });
@@ -374,7 +375,7 @@ export class AppStore {
     await this.refreshWorkspaces();
   }
 
-  async selectSession(sessionId: string): Promise<void> {
+  async selectSession(sessionId: SessionId): Promise<void> {
     this.set({ activeSessionId: sessionId, view: "chat" });
     const cached = this.chatBySession.get(sessionId);
     if (cached) this.set({ chat: cached });
@@ -411,7 +412,7 @@ export class AppStore {
     }
   }
 
-  async renameSession(sessionId: string, title: string): Promise<void> {
+  async renameSession(sessionId: SessionId, title: string): Promise<void> {
     try {
       await this.bridge.call("session.rename", { sessionId, title });
       await this.refreshSessions();
@@ -420,7 +421,7 @@ export class AppStore {
     }
   }
 
-  async archiveSession(sessionId: string): Promise<void> {
+  async archiveSession(sessionId: SessionId): Promise<void> {
     try {
       await this.bridge.call("session.archive", { sessionId });
       if (this.state.activeSessionId === sessionId) {
@@ -585,7 +586,7 @@ export class AppStore {
     const sessionId = this.state.activeSessionId;
     if (!sessionId) return;
     try {
-      const params: { sessionId: string; file?: string; hunkIndex?: number } = { sessionId };
+      const params: { sessionId: SessionId; file?: string; hunkIndex?: number } = { sessionId };
       if (file !== undefined) params.file = file;
       if (hunkIndex !== undefined) params.hunkIndex = hunkIndex;
       await this.bridge.call(kind === "accept" ? "diff.accept" : "diff.reject", params);
@@ -613,7 +614,7 @@ export class AppStore {
     const sessionId = this.state.activeSessionId;
     if (!sessionId) return;
     try {
-      const params: { sessionId: string; label?: string } = { sessionId };
+      const params: { sessionId: SessionId; label?: string } = { sessionId };
       if (label) params.label = label;
       await this.bridge.call("checkpoint.create", params);
       await this.refreshCheckpoints();
@@ -634,7 +635,7 @@ export class AppStore {
 
   async refreshArtifacts(): Promise<void> {
     try {
-      const params: { limit: number; sessionId?: string } = { limit: 100 };
+      const params: { limit: number; sessionId?: SessionId } = { limit: 100 };
       if (this.state.activeSessionId) params.sessionId = this.state.activeSessionId;
       const r = await this.bridge.call("artifact.list", params);
       this.set({ artifacts: r.artifacts });

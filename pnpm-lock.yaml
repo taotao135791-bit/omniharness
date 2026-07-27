@@ -169,6 +169,9 @@ importers:
       '@omniharness/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
+      '@omniharness/ui-command-registry':
+        specifier: workspace:*
+        version: link:../../packages/ui-command-registry
     devDependencies:
       '@types/node':
         specifier: ^24.0.0

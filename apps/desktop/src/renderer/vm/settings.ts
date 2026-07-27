@@ -1,4 +1,4 @@
-import { getPath, validate, type FieldDef } from "@omniharness/config-schema";
+import { getPath, validate, type FieldDef } from "../schema.js";
 
 /**
  * Settings view-model: groups the schema into sections and converts raw
@@ -72,7 +72,7 @@ export function coerceFieldInput(field: FieldDef, raw: string | boolean): FieldE
     }
   } else {
     value = String(raw);
-    if (field.type === "enum" && !(field.enumValues ?? []).includes(value)) {
+    if (field.type === "enum" && !(field.enumValues ?? []).includes(value as string)) {
       return { ok: false, error: `expected one of: ${(field.enumValues ?? []).join(", ")}` };
     }
   }

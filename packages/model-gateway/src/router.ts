@@ -62,6 +62,8 @@ export interface ModelRouterOptions {
   random?: () => number;
   /** Injectable sleep (tests). */
   sleep?: (ms: number) => Promise<void>;
+  /** Called when the router falls through from one model to the next in a chain. */
+  onModelFallback?: (role: ModelRole, fromModelId: ModelId, toModelId: ModelId, reason: string) => void;
 }
 
 export interface ProviderHealth {
@@ -88,6 +90,7 @@ export class ModelRouter {
   private readonly baseDelayMs: number;
   private readonly maxDelayMs: number;
   private readonly fallbackOnRateLimit: boolean;
+  private readonly onModelFallback: ModelRouterOptions["onModelFallback"];
   private readonly healthCacheTtlMs: number;
   private readonly random: () => number;
   private readonly sleep: (ms: number) => Promise<void>;
@@ -108,6 +111,7 @@ export class ModelRouter {
     this.baseDelayMs = options.baseDelayMs ?? 500;
     this.maxDelayMs = options.maxDelayMs ?? 30_000;
     this.fallbackOnRateLimit = options.fallbackOnRateLimit ?? true;
+    this.onModelFallback = options.onModelFallback;
     this.healthCacheTtlMs = options.healthCacheTtlMs ?? 60_000;
     this.random = options.random ?? Math.random;
     this.sleep = options.sleep ?? defaultSleep;
@@ -228,7 +232,13 @@ export class ModelRouter {
             await this.sleep(this.retryDelayMs(err, attempt));
             continue;
           }
-          if (isRetryableProviderError(err) && this.fallbackOnRateLimit) break; // next model
+          if (isRetryableProviderError(err) && this.fallbackOnRateLimit) {
+            const next = chain[chain.indexOf(model) + 1];
+            if (next !== undefined) {
+              this.onModelFallback?.(role, model.id, next.id, err instanceof Error ? err.message : String(err));
+            }
+            break; // next model
+          }
           throw err;
         }
       }
