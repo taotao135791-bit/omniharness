@@ -25,9 +25,7 @@ export function runRows(runs: AgentRun[], activeRunId: string | null): RunRow[] 
       status: r.id === activeRunId ? "running" : r.status,
       startedAt: r.startedAt,
       durationMs:
-        r.endedAt !== null
-          ? Math.max(0, Date.parse(r.endedAt) - Date.parse(r.startedAt))
-          : null,
+        r.endedAt !== null ? Math.max(0, Date.parse(r.endedAt) - Date.parse(r.startedAt)) : null,
       error: r.error ?? null,
       inputTokens: r.usage.inputTokens,
       outputTokens: r.usage.outputTokens,

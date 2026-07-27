@@ -24,14 +24,7 @@ import {
 } from "./vm/chat.js";
 
 export type MainView =
-  | "chat"
-  | "models"
-  | "memory"
-  | "skills"
-  | "automations"
-  | "plugins"
-  | "settings"
-  | "diagnostics";
+  "chat" | "models" | "memory" | "skills" | "automations" | "plugins" | "settings" | "diagnostics";
 
 export type InspectorTab = "diff" | "files" | "artifacts" | "context" | "usage";
 export type BottomTab = "logs" | "approvals" | "problems";
@@ -190,7 +183,9 @@ export class AppStore {
         void this.refreshSessions();
         return;
       case "approval.requested":
-        this.set({ approvals: [...this.state.approvals.filter((a) => a.id !== e.approval.id), e.approval] });
+        this.set({
+          approvals: [...this.state.approvals.filter((a) => a.id !== e.approval.id), e.approval],
+        });
         return;
       case "approval.resolved":
         this.set({ approvals: this.state.approvals.filter((a) => a.id !== e.approvalId) });
@@ -493,7 +488,11 @@ export class AppStore {
     if (!runId || !input.trim()) return;
     const sessionId = this.state.activeSessionId;
     if (sessionId) {
-      const chat = appendUserMessage(this.state.chat, `local-${++this.localSeq}`, `(steer) ${input.trim()}`);
+      const chat = appendUserMessage(
+        this.state.chat,
+        `local-${++this.localSeq}`,
+        `(steer) ${input.trim()}`,
+      );
       this.chatBySession.set(sessionId, chat);
       this.set({ chat });
     }
@@ -578,11 +577,7 @@ export class AppStore {
     }
   }
 
-  async diffDecision(
-    kind: "accept" | "reject",
-    file?: string,
-    hunkIndex?: number,
-  ): Promise<void> {
+  async diffDecision(kind: "accept" | "reject", file?: string, hunkIndex?: number): Promise<void> {
     const sessionId = this.state.activeSessionId;
     if (!sessionId) return;
     try {
@@ -689,9 +684,7 @@ export class AppStore {
 function resolveTheme(settings: Record<string, unknown>): "dark" | "light" {
   const gui = settings["gui"];
   const raw =
-    typeof gui === "object" && gui !== null
-      ? (gui as Record<string, unknown>)["theme"]
-      : undefined;
+    typeof gui === "object" && gui !== null ? (gui as Record<string, unknown>)["theme"] : undefined;
   const v = typeof raw === "string" ? raw : "system";
   if (v === "light") return "light";
   if (v === "dark") return "dark";

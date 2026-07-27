@@ -1,4 +1,9 @@
-import { MODEL_ROLES, type ModelDefinition, type ModelRole, type ProviderConfig } from "@omniharness/shared-types";
+import {
+  MODEL_ROLES,
+  type ModelDefinition,
+  type ModelRole,
+  type ProviderConfig,
+} from "@omniharness/shared-types";
 
 /**
  * Models page view-model: provider grouping, capability badges, role binding

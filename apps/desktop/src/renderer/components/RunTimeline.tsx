@@ -21,9 +21,7 @@ export function RunTimeline({ store }: { store: AppStore }): React.JSX.Element {
             <span className="muted">{formatTime(r.startedAt)}</span>
             <span className="tl-dur">{formatDuration(r.durationMs)}</span>
           </div>
-          <div className="tl-usage muted">
-            {formatTokens(r.inputTokens + r.outputTokens)} tok
-          </div>
+          <div className="tl-usage muted">{formatTokens(r.inputTokens + r.outputTokens)} tok</div>
           {r.error && <div className="error-text">{r.error}</div>}
         </div>
       ))}

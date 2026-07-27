@@ -44,7 +44,14 @@ export interface DiffSummary {
 
 export function summarizeDiff(diff: DiffResult | null): DiffSummary {
   if (!diff) {
-    return { files: 0, additions: 0, deletions: 0, decidedHunks: 0, totalHunks: 0, allDecided: true };
+    return {
+      files: 0,
+      additions: 0,
+      deletions: 0,
+      decidedHunks: 0,
+      totalHunks: 0,
+      allDecided: true,
+    };
   }
   let additions = 0;
   let deletions = 0;

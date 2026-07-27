@@ -35,7 +35,6 @@ and its tests pass (or the failure is recorded here honestly).
 - [ ] Agent run pipeline (runtime-pi) — in progress
 - [ ] skill-engine / automation-engine / orchestrator — in progress
 
-
 ## 2026-07-23 — Full stack green
 
 - `pnpm verify` PASSED: lint, typecheck, unit+contract tests, e2e (daemon
@@ -46,4 +45,16 @@ and its tests pass (or the failure is recorded here honestly).
   approval → execution → persistence, 8/8 daemon tests.
 - Standalone single-file CLI/daemon bundles built with esbuild and verified
   end-to-end from the tarball on this machine (daemon start + `omni doctor`).
-- Desktop GUI full views: in progress.
+- Desktop GUI full command center: done (50 tests) — three-pane workbench,
+  diff review per file/hunk, models/memory/skills/automations/plugins pages,
+  schema-generated settings, diagnostics+usage, command palette, themes.
+
+## 2026-07-23 — Final verification
+
+- `pnpm verify` PASSED (all stages incl. format check): lint 3.7s, typecheck
+  21.8s, unit+contract 38.4s, e2e 2.3s, security 1.5s, build 16.9s.
+- Test totals: 750+ across 28 workspace projects (691 core + 50 GUI + 10 new
+  daemon run-e2e incl. approval-deny and 429-fallback scenarios).
+- Artifacts: `release/omniharness-0.1.0.tar.gz` (standalone CLI+daemon,
+  tarball-verified), `apps/desktop/release/mac-arm64/OmniHarness.app`
+  (unsigned, daemon bundled).

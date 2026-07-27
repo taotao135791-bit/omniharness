@@ -22,7 +22,10 @@ export function BottomPanel({ store }: { store: AppStore }): React.JSX.Element {
   }, [s.logs.length, s.bottomTab, s.bottomOpen]);
 
   return (
-    <section className={`bottom-panel ${s.bottomOpen ? "" : "collapsed"}`} aria-label="Bottom panel">
+    <section
+      className={`bottom-panel ${s.bottomOpen ? "" : "collapsed"}`}
+      aria-label="Bottom panel"
+    >
       <div className="tab-bar" role="tablist" aria-label="Bottom panel tabs">
         {TABS.map((t) => (
           <button

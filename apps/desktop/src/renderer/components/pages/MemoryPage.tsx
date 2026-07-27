@@ -37,14 +37,18 @@ function MemoryRow({
             <button
               className="mini approve"
               aria-label="Approve memory"
-              onClick={() => void act(() => store.rpc.call("memory.approve", { memoryId: entry.id }))}
+              onClick={() =>
+                void act(() => store.rpc.call("memory.approve", { memoryId: entry.id }))
+              }
             >
               Approve
             </button>
             <button
               className="mini deny"
               aria-label="Reject memory"
-              onClick={() => void act(() => store.rpc.call("memory.reject", { memoryId: entry.id }))}
+              onClick={() =>
+                void act(() => store.rpc.call("memory.reject", { memoryId: entry.id }))
+              }
             >
               Reject
             </button>

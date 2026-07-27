@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type { DomainEvent } from "@omniharness/agent-protocol";
 import type { Message, MessageId, SessionId, ToolCallId } from "@omniharness/shared-types";
 import {
   appendUserMessage,

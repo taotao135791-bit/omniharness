@@ -97,9 +97,7 @@ function ApprovalCard({
       <div className="approval-actions">
         <button
           className="approve"
-          onClick={() =>
-            void store.resolveApproval(approval.id, "approve", remember || undefined)
-          }
+          onClick={() => void store.resolveApproval(approval.id, "approve", remember || undefined)}
         >
           Approve
         </button>
@@ -194,7 +192,12 @@ export function ChatView({ store }: { store: AppStore }): React.JSX.Element {
           )}
           {s.chat.messages.map((m) => (
             <div key={m.id} className={`msg ${m.role}`}>
-              {m.reasoning && <details className="reasoning"><summary>reasoning</summary>{m.reasoning}</details>}
+              {m.reasoning && (
+                <details className="reasoning">
+                  <summary>reasoning</summary>
+                  {m.reasoning}
+                </details>
+              )}
               {m.text}
               {m.streaming ? " ▍" : ""}
             </div>
@@ -246,7 +249,11 @@ export function ChatView({ store }: { store: AppStore }): React.JSX.Element {
               >
                 Enqueue
               </button>
-              <button className="danger" onClick={() => void store.interrupt()} aria-label="Interrupt run">
+              <button
+                className="danger"
+                onClick={() => void store.interrupt()}
+                aria-label="Interrupt run"
+              >
                 ■ Interrupt
               </button>
             </>

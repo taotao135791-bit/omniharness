@@ -60,7 +60,10 @@ export function PluginsPage({ store }: { store: AppStore }): React.JSX.Element {
                 checked={p.enabled}
                 onChange={(e) =>
                   void store.rpc
-                    .call("plugin.setEnabled", { pluginId: p.manifest.id, enabled: e.target.checked })
+                    .call("plugin.setEnabled", {
+                      pluginId: p.manifest.id,
+                      enabled: e.target.checked,
+                    })
                     .then(plugins.refresh)
                 }
               />

@@ -39,8 +39,8 @@ export function DiagnosticsPage({ store }: { store: AppStore }): React.JSX.Eleme
         <>
           <div className="card">
             <div className="muted">
-              {report.platform.os} / {report.platform.arch} · node {report.platform.node} · data
-              dir <code>{report.dataDir}</code> · db {formatBytes(report.dbSizeBytes)} · event log{" "}
+              {report.platform.os} / {report.platform.arch} · node {report.platform.node} · data dir{" "}
+              <code>{report.dataDir}</code> · db {formatBytes(report.dbSizeBytes)} · event log{" "}
               {report.eventLogSize} events
             </div>
           </div>

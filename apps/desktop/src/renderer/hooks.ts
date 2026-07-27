@@ -56,7 +56,6 @@ export function useQuery<T>(
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick, ...(listenRevision ? [revision] : []), ...deps]);
 
   return { data, error, loading, refresh };

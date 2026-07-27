@@ -5,7 +5,11 @@ import path from "node:path";
 import { OmniClient } from "@omniharness/client-sdk";
 import { startDaemon, stopDaemon, type DaemonContext } from "./index.js";
 import { fixture, type FixtureResponse } from "@omniharness/model-gateway";
-import { DEFAULT_CAPABILITIES, type ModelDefinition, type ProviderConfig } from "@omniharness/shared-types";
+import {
+  DEFAULT_CAPABILITIES,
+  type ModelDefinition,
+  type ProviderConfig,
+} from "@omniharness/shared-types";
 
 /**
  * More acceptance scenarios with fixture models:
@@ -30,7 +34,11 @@ describe("run e2e — deny path and rate-limit fallback", () => {
         "prov_fixture",
         [
           // Session A: shell.exec → user will DENY → model answers anyway.
-          fixture.toolCall("shell.exec", JSON.stringify({ command: "touch SHOULD_NOT_EXIST" }), "c1"),
+          fixture.toolCall(
+            "shell.exec",
+            JSON.stringify({ command: "touch SHOULD_NOT_EXIST" }),
+            "c1",
+          ),
           fixture.text("Understood, I will not run shell commands."),
           // Session B: text via fallback model only (primary 429s — see prov_flaky).
           fixture.text("answer from fallback model"),
@@ -148,7 +156,10 @@ describe("run e2e — deny path and rate-limit fallback", () => {
       if (e.type === "model.fallback") events.push(`${e.fromModelId}→${e.toModelId}`);
     });
 
-    const { session } = await client.call("session.create", { workspaceId, title: "fallback-test" });
+    const { session } = await client.call("session.create", {
+      workspaceId,
+      title: "fallback-test",
+    });
     const ended = new Promise<string>((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error("run timeout")), 30_000);
       const off = client.onEvent((e) => {

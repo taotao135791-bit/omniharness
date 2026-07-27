@@ -45,7 +45,13 @@ export interface UsageTotals {
 }
 
 export function totalUsage(buckets: UsageBucket[]): UsageTotals {
-  const t: UsageTotals = { inputTokens: 0, outputTokens: 0, costUsd: 0, hasCost: false, requests: 0 };
+  const t: UsageTotals = {
+    inputTokens: 0,
+    outputTokens: 0,
+    costUsd: 0,
+    hasCost: false,
+    requests: 0,
+  };
   for (const b of buckets) {
     t.inputTokens += b.usage.inputTokens;
     t.outputTokens += b.usage.outputTokens;

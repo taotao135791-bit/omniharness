@@ -63,7 +63,12 @@ export interface ModelRouterOptions {
   /** Injectable sleep (tests). */
   sleep?: (ms: number) => Promise<void>;
   /** Called when the router falls through from one model to the next in a chain. */
-  onModelFallback?: (role: ModelRole, fromModelId: ModelId, toModelId: ModelId, reason: string) => void;
+  onModelFallback?: (
+    role: ModelRole,
+    fromModelId: ModelId,
+    toModelId: ModelId,
+    reason: string,
+  ) => void;
 }
 
 export interface ProviderHealth {
@@ -235,7 +240,12 @@ export class ModelRouter {
           if (isRetryableProviderError(err) && this.fallbackOnRateLimit) {
             const next = chain[chain.indexOf(model) + 1];
             if (next !== undefined) {
-              this.onModelFallback?.(role, model.id, next.id, err instanceof Error ? err.message : String(err));
+              this.onModelFallback?.(
+                role,
+                model.id,
+                next.id,
+                err instanceof Error ? err.message : String(err),
+              );
             }
             break; // next model
           }

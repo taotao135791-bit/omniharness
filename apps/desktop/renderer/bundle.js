@@ -22100,7 +22100,9 @@ var AppStore = class {
         void this.refreshSessions();
         return;
       case "approval.requested":
-        this.set({ approvals: [...this.state.approvals.filter((a) => a.id !== e.approval.id), e.approval] });
+        this.set({
+          approvals: [...this.state.approvals.filter((a) => a.id !== e.approval.id), e.approval]
+        });
         return;
       case "approval.resolved":
         this.set({ approvals: this.state.approvals.filter((a) => a.id !== e.approvalId) });
@@ -22368,7 +22370,11 @@ var AppStore = class {
     if (!runId || !input.trim()) return;
     const sessionId = this.state.activeSessionId;
     if (sessionId) {
-      const chat = appendUserMessage(this.state.chat, `local-${++this.localSeq}`, `(steer) ${input.trim()}`);
+      const chat = appendUserMessage(
+        this.state.chat,
+        `local-${++this.localSeq}`,
+        `(steer) ${input.trim()}`
+      );
       this.chatBySession.set(sessionId, chat);
       this.set({ chat });
     }
@@ -23116,7 +23122,15 @@ function ChatView({ store }) {
             children: "Enqueue"
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "danger", onClick: () => void store.interrupt(), "aria-label": "Interrupt run", children: "\u25A0 Interrupt" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
+          "button",
+          {
+            className: "danger",
+            onClick: () => void store.interrupt(),
+            "aria-label": "Interrupt run",
+            children: "\u25A0 Interrupt"
+          }
+        )
       ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
         "button",
         {
@@ -23151,7 +23165,14 @@ function fileDecision(file) {
 }
 function summarizeDiff(diff) {
   if (!diff) {
-    return { files: 0, additions: 0, deletions: 0, decidedHunks: 0, totalHunks: 0, allDecided: true };
+    return {
+      files: 0,
+      additions: 0,
+      deletions: 0,
+      decidedHunks: 0,
+      totalHunks: 0,
+      allDecided: true
+    };
   }
   let additions = 0;
   let deletions = 0;
@@ -23215,7 +23236,13 @@ function toUsageBars(buckets) {
   return rows;
 }
 function totalUsage(buckets) {
-  const t = { inputTokens: 0, outputTokens: 0, costUsd: 0, hasCost: false, requests: 0 };
+  const t = {
+    inputTokens: 0,
+    outputTokens: 0,
+    costUsd: 0,
+    hasCost: false,
+    requests: 0
+  };
   for (const b of buckets) {
     t.inputTokens += b.usage.inputTokens;
     t.outputTokens += b.usage.outputTokens;
@@ -23540,84 +23567,91 @@ function BottomPanel({ store }) {
       logEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [s.logs.length, s.bottomTab, s.bottomOpen]);
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("section", { className: `bottom-panel ${s.bottomOpen ? "" : "collapsed"}`, "aria-label": "Bottom panel", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "tab-bar", role: "tablist", "aria-label": "Bottom panel tabs", children: [
-      TABS2.map((t) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
-        "button",
-        {
-          role: "tab",
-          "aria-selected": s.bottomTab === t.id,
-          className: `tab ${s.bottomTab === t.id ? "active" : ""}`,
-          onClick: () => store.setBottomTab(t.id),
-          children: [
-            t.label,
-            t.id === "approvals" && pending.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "count-badge", children: pending.length }),
-            t.id === "problems" && problems.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "count-badge danger", children: problems.length })
-          ]
-        },
-        t.id
-      )),
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-        "button",
-        {
-          className: "tab collapse-btn",
-          "aria-label": s.bottomOpen ? "Collapse panel" : "Expand panel",
-          onClick: () => store.toggleBottom(),
-          children: s.bottomOpen ? "\u25BE" : "\u25B4"
-        }
-      )
-    ] }),
-    s.bottomOpen && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bottom-body", children: [
-      s.bottomTab === "logs" && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "log-view", "aria-label": "Logs", children: [
-        s.logs.map((l) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: `log-line ${l.level}`, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "muted", children: new Date(l.at).toLocaleTimeString() }),
-          " ",
-          l.text
-        ] }, l.id)),
-        s.logs.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "hint", children: "No log lines yet." }),
-        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { ref: logEndRef })
-      ] }),
-      s.bottomTab === "approvals" && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { "aria-label": "Pending approvals", children: [
-        pending.map((a) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "approval-row", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: `badge risk-${a.risk}`, children: a.risk }),
-          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("strong", { children: a.capability }),
-          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "approval-summary", children: a.summary }),
-          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: "approval-actions", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-              "button",
-              {
-                className: "mini approve",
-                "aria-label": `Approve ${a.capability}`,
-                onClick: () => void store.resolveApproval(a.id, "approve"),
-                children: "Approve"
-              }
-            ),
-            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-              "button",
-              {
-                className: "mini deny",
-                "aria-label": `Deny ${a.capability}`,
-                onClick: () => void store.resolveApproval(a.id, "deny"),
-                children: "Deny"
-              }
-            )
+  return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+    "section",
+    {
+      className: `bottom-panel ${s.bottomOpen ? "" : "collapsed"}`,
+      "aria-label": "Bottom panel",
+      children: [
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "tab-bar", role: "tablist", "aria-label": "Bottom panel tabs", children: [
+          TABS2.map((t) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+            "button",
+            {
+              role: "tab",
+              "aria-selected": s.bottomTab === t.id,
+              className: `tab ${s.bottomTab === t.id ? "active" : ""}`,
+              onClick: () => store.setBottomTab(t.id),
+              children: [
+                t.label,
+                t.id === "approvals" && pending.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "count-badge", children: pending.length }),
+                t.id === "problems" && problems.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "count-badge danger", children: problems.length })
+              ]
+            },
+            t.id
+          )),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+            "button",
+            {
+              className: "tab collapse-btn",
+              "aria-label": s.bottomOpen ? "Collapse panel" : "Expand panel",
+              onClick: () => store.toggleBottom(),
+              children: s.bottomOpen ? "\u25BE" : "\u25B4"
+            }
+          )
+        ] }),
+        s.bottomOpen && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bottom-body", children: [
+          s.bottomTab === "logs" && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "log-view", "aria-label": "Logs", children: [
+            s.logs.map((l) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: `log-line ${l.level}`, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "muted", children: new Date(l.at).toLocaleTimeString() }),
+              " ",
+              l.text
+            ] }, l.id)),
+            s.logs.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "hint", children: "No log lines yet." }),
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { ref: logEndRef })
+          ] }),
+          s.bottomTab === "approvals" && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { "aria-label": "Pending approvals", children: [
+            pending.map((a) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "approval-row", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: `badge risk-${a.risk}`, children: a.risk }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("strong", { children: a.capability }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "approval-summary", children: a.summary }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: "approval-actions", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                  "button",
+                  {
+                    className: "mini approve",
+                    "aria-label": `Approve ${a.capability}`,
+                    onClick: () => void store.resolveApproval(a.id, "approve"),
+                    children: "Approve"
+                  }
+                ),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                  "button",
+                  {
+                    className: "mini deny",
+                    "aria-label": `Deny ${a.capability}`,
+                    onClick: () => void store.resolveApproval(a.id, "deny"),
+                    children: "Deny"
+                  }
+                )
+              ] })
+            ] }, a.id)),
+            pending.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "hint", children: "No pending approvals." })
+          ] }),
+          s.bottomTab === "problems" && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { "aria-label": "Problems", children: [
+            problems.map((p) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "problem-row", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "badge status-failed", children: "fail" }),
+              " ",
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("strong", { children: p.name }),
+              " ",
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "muted", children: p.detail })
+            ] }, p.name)),
+            problems.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "hint", children: s.diagnostics ? "All diagnostics checks pass." : "Diagnostics not loaded yet." }),
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("button", { className: "link-btn", onClick: () => void store.refreshDiagnostics(), children: "Re-run diagnostics" })
           ] })
-        ] }, a.id)),
-        pending.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "hint", children: "No pending approvals." })
-      ] }),
-      s.bottomTab === "problems" && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { "aria-label": "Problems", children: [
-        problems.map((p) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "problem-row", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "badge status-failed", children: "fail" }),
-          " ",
-          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("strong", { children: p.name }),
-          " ",
-          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "muted", children: p.detail })
-        ] }, p.name)),
-        problems.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "hint", children: s.diagnostics ? "All diagnostics checks pass." : "Diagnostics not loaded yet." }),
-        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("button", { className: "link-btn", onClick: () => void store.refreshDiagnostics(), children: "Re-run diagnostics" })
-      ] })
-    ] })
-  ] });
+        ] })
+      ]
+    }
+  );
 }
 
 // src/renderer/components/CommandPalette.tsx
@@ -24594,7 +24628,10 @@ function PluginsPage({ store }) {
               type: "checkbox",
               "aria-label": `Enable ${p.manifest.name}`,
               checked: p.enabled,
-              onChange: (e) => void store.rpc.call("plugin.setEnabled", { pluginId: p.manifest.id, enabled: e.target.checked }).then(plugins.refresh)
+              onChange: (e) => void store.rpc.call("plugin.setEnabled", {
+                pluginId: p.manifest.id,
+                enabled: e.target.checked
+              }).then(plugins.refresh)
             }
           ),
           "enabled"
@@ -25222,7 +25259,8 @@ function DiagnosticsPage({ store }) {
         report.platform.arch,
         " \xB7 node ",
         report.platform.node,
-        " \xB7 data dir ",
+        " \xB7 data dir",
+        " ",
         /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("code", { children: report.dataDir }),
         " \xB7 db ",
         formatBytes(report.dbSizeBytes),
@@ -25358,7 +25396,12 @@ function Shell({ store }) {
       )
     ] }),
     s.daemon !== "connected" && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "conn-banner", role: "alert", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: `dot ${s.daemon === "reconnecting" ? "reconnecting" : "disconnected"}` }),
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+        "span",
+        {
+          className: `dot ${s.daemon === "reconnecting" ? "reconnecting" : "disconnected"}`
+        }
+      ),
       "daemon ",
       s.daemon,
       s.daemon === "reconnecting" ? " \u2014 retrying\u2026" : " \u2014 commands are unavailable"
@@ -25385,7 +25428,8 @@ function Shell({ store }) {
         s.version ? ` \xB7 v${s.version}` : ""
       ] }),
       s.activeSessionId && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { children: [
-        "session: ",
+        "session:",
+        " ",
         s.sessions.find((x) => x.id === s.activeSessionId)?.title ?? s.activeSessionId
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "titlebar-spacer" }),

@@ -51,14 +51,15 @@ covered by tests. Last updated: 2026-07-23.
 
 ## Coverage gaps (explicitly not done)
 
-- **MCP client protocol**: MCP server *configs* import as data; speaking the
+- **MCP client protocol**: MCP server _configs_ import as data; speaking the
   MCP protocol to external servers is not implemented.
 - **TUI view breadth**: the spec's 21 named views exist as commands/views for
   sessions, chat, diff, models, approvals, memory, skills, automations, logs,
   settings, palette; dedicated Channels/Nodes/Plugins/Usage full views are
   CLI/GUI-first today.
-- **GUI**: full command-center views are landing; the minimal shell
-  (sessions/chat/approvals) already works against the daemon.
+- **GUI**: full command-center views are in (50 tests). No computer-use
+  live view; `session.branch`/`session.export` palette entries not yet mapped
+  to GUI flows.
 - **Remote nodes / mobile approvals**: the adapter supports the flows as a
   library; no bundled mobile app exists.
 

@@ -111,11 +111,16 @@ const toolSeed: Omit<ToolCallState, "id"> = {
 };
 
 /** Apply one domain event for the given session; returns unchanged state for foreign events. */
-export function reduceChatEvent(state: ChatState, sessionId: string, event: DomainEvent): ChatState {
+export function reduceChatEvent(
+  state: ChatState,
+  sessionId: string,
+  event: DomainEvent,
+): ChatState {
   switch (event.type) {
     case "message.started": {
       if (event.sessionId !== sessionId) return state;
-      const role = event.role === "user" ? "user" : event.role === "system" ? "system" : "assistant";
+      const role =
+        event.role === "user" ? "user" : event.role === "system" ? "system" : "assistant";
       return {
         ...state,
         messages: upsertMessage(state.messages, event.messageId, role, (m) => ({

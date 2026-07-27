@@ -91,7 +91,9 @@ function Shell({ store }: { store: AppStore }): React.JSX.Element {
 
       {s.daemon !== "connected" && (
         <div className="conn-banner" role="alert">
-          <span className={`dot ${s.daemon === "reconnecting" ? "reconnecting" : "disconnected"}`} />
+          <span
+            className={`dot ${s.daemon === "reconnecting" ? "reconnecting" : "disconnected"}`}
+          />
           daemon {s.daemon}
           {s.daemon === "reconnecting" ? " — retrying…" : " — commands are unavailable"}
         </div>
@@ -121,7 +123,8 @@ function Shell({ store }: { store: AppStore }): React.JSX.Element {
         </span>
         {s.activeSessionId && (
           <span>
-            session: {s.sessions.find((x) => x.id === s.activeSessionId)?.title ?? s.activeSessionId}
+            session:{" "}
+            {s.sessions.find((x) => x.id === s.activeSessionId)?.title ?? s.activeSessionId}
           </span>
         )}
         <span className="titlebar-spacer" />

@@ -14,7 +14,9 @@ import {
 
 export function ModelsPage({ store }: { store: AppStore }): React.JSX.Element {
   useAppState(store); // re-render on dataRevision bumps via useQuery below
-  const [testResults, setTestResults] = useState<Record<string, { ok: boolean; latencyMs: number; error?: string }>>({});
+  const [testResults, setTestResults] = useState<
+    Record<string, { ok: boolean; latencyMs: number; error?: string }>
+  >({});
   const [testing, setTesting] = useState<string | null>(null);
   const [edits, setEdits] = useState<Partial<Record<ModelRole, string | null>>>({});
 

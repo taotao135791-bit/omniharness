@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type {
-  CommandName,
-  CommandParams,
-  CommandResult,
-  DomainEvent,
-} from "./bridge.js";
+import type { CommandName, CommandParams, CommandResult, DomainEvent } from "./bridge.js";
 import type { OmniBridge } from "./bridge.js";
 import { AppStore } from "./store.js";
 import type { ApprovalId, SessionId, ToolCallId } from "@omniharness/shared-types";
@@ -70,7 +65,12 @@ class FakeBridge implements OmniBridge {
               headMessageId: null,
               createdAt: "2026-01-01",
               updatedAt: "2026-01-01",
-              totalUsage: { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 },
+              totalUsage: {
+                inputTokens: 0,
+                outputTokens: 0,
+                cacheReadTokens: 0,
+                cacheWriteTokens: 0,
+              },
             },
           ],
           total: 1,
