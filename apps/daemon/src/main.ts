@@ -153,8 +153,11 @@ export async function stopDaemon(ctx: DaemonContext): Promise<void> {
   ctx.log.info("daemon stopped");
 }
 
-// Direct execution entry.
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Direct execution entry. In esbuild's CJS bundle `import.meta.url` is
+// undefined, so treat that as "run directly" as well.
+const invokedDirectly =
+  import.meta.url === `file://${process.argv[1]}` || import.meta.url === undefined;
+if (invokedDirectly) {
   startDaemon().catch((err) => {
     console.error("daemon failed to start:", err);
     process.exit(1);
