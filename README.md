@@ -2,6 +2,8 @@
 
 > Local-first, model-agnostic desktop agent harness. One runtime for coding agents,
 > knowledge work, browser automation, and desktop computer use — with any model.
+>
+> **[中文 README](./README.zh-CN.md)**
 
 **Status: under active construction.** See [PROGRESS.md](./PROGRESS.md) for the true,
 test-backed state of the product and [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) for real limits.
