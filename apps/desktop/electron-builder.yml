@@ -8,6 +8,12 @@ files:
   - dist-electron/**
   - renderer/**
   - package.json
+extraResources:
+  - from: ../../release/omniharness-0.1.0/bin
+    to: bin
+    filter:
+      - omniharnessd
+      - omni
 mac:
   category: public.app-category.developer-tools
   target: [dmg, zip]

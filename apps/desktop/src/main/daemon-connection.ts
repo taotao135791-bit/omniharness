@@ -94,8 +94,12 @@ export class DaemonConnection {
   }
 
   private spawnDaemon(): void {
-    const bin = process.env.OMNIHARNESS_DAEMON_BIN;
-    if (!bin || !existsSync(bin)) return; // dev: user runs pnpm dev:daemon
+    // Packaged app: the daemon ships inside resources/bin. Dev: user runs
+    // pnpm dev:daemon, or sets OMNIHARNESS_DAEMON_BIN explicitly.
+    const bin =
+      process.env.OMNIHARNESS_DAEMON_BIN ??
+      (process.resourcesPath ? path.join(process.resourcesPath, "bin", "omniharnessd") : undefined);
+    if (!bin || !existsSync(bin)) return;
     this.spawned = spawn(bin, [], { detached: true, stdio: "ignore" });
     this.spawned.unref();
   }
