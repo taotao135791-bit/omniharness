@@ -6,7 +6,8 @@ import { AutomationEngine, Scheduler } from "@omniharness/automation-engine";
 import { ExtensionHost, PluginRegistry, type PluginPersistence } from "@omniharness/extension-host";
 import type { InstalledPlugin, PluginId } from "@omniharness/shared-types";
 import { PolicyEngine } from "@omniharness/policy-engine";
-import { ApprovalEngine, InMemoryApprovalStore } from "@omniharness/approval-engine";
+import { ApprovalEngine, type ApprovalStore, type ApprovalFilter } from "@omniharness/approval-engine";
+import type { ApprovalRequest, ApprovalId, ApprovalStatus } from "@omniharness/shared-types";
 import { ArtifactStore } from "@omniharness/artifact-store";
 import { Logger, Tracer, createNdjsonSink, createStderrSink } from "@omniharness/observability";
 import { EventBus } from "./event-bus.js";
@@ -57,7 +58,24 @@ export async function createDaemonContext(opts: {
   const secrets = detectedSecrets.store;
   const tracer = new Tracer();
   const policy = new PolicyEngine();
-  const approvals = new ApprovalEngine({ store: new InMemoryApprovalStore() });
+  const approvalStore: ApprovalStore = {
+    insert: async (req: ApprovalRequest) => {
+      db.approvals.put(req);
+    },
+    update: async (req: ApprovalRequest) => {
+      db.approvals.put(req);
+    },
+    get: async (id: ApprovalId) => db.approvals.get(id) ?? null,
+    list: async (filter?: ApprovalFilter) => {
+      const rows = filter?.status
+        ? db.approvals.listByStatus(filter.status as ApprovalStatus)
+        : (["pending", "approved", "denied", "expired", "cancelled"] as ApprovalStatus[]).flatMap((s) =>
+            db.approvals.listByStatus(s),
+          );
+      return rows;
+    },
+  };
+  const approvals = new ApprovalEngine({ store: approvalStore });
   const memory = new MemoryEngine(db);
   const artifacts = new ArtifactStore(opts.paths.artifactsDir);
   const { SqliteSkillStore } = await import("./services/skill-store-adapter.js");

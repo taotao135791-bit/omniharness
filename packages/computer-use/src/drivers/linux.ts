@@ -202,7 +202,7 @@ export class LinuxInputDriver extends BaseInputDriver {
     }
   }
 
-  override async activateWindow(target: string): Promise<boolean> {
+  async activateWindow(target: string): Promise<boolean> {
     const result = await runFile("xdotool", [
       "search",
       "--name",

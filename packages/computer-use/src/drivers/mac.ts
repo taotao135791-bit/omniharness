@@ -281,7 +281,7 @@ export class MacInputDriver extends BaseInputDriver {
     }
   }
 
-  override async activateWindow(target: string): Promise<boolean> {
+  async activateWindow(target: string): Promise<boolean> {
     try {
       await this.osascript(
         `tell application "System Events" to set frontmost of (first application process whose name contains ${appleScriptString(target)}) to true`,
