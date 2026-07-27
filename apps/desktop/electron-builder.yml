@@ -15,16 +15,19 @@ extraResources:
       - omniharnessd
       - omni
 mac:
+  icon: ../../brand/assets/icon.icns
   category: public.app-category.developer-tools
   target: [dmg, zip]
   hardenedRuntime: true
   gatekeeperAssess: false
 win:
+  icon: ../../brand/assets/icon.png
   target: [nsis, zip]
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
 linux:
+  icon: ../../brand/assets/icon.png
   target: [AppImage, deb]
   category: Development
 electronDownload:

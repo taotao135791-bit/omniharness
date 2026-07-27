@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10141c"/>
+      <stop offset="1" stop-color="#1c2740"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f8cff"/>
+      <stop offset="1" stop-color="#7c5cff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+  <!-- harness ring -->
+  <circle cx="512" cy="512" r="300" fill="none" stroke="url(#accent)" stroke-width="56"/>
+  <!-- spokes: connections to models/tools -->
+  <g stroke="url(#accent)" stroke-width="40" stroke-linecap="round">
+    <line x1="512" y1="120" x2="512" y2="230"/>
+    <line x1="512" y1="794" x2="512" y2="904"/>
+    <line x1="120" y1="512" x2="230" y2="512"/>
+    <line x1="794" y1="512" x2="904" y2="512"/>
+    <line x1="235" y1="235" x2="313" y2="313"/>
+    <line x1="711" y1="711" x2="789" y2="789"/>
+    <line x1="789" y1="235" x2="711" y2="313"/>
+    <line x1="313" y1="711" x2="235" y2="789"/>
+  </g>
+  <!-- core -->
+  <circle cx="512" cy="512" r="130" fill="url(#accent)"/>
+  <circle cx="512" cy="512" r="58" fill="#0f1115"/>
+</svg>
