@@ -8,7 +8,6 @@ import type {
   TaskId,
   WorkspaceId,
 } from "@omniharness/shared-types";
-import { nowIso } from "@omniharness/shared-types";
 import type { TasksRepo } from "@omniharness/session-store";
 import {
   BudgetExceededError,

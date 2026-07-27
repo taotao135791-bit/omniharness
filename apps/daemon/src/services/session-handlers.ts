@@ -9,7 +9,7 @@ import type {
 import { nowIso } from "@omniharness/shared-types";
 import type { OmniDatabase } from "@omniharness/session-store";
 import type { EventBus } from "../event-bus.js";
-import { RpcError, type CommandHandler } from "../rpc-server.js";
+import { RpcError } from "../rpc-server.js";
 import { ErrorCodes } from "@omniharness/agent-protocol";
 
 /** Profile/project/workspace/session command handlers (pure CRUD + events). */

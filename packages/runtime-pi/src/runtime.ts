@@ -453,6 +453,9 @@ export class PiAgentRuntime {
       }
     }
     try {
+      // Our run bookkeeping frees the session at agent_end, which fires
+      // slightly before Pi settles the previous run internally.
+      await session.agent.waitForIdle();
       await session.agent.prompt(text);
       // Safety net: if the loop ended without agent_end (unexpected throw
       // path), close the run here. Normally a no-op.

@@ -158,7 +158,11 @@ describe("PiAgentRuntime", () => {
 
   it("executes an fs.write tool call through ToolRuntime", async () => {
     const { runtime, provider, root: wsRoot } = makeHarness(root, [
-      fixture.toolCall("fs.write", JSON.stringify({ path: "note.txt", content: "hello file" }), "call_write"),
+      fixture.toolCall(
+        "fs.write",
+        JSON.stringify({ path: path.join(root, "note.txt"), content: "hello file" }),
+        "call_write",
+      ),
       fixture.text("file written", { usage: { inputTokens: 5, outputTokens: 2 } }),
     ]);
 

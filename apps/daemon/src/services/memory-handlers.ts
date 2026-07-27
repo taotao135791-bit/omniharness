@@ -1,7 +1,5 @@
 import type { DaemonContext } from "../context.js";
 import type { MemoryKind } from "@omniharness/shared-types";
-import { nanoid } from "./id.js";
-import type { CommandHandler } from "../rpc-server.js";
 
 type Register = (name: string, handler: (params: never) => unknown) => void;
 

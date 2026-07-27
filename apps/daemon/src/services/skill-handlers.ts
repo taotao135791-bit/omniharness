@@ -1,5 +1,4 @@
 import type { DaemonContext } from "../context.js";
-import { nanoid } from "./id.js";
 import type { SkillDefinition } from "@omniharness/shared-types";
 import path from "node:path";
 import { RpcError } from "../rpc-server.js";

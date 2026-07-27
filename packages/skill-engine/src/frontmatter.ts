@@ -152,7 +152,7 @@ function needsQuoting(value: string): boolean {
   if (value.length === 0) return true;
   if (value !== value.trim()) return true;
   if (NUMBER_RE.test(value) || value === "true" || value === "false") return true;
-  return /[:#"'\[\]{}&*!|>%@`\n]/.test(value);
+  return /[:#"'[\]{}&*!|>%@`\n]/.test(value);
 }
 
 function serializeValue(value: FrontmatterValue): string {

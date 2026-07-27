@@ -5,7 +5,7 @@
  * failure with a non-zero exit code and a readable report.
  */
 import { spawnSync } from "node:child_process";
-import { existsSync, writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 
 const root = path.resolve(import.meta.dirname, "../..");

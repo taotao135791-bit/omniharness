@@ -1,14 +1,13 @@
 import fs from "node:fs";
 import type { OmniDatabase } from "@omniharness/session-store";
 import type { EventBus } from "../event-bus.js";
-import { RpcError, type CommandHandler } from "../rpc-server.js";
+import { RpcError } from "../rpc-server.js";
 import { ErrorCodes, type DiagnosticsReport } from "@omniharness/agent-protocol";
 import type { Tracer } from "@omniharness/observability";
 import { createProviderFromConfig, PROVIDER_PRESETS } from "@omniharness/model-gateway";
 import type { SecretStore } from "@omniharness/secret-store";
 import { nanoid } from "./id.js";
 import type { ProviderConfig, ProviderKind } from "@omniharness/shared-types";
-import { nowIso } from "@omniharness/shared-types";
 
 interface SystemDeps {
   db: OmniDatabase;

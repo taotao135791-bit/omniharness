@@ -1,6 +1,4 @@
 import type { DaemonContext } from "../context.js";
-import { RpcError } from "../rpc-server.js";
-import { ErrorCodes } from "@omniharness/agent-protocol";
 
 type Register = (name: string, handler: (params: never) => unknown) => void;
 

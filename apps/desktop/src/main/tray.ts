@@ -27,7 +27,9 @@ export function createTray(brand: BrandConfig, getWindow: () => BrowserWindow | 
   tray.setContextMenu(menu);
   tray.on("click", () => {
     const win = getWindow();
-    if (win) win.isVisible() ? win.hide() : win.show();
+    if (!win) return;
+    if (win.isVisible()) win.hide();
+    else win.show();
   });
   return tray;
 }

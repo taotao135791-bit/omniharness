@@ -17,7 +17,8 @@
     "@omniharness/agent-protocol": "workspace:*",
     "@omniharness/client-sdk": "workspace:*",
     "@omniharness/config-schema": "workspace:*",
-    "@omniharness/shared-types": "workspace:*"
+    "@omniharness/shared-types": "workspace:*",
+    "@omniharness/ui-command-registry": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

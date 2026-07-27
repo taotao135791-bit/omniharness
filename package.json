@@ -35,7 +35,8 @@
     "prettier": "^3.5.3",
     "tsx": "^4.19.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.1.0"
+    "vitest": "^3.1.0",
+    "@eslint/js": "^9.25.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -5,7 +5,6 @@ import type {
   AssistantMessageEventStream,
   Context,
   ImageContent,
-  Message,
   Model,
   TextContent,
   ThinkingContent,

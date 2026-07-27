@@ -61,6 +61,12 @@ export function createAgentTools(
       label: tool.name,
       parameters: tool.parametersSchema as unknown as AgentTool["parameters"],
       execute: async (toolCallId, params, signal): Promise<AgentToolResult<unknown>> => {
+        // ToolRuntime cannot handle an already-aborted signal (its abort and
+        // timeout listeners never fire on a pre-aborted controller), and Pi
+        // itself treats such calls as aborted. Short-circuit here.
+        if (signal?.aborted) {
+          throw new Error("Tool execution aborted");
+        }
         const runContext = getRunContext();
         const startedAt = Date.now();
         const result: ToolResult = await toolRuntime.run(tool.name, params, {

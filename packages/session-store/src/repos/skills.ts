@@ -7,7 +7,7 @@ import type {
   SkillProposalStatus,
 } from "@omniharness/shared-types";
 import { nowIso } from "@omniharness/shared-types";
-import { allRows, bit, bool, getRow, jparse, jstr, num } from "../helpers.js";
+import { allRows, bit, bool, getRow, jparse, jstr } from "../helpers.js";
 
 interface SkillRow {
   id: string;

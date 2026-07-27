@@ -10,7 +10,7 @@ import { ModelCapabilityRegistry } from "./capabilities.js";
 import { BudgetExceededError, NoModelForRoleError, ProviderHttpError } from "./errors.js";
 import { FixtureProvider, fixture } from "./fixture.js";
 import { ModelRouter, type UsageRecord } from "./router.js";
-import { textMessage, type CompletionRequest, type ModelProvider, type RouterRequest } from "./types.js";
+import { textMessage, type ModelProvider, type RouterRequest } from "./types.js";
 
 function makeModel(
   id: string,
