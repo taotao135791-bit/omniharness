@@ -97,7 +97,11 @@ it("debug interrupt", async () => {
     requiredCapabilities: [],
     execute: (_a, ctx) =>
       new Promise((_, reject) => {
-        ctx.signal.addEventListener("abort", () => reject(new Error("aborted")), { once: true });
+        console.log("TOOL ENTER, aborted?", ctx.signal.aborted);
+        ctx.signal.addEventListener("abort", () => {
+          console.log("TOOL GOT ABORT");
+          reject(new Error("aborted"));
+        }, { once: true });
       }),
   };
   tools.register(slow);
@@ -106,6 +110,7 @@ it("debug interrupt", async () => {
     registry: tools,
     policy: new PolicyEngine({ workspaceRoot: root }),
     workspace: workspace(root),
+    auditSink: (e) => console.log("AUDIT", e.outcome, e.ok),
   });
   const stream = runtime.startRun({ sessionId: "s" as SessionId, input: "go", runId: "r1" });
   const it2 = stream[Symbol.asyncIterator]();
@@ -118,7 +123,9 @@ it("debug interrupt", async () => {
     if (n.value.type === "tool.call.started") break;
   }
   console.log("interrupt ->", runtime.interrupt("r1"));
-  const timeout = setTimeout(() => console.log("STILL WAITING"), 3000);
+  const timeout = setTimeout(() => {
+    console.log("STILL WAITING; active?", runtime.hasActiveRun("s" as SessionId), "transcript:", runtime.transcript("s" as SessionId).length);
+  }, 3000);
   for (;;) {
     const n = await it2.next();
     if (n.done) break;

@@ -292,7 +292,10 @@ export function importHermesSessions(options: HermesSessionsImportOptions): Impo
           }
           parts.push(...hermesToolCallsToParts(m.tool_calls));
         }
-        if (compacted === 1) compactedCount += 1;
+        if (compacted === 1) {
+          compactedCount += 1;
+          lastCompactedIndex = messages.length;
+        }
 
         const message: Message = {
           id: messageId,
@@ -306,18 +309,15 @@ export function importHermesSessions(options: HermesSessionsImportOptions): Impo
         previousId = messageId;
       }
 
-      // One synthetic marker at the compaction boundary: sessions with
-      // compacted rows had their earlier history folded into a summary.
+      // One synthetic marker right after the last compacted message: the
+      // point where the source session's earlier history was folded away.
       if (compactedCount > 0) {
-        const markerIndex = messages.findIndex((m) => {
-          const rowId = Number(m.id.slice(`msg_hermes_${row.id}_`.length));
-          const source_row = messageRows.find((r) => r.id === rowId);
-          return (source_row?.compacted ?? 0) === 0;
-        });
+        const insertAt = lastCompactedIndex + 1;
+        const previous = messages[insertAt - 1];
         const marker: Message = {
           id: `msg_hermes_${row.id}_compaction-marker` as MessageId,
           sessionId,
-          parentId: markerIndex > 0 ? (messages[markerIndex - 1]?.id ?? null) : (messages[markerIndex - 1] === undefined && messages.length > 0 && markerIndex === -1 ? messages[messages.length - 1]!.id : null),
+          parentId: previous === undefined ? null : previous.id,
           role: "system",
           parts: [
             {
@@ -325,10 +325,8 @@ export function importHermesSessions(options: HermesSessionsImportOptions): Impo
               text: `[compaction marker] ${compactedCount} earlier message(s) were compacted in the source Hermes session`,
             },
           ],
-          createdAt: messages[Math.max(0, markerIndex === -1 ? messages.length - 1 : markerIndex)]?.createdAt ?? nowIso(),
+          createdAt: (messages[insertAt] ?? previous)?.createdAt ?? nowIso(),
         };
-        const insertAt = markerIndex === -1 ? messages.length : markerIndex;
-        if (insertAt > 0) marker.parentId = messages[insertAt - 1]!.id;
         messages.splice(insertAt, 0, marker);
         // Re-thread the linear parent chain after the splice.
         for (let i = insertAt + 1; i < messages.length; i++) {
