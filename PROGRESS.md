@@ -34,3 +34,16 @@ and its tests pass (or the failure is recorded here honestly).
       preload bridge, tray, global hotkey, minimal React shell
 - [ ] Agent run pipeline (runtime-pi) — in progress
 - [ ] skill-engine / automation-engine / orchestrator — in progress
+
+
+## 2026-07-23 — Full stack green
+
+- `pnpm verify` PASSED: lint, typecheck, unit+contract tests, e2e (daemon
+  restart + multi-client), security tests, production build, installer smoke.
+- ~691 tests green across 27 workspace packages (see FEATURE_MATRIX for the
+  per-package breakdown).
+- Agent pipeline e2e (fixture provider): model → tool call → policy →
+  approval → execution → persistence, 8/8 daemon tests.
+- Standalone single-file CLI/daemon bundles built with esbuild and verified
+  end-to-end from the tarball on this machine (daemon start + `omni doctor`).
+- Desktop GUI full views: in progress.

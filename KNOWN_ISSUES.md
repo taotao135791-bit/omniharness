@@ -49,6 +49,19 @@ covered by tests. Last updated: 2026-07-23.
 - No code signing certificates in this environment — signing pipeline is
   documented (docs/security/SIGNING.md) but unsigned test builds ship.
 
+## Coverage gaps (explicitly not done)
+
+- **MCP client protocol**: MCP server *configs* import as data; speaking the
+  MCP protocol to external servers is not implemented.
+- **TUI view breadth**: the spec's 21 named views exist as commands/views for
+  sessions, chat, diff, models, approvals, memory, skills, automations, logs,
+  settings, palette; dedicated Channels/Nodes/Plugins/Usage full views are
+  CLI/GUI-first today.
+- **GUI**: full command-center views are landing; the minimal shell
+  (sessions/chat/approvals) already works against the daemon.
+- **Remote nodes / mobile approvals**: the adapter supports the flows as a
+  library; no bundled mobile app exists.
+
 ## Misc
 
 - `pnpm verify` "format check" stage requires prettier 3; enforced in CI.
