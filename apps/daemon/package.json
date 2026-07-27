@@ -43,7 +43,8 @@
     "@omniharness/observability": "workspace:*",
     "@omniharness/client-sdk": "workspace:*",
     "@omniharness/extension-host": "workspace:*",
-    "@omniharness/plugin-sdk": "workspace:*"
+    "@omniharness/plugin-sdk": "workspace:*",
+    "@omniharness/hermes-importer": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -93,6 +93,9 @@ importers:
       '@omniharness/git-engine':
         specifier: workspace:*
         version: link:../../packages/git-engine
+      '@omniharness/hermes-importer':
+        specifier: workspace:*
+        version: link:../../packages/hermes-importer
       '@omniharness/memory-engine':
         specifier: workspace:*
         version: link:../../packages/memory-engine

@@ -6,7 +6,7 @@ import type {
   ProviderConfig,
   Session,
 } from "@omniharness/agent-protocol";
-import type { SessionId } from "@omniharness/shared-types";
+import type { SessionId, ToolCallId } from "@omniharness/shared-types";
 import { DEFAULT_CAPABILITIES } from "@omniharness/shared-types";
 import { OmniClient } from "@omniharness/client-sdk";
 import { AppController } from "../core/app-controller.js";
@@ -15,7 +15,6 @@ import { FakeDaemon } from "./fake-daemon.js";
 /** Cast a plain string to a branded ID for fixtures/events. */
 export const sid = (s: string): SessionId => s as SessionId;
 
-import type { ToolCallId } from "/shared-types";
 export const tid = (s: string): ToolCallId => s as ToolCallId;
 
 /** Un-brands top-level string fields so fixtures accept plain strings. */

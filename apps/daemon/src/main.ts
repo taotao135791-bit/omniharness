@@ -13,6 +13,7 @@ import { registerToolHandlers } from "./services/tool-handlers.js";
 import { registerDataHandlers } from "./services/data-handlers.js";
 import { registerRunHandlers } from "./services/run-handlers.js";
 import { RunService } from "./services/run-service.js";
+import { registerImportHandlers } from "./services/import-handlers.js";
 import { Scheduler, type AutomationRunner } from "@omniharness/automation-engine";
 import type { Session, SessionId } from "@omniharness/shared-types";
 import { nowIso } from "@omniharness/shared-types";
@@ -55,6 +56,7 @@ export async function startDaemon(opts?: {
   registerPluginHandlers(register, ctx);
   registerToolHandlers(register, ctx);
   registerDataHandlers(register, ctx);
+  registerImportHandlers(register, ctx);
 
   // ── agent runs ──
   const runService = new RunService(ctx, opts?.fixtureScripts);
