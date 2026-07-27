@@ -679,9 +679,24 @@ importers:
       '@omniharness/client-sdk':
         specifier: workspace:*
         version: link:../client-sdk
+      '@omniharness/observability':
+        specifier: workspace:*
+        version: link:../observability
+      '@omniharness/policy-engine':
+        specifier: workspace:*
+        version: link:../policy-engine
+      '@omniharness/sandbox-engine':
+        specifier: workspace:*
+        version: link:../sandbox-engine
+      '@omniharness/session-store':
+        specifier: workspace:*
+        version: link:../session-store
       '@omniharness/shared-types':
         specifier: workspace:*
         version: link:../shared-types
+      '@omniharness/workspace-manager':
+        specifier: workspace:*
+        version: link:../workspace-manager
     devDependencies:
       '@types/node':
         specifier: ^24.0.0

@@ -25,7 +25,12 @@
   "dependencies": {
     "@omniharness/shared-types": "workspace:*",
     "@omniharness/agent-protocol": "workspace:*",
-    "@omniharness/client-sdk": "workspace:*"
+    "@omniharness/client-sdk": "workspace:*",
+    "@omniharness/policy-engine": "workspace:*",
+    "@omniharness/sandbox-engine": "workspace:*",
+    "@omniharness/workspace-manager": "workspace:*",
+    "@omniharness/observability": "workspace:*",
+    "@omniharness/session-store": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
