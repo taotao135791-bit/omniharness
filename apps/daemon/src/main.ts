@@ -15,6 +15,7 @@ import { registerRunHandlers } from "./services/run-handlers.js";
 import { RunService } from "./services/run-service.js";
 import { registerImportHandlers } from "./services/import-handlers.js";
 import { registerChannelHandlers } from "./services/channel-handlers.js";
+import { registerTaskHandlers } from "./services/task-handlers.js";
 import { Scheduler, type AutomationRunner } from "@omniharness/automation-engine";
 import type { Session, SessionId } from "@omniharness/shared-types";
 import { nowIso } from "@omniharness/shared-types";
@@ -63,6 +64,7 @@ export async function startDaemon(opts?: {
   // ── agent runs ──
   const runService = new RunService(ctx, opts?.fixtureScripts);
   registerRunHandlers(register, ctx, runService);
+  registerTaskHandlers(register, ctx, runService);
   runService.recoverOnBoot();
 
   // ── automation scheduler: runs prompts in isolated, tool-restricted sessions ──
