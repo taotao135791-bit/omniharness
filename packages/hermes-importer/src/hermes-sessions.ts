@@ -256,6 +256,7 @@ export function importHermesSessions(options: HermesSessionsImportOptions): Impo
 
       const messages: Message[] = [];
       let compactedCount = 0;
+      let lastCompactedIndex = -1;
       let previousId: MessageId | null = null;
       for (const m of messageRows) {
         const active = m.active ?? 1;
